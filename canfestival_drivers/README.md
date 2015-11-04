@@ -1,0 +1,23 @@
+# CanFestival drivers
+
+The drivers in this directory are taken from the
+[CanFestival project](http://www.canfestival.org/).
+We have replaced the makefiles by more modern
+CMake files. There have only been small changes
+to the original source code. If a file is changed,
+there exists a corresponding difference file
+comparing to the _CanFestival-3_ version from
+<http://dev.automforge.net/> on 29 October 2015.
+
+The drivers are binary compatible. However, we
+distribute them here in order to simplify the
+build process. Not all original drivers are
+ported yet, because many of them cannot be tested
+by us. If you have made currently unsupported
+hardware working, we are happy if you contribute
+your work to the project.
+
+Some drivers have external dependencies. They are
+listed here:
+
+* __can_peak_linux:__ PCAN by [PEAK-System](http://www.peak-system.com/fileadmin/media/linux/index.htm)

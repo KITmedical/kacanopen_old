@@ -1,0 +1,73 @@
+40,45d39
+< #ifdef DLL_CALL
+< #undef DLL_CALL
+< #endif
+< 
+< #define DLL_CALL(funcname) (* funcname##_driver)
+< 
+48,63d41
+< int DLL_CALL(canfd)(CAN_HANDLE)FCT_PTR_INIT;
+< 
+< #ifdef DLL_CALL
+< #undef DLL_CALL
+< #endif
+< 
+< #define DLL_CALL(funcname) funcname##_driver
+< 
+< #define DLSYM(name)\
+<         *(void **) (&name##_driver) = dlsym(handle, #name"_driver");\
+<         if ((error = dlerror()) != NULL)  {\
+<                 fprintf (stderr, "%s\n", error);\
+<                 UnLoadCanDriver(handle);\
+<                 return NULL;\
+<         }
+< 
+264,303d241
+< /*UnLoads the dll*/
+< UNS8 UnLoadCanDriver(LIB_HANDLE handle)
+< {
+<         if(handle!=NULL)
+<         {
+<                 dlclose(handle);
+< 
+<                 handle=NULL;
+<                 return 0;
+<         }
+<         return -1;
+< }
+< 
+< /*Loads the dll and get funcs ptr*/
+< LIB_HANDLE LoadCanDriver(char* driver_name)
+< {
+<         LIB_HANDLE handle = NULL;
+<         char *error;
+< 
+<         if(handle==NULL)
+<         {
+<                 handle = dlopen(driver_name, RTLD_LAZY);
+<         }
+< 
+<         if (!handle) {
+<                 fprintf (stderr, "%s\n", dlerror());
+<                 return NULL;
+<         }
+< 
+<         /*Get function ptr*/
+<         DLSYM(canReceive)
+<         DLSYM(canSend)
+<         DLSYM(canOpen)
+<         DLSYM(canChangeBaudRate)
+<         DLSYM(canClose)
+< 	DLSYM(canfd)
+< 
+<         return handle;
+< }
+< 
+364c302
+< 		lib_h = LoadCanDriver(can_drv);
+---
+> 		/*lib_h = LoadCanDriver(can_drv);
+368c306
+< 		}
+---
+> 		}*/

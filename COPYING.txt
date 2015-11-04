@@ -1,0 +1,12 @@
+KaCanOpen Easy-to-use CanOpen stack and CanOpen-ROS bridge from Karlsruhe
+Copyright (c) 2015, Thomas Keh
+
+All code residing in a directory prefixed with kacanopen_ is licensed under
+the BSD-3-Clause license. See COPYING.BSD.txt for details.
+
+The can drivers in the canfestival_drivers directory are taken from the
+CanFestival project (http://www.canfestival.org/) and are licensed under
+the LGPLv2.1+ license. See COPYING.LGPL.txt and the COPYING, AUTHORS and
+CONTRIBUTORS files in thr canfestival_drivers directory for details.
+We want to thank Edouard Tisserant, Francis Dupin, Laurent Bessard and
+other contributers to CanFestival for their great work.

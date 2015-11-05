@@ -29,65 +29,85 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#pragma once
+#include "entry.h"
+#include "logger.h"
 
-#include <cstdint>
-#include <string>
-#include <vector>
-
-#include "type.h"
-#include "value.h"
-#include "access_method.h"
+#include <cassert>
 
 namespace kaco {
 
-	enum AccessType {
-		read_only,
-		write_only,
-		read_write,
-		constant
-	};
+Entry::Entry() {}
 
-	struct Entry {
+// standard constructor
+Entry::Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access)
+	: name(_name),
+		index(_index),
+		subindex(_subindex),
+		is_array(false),
+		access(_access),
+		type(_type),
+		value(),
+		valid(false),
+		sdo_on_read(true),
+		sdo_on_write(true),
+		is_slice(false),
+		slice_first_bit(0),
+		slice_last_bit(0),
+		access_method(AccessMethod::sdo),
+		description("")
+	{ }
 
-		Entry();
+// array constructor
+Entry::Entry(uint32_t _index, std::string _name, Type _type, AccessType _access)
+	: name(_name),
+		index(_index),
+		subindex(0),
+		is_array(true),
+		access(_access),
+		type(_type),
+		value(),
+		valid(false),
+		sdo_on_read(true),
+		sdo_on_write(true),
+		is_slice(false),
+		slice_first_bit(0),
+		slice_last_bit(0),
+		access_method(AccessMethod::sdo),
+		description("")
+	{ }
 
-		// standard constructor
-		Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access);
+void Entry::set_value(const Value& _value, uint8_t array_index) {
+	if (is_array) {
 
-		// array constructor
-		Entry(uint32_t _index, std::string _name, Type _type, AccessType _access);
+		if (array.size()<=array_index)
+			array.resize(array_index+1);
 
-		std::string name;
-		uint16_t index;
+		if (array_entry_valid.size()<=array_index)
+			array_entry_valid.resize(array_index+1, false);
+
+		array[array_index] = _value;
+		array_entry_valid[array_index] = true;
+
+	} else {
+		value = _value;
+		valid = true;
+	}
+}
+
+const Value& Entry::get_value(uint8_t array_index) const {
 		
-		uint8_t subindex; // only used if is_array==false
-		bool is_array;
+	if ( (!is_array && !valid)
+		|| (is_array && (array_index>=array.size()
+		|| array_index>=array_entry_valid.size()
+		|| !array_entry_valid[array_index])) ) {
+		LOG("[Entry::get_value] Value not valid.");
+	}
 
-		AccessType access;
-
-		Type type;
-		
-		Value value;
-		bool valid;
-
-		std::vector<Value> array;
-		std::vector<bool> array_entry_valid;
-
-		bool sdo_on_read;
-		bool sdo_on_write;
-
-		bool is_slice;
-		uint8_t slice_first_bit;
-		uint8_t slice_last_bit;
-
-		AccessMethod access_method;
-
-		std::string description;
-
-		void set_value(const Value& value, uint8_t array_index=0);
-		const Value& get_value(uint8_t array_index=0) const;
-
-	};
+	if (is_array) {
+		return array[array_index];
+	} else {
+		return value;
+	}
+}
 
 } // end namespace kaco

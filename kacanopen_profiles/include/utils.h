@@ -34,12 +34,16 @@
 #include "type.h"
 
 #include <string>
+#include <cstdint>
 
 namespace kaco {
 
 struct Utils {
 
+	static const bool debug = true;
+
 	static std::string type_to_string(Type type);
+	static uint8_t get_type_size(Type type);
 
 };
 

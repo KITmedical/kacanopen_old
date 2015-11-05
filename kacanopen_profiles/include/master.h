@@ -47,8 +47,8 @@ namespace kaco {
 
 		//! \returns true if successful
 		bool start();
+		
 		void stop();
-
 		std::vector<Device>& get_devices();
 
 		Core core;
@@ -59,7 +59,7 @@ namespace kaco {
 
 		std::vector<Device> m_devices;
 		NMT::NewDeviceCallback m_new_device_callback_functional;
-		
+
 		void new_device_callback(uint8_t node_id);
 
 	};

@@ -50,7 +50,7 @@ namespace kaco {
 		struct PDOReceivedCallback {
 			// TODO: make data vector a reference?
 			typedef std::function< void(std::vector<uint8_t>) > Function;
-			uint8_t node_id;
+			uint16_t cob_id;
 			Function callback;
 		};
 
@@ -58,6 +58,8 @@ namespace kaco {
 		~PDO();
 
 		void process_incoming_message(const Message& message);
+
+		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
 
 	private:
 

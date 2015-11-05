@@ -34,6 +34,8 @@
 #include "core.h"
 #include "entry.h"
 #include "type.h"
+#include "pdo_mapping.h"
+#include "access_method.h"
 
 #include <vector>
 #include <map>
@@ -58,7 +60,7 @@ namespace kaco {
 		//! Gets the value of a dictionary entry by name internally.
 		//! If there is no cached value or the entry is configured to send an SDO on request, the new value is fetched from the device via SDO.
 		//! Otherwise it returns the cached value. This makes sense, if a Reveive PDO is configured on the corresponding entry.
-		Value get_entry(std::string name, uint8_t array_index=0);
+		const Value& get_entry(std::string name, uint8_t array_index=0, AccessMethod access_method = AccessMethod::use_default);
 
 		//! Sets the value of a dictionary entry by index via SDO
 		//! It does not change the corresponding internal value and therefore the new value
@@ -68,9 +70,13 @@ namespace kaco {
 		//! Sets the value of a dictionary entry by name internally.
 		//! If the entry is configured to send an SDO on update, the new value is also sent to the device via SDO.
 		//! If a PDO is configured on the corresponding entry, it will from now on use the new value stored internally.
-		void set_entry(std::string name, const Value& value, uint8_t array_index=0);
+		void set_entry(std::string name, const Value& value, uint8_t array_index=0, AccessMethod access_method = AccessMethod::use_default);
+
+		void add_pdo_mapping(uint16_t cob_id, std::string entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index=0);
 
 	private:
+
+		void pdo_received_callback(const PDOMapping& mapping, std::vector<uint8_t> data);
 
 		static const bool debug = true;
 
@@ -78,6 +84,8 @@ namespace kaco {
 		uint8_t m_node_id;
 
 		std::map<std::string, Entry> m_dictionary;
+		std::vector<PDOMapping> m_pdo_mappings;
+		const Value m_dummy_value;
 
 		const std::vector<Entry> profile301 {
 
@@ -85,6 +93,7 @@ namespace kaco {
 			Entry(0x1001, 0, "error_register", Type::uint8, AccessType::read_only),
 			
 			// TODO remove. This is CiA401!
+			Entry(0x6000, "read_digital_input", Type::uint8, AccessType::read_only),
 			Entry(0x6200, "write_output", Type::uint8, AccessType::write_only)
 			
 		};

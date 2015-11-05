@@ -51,6 +51,14 @@ int main(int argc, char** argv) {
 
 	master.get_devices()[0].start();
 
+	master.get_devices()[0].add_pdo_mapping(0x188, "read_digital_input", 0, 0, 0); // index 0
+	master.get_devices()[0].add_pdo_mapping(0x188, "read_digital_input", 1, 1, 1); // index 1
+
+
+
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::sdo));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::sdo));
+
 	// TODO: This is only for testing. write_output is CiA401 and should not be available here.
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0x0F, 0);
 
@@ -58,16 +66,39 @@ int main(int argc, char** argv) {
 	//UINTDUMP(device_type);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF0, 0);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF1, 0);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF2, 0);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF3, 0);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF4, 0);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF5, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(4));

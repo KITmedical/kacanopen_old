@@ -32,61 +32,26 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
-#include <vector>
-
-#include "type.h"
-#include "value.h"
-#include "access_method.h"
 
 namespace kaco {
 
-	enum AccessType {
-		read_only,
-		write_only,
-		read_write,
-		constant
-	};
+	/// AccessMethod lists methods on how to access the dictionary of a device.
+	enum class AccessMethod {
 
-	struct Entry {
+		/// Use default access method from dictionary.
+		use_default,
 
-		Entry();
+		/// Return cached value.
+		cache,
 
-		// standard constructor
-		Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access);
+		/// Send an SDO message (and wait for confirmation).
+		sdo,
 
-		// array constructor
-		Entry(uint32_t _index, std::string _name, Type _type, AccessType _access);
+		/// Return cached value and send a PDO request.
+		cache_and_pdo_request,
 
-		std::string name;
-		uint16_t index;
-		
-		uint8_t subindex; // only used if is_array==false
-		bool is_array;
-
-		AccessType access;
-
-		Type type;
-		
-		Value value;
-		bool valid;
-
-		std::vector<Value> array;
-		std::vector<bool> array_entry_valid;
-
-		bool sdo_on_read;
-		bool sdo_on_write;
-
-		bool is_slice;
-		uint8_t slice_first_bit;
-		uint8_t slice_last_bit;
-
-		AccessMethod access_method;
-
-		std::string description;
-
-		void set_value(const Value& value, uint8_t array_index=0);
-		const Value& get_value(uint8_t array_index=0) const;
+		/// Send a PDO request, wait for the result and return it.
+		pdo_request_and_wait
 
 	};
 

@@ -45,10 +45,11 @@ PDO::~PDO()
 
 void PDO::process_incoming_message(const Message& message) {
 
+	uint16_t cob_id = message.cob_id;
 	uint8_t node_id = message.get_node_id();
 	std::vector<uint8_t> data;
 
-	DEBUG("Received transmit PDO from node "<<(unsigned)node_id);
+	DEBUG("Received transmit PDO with cob_id 0x"<<std::hex<<cob_id<<" (usually from node 0x"<<(unsigned)node_id<<")");
 
 	for (unsigned i=0; i<message.len; ++i) {
 		data.push_back(message.data[i]);
@@ -57,7 +58,7 @@ void PDO::process_incoming_message(const Message& message) {
 	// call registered callbacks
 	bool found_callback = false;
 	for (const PDOReceivedCallback& callback : m_receive_callbacks) {
-		if (callback.node_id == node_id) {
+		if (callback.cob_id == cob_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
 			callback.callback(data);
@@ -72,6 +73,10 @@ void PDO::process_incoming_message(const Message& message) {
 		std::cout << std::endl;
 	}
 
+}
+
+void PDO::add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback) {
+	m_receive_callbacks.push_back({cob_id,callback});
 }
 
 } // end namespace kaco

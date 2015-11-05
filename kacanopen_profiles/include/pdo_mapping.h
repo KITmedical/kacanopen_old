@@ -31,9 +31,20 @@
  
 #pragma once
 
+#include <string>
+
 namespace kaco {
 
 	struct PDOMapping {
+
+		uint16_t cob_id;
+		std::string entry_name;
+		uint8_t first_byte;
+		uint8_t last_byte;
+
+		// only relevant for arrays
+		// TODO: one byte correct?
+		uint8_t array_index;
 
 	};
 

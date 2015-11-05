@@ -105,26 +105,25 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 
 }
 
-Value Device::get_entry(std::string name, uint8_t array_index) {
+const Value& Device::get_entry(std::string name, uint8_t array_index, AccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		LOG("Dictionary entry \""<<name<<"\" not available.");
-		return Value();
+		return m_dummy_value;
 	}
 
 	Entry& entry = m_dictionary[name];
 
-	if (entry.sdo_on_read) {
+	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_read)) {
 		
 		LOG("update_on_read.");
 
 		uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
-		entry.value = get_entry_via_sdo(entry.index, subindex, entry.type);
-		entry.valid = true;
+		entry.set_value(get_entry_via_sdo(entry.index, subindex, entry.type), array_index);
 
 	}
 
-	return entry.value;
+	return entry.get_value(array_index);
 
 }
 
@@ -171,7 +170,7 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 
 }
 
-void Device::set_entry(std::string name, const Value& value, uint8_t array_index) {
+void Device::set_entry(std::string name, const Value& value, uint8_t array_index, AccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		LOG("Dictionary entry \""<<name<<"\" not available.");
@@ -186,15 +185,98 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 		return;
 	}
 
-	entry.value = value;
-	entry.valid = true;
+	entry.set_value(value, array_index);
 
-	if (entry.sdo_on_write) {
+	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_write)) {
 		
 		LOG("update_on_write.");
 
-		uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
+		const uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
 		set_entry_via_sdo(entry.index, subindex, value);
+
+	}
+
+}
+
+void Device::add_pdo_mapping(uint16_t cob_id, std::string entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index) {
+	
+	Entry& entry = m_dictionary[entry_name];
+	const uint8_t type_size = Utils::get_type_size(entry.type);
+
+	if (last_byte+1-first_byte != type_size) {
+		LOG("[Device::add_pdo_mapping] PDO mapping has wrong size!");
+		UDECIMALDUMP(type_size);
+		UDECIMALDUMP(first_byte);
+		UDECIMALDUMP(last_byte);
+	}
+
+
+
+
+	m_pdo_mappings.push_back({cob_id,entry_name,first_byte,last_byte,array_index});
+
+	// TODO: this only works while add_pdo_received_callback takes callback by value.
+	auto binding = std::bind(&Device::pdo_received_callback, this, m_pdo_mappings.back(), std::placeholders::_1);
+	m_core.pdo.add_pdo_received_callback(cob_id, binding);
+
+}
+
+void Device::pdo_received_callback(const PDOMapping& mapping, std::vector<uint8_t> data) {
+	Entry& entry = m_dictionary[mapping.entry_name];
+	const uint8_t array_index = mapping.array_index;
+	const uint8_t first_byte = mapping.first_byte;
+	const uint8_t last_byte = mapping.last_byte;
+
+	if (data.size() <= first_byte || data.size() <= last_byte) {
+		LOG("[Device::pdo_received_callback] PDO has wrong size!");
+		UDECIMALDUMP(data.size());
+		UDECIMALDUMP(first_byte);
+		UDECIMALDUMP(last_byte);
+	}
+
+	LOG("Updating entry "<<entry.name<<"...");
+	UDECIMALDUMP(array_index);
+
+	switch(entry.type) {
+			
+		case Type::uint8: {
+			entry.set_value(Value((uint8_t)data[first_byte+0]), array_index);
+			break;
+		}
+			
+		case Type::int8: {
+			entry.set_value(Value((int8_t)data[first_byte+0]), array_index);
+			break;
+		}
+
+		case Type::uint16: {
+			entry.set_value(Value((uint16_t)data[first_byte+0] + ((uint16_t)data[first_byte+1] << 8)), array_index);
+			break;
+		}
+
+		case Type::int16: {
+			entry.set_value(Value((int16_t)data[first_byte+0] + ((int16_t)data[first_byte+1] << 8)), array_index);
+			break;
+		}
+
+		case Type::uint32: {
+			entry.set_value(Value((uint32_t)data[first_byte+0] + ((uint32_t)data[first_byte+1] << 8) + ((uint32_t)data[first_byte+2] << 16) + ((uint32_t)data[first_byte+3] << 24)), array_index);
+		}
+
+		case Type::int32: {
+			entry.set_value(Value((int32_t)data[first_byte+0] + ((int32_t)data[first_byte+1] << 8) + ((int32_t)data[first_byte+2] << 16) + ((int32_t)data[first_byte+3] << 24)), array_index);
+			break;
+		}
+
+		case Type::string: {
+			LOG("Mapping PDOs to string typed entries is not supported!");
+			break;
+		}
+
+		default: {
+			LOG("Unknown data type.");
+			break;
+		}
 
 	}
 

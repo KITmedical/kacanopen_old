@@ -31,8 +31,10 @@
 
 #include "utils.h"
 #include "type.h"
+#include "logger.h"
 
 #include <string>
+#include <cstdint>
 
 namespace kaco {
 
@@ -54,6 +56,24 @@ std::string Utils::type_to_string(Type type) {
 			return "string";
 		default:
 			return "unknown type";
+	}
+}
+
+uint8_t Utils::get_type_size(Type type) {
+	switch(type) {
+		case Type::uint8:
+		case Type::int8:
+			return 1;
+		case Type::uint16:
+		case Type::int16:
+			return 2;
+		case Type::uint32:
+		case Type::int32:
+			return 4;
+		case Type::string:
+		default:
+			DEBUG("[Utils::get_type_size] Unknown type or type with variable size.");
+			return 0;
 	}
 }
 

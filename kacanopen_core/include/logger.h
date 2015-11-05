@@ -39,5 +39,6 @@
 // been deactivated using a static const boolean.
 
 #define UINTDUMP(x) std::cout <<  #x << " = 0x" << std::hex << (uint64_t)x << std::endl;
+#define UDECIMALDUMP(x) std::cout <<  #x << " = " << std::dec << (uint64_t)x << std::endl;
 #define LOG(x) std::cout << x << std::endl;
 #define DEBUG(x) if (debug) {std::cout << x << std::endl;}

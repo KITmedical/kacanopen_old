@@ -29,36 +29,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "message_type.h"
-#include "defines.h"
+#pragma once
 
-#include <iostream>
 #include <cstdint>
+#include <string>
 
 namespace kaco {
 
-uint8_t message_type::get_node_id() const {
-	return cob_id & 0x7F;
-}
+struct SDOResponse {
 
-uint8_t message_type::get_function_code() const {
-	return cob_id >> 7;
-}
+	uint8_t node_id;
+	uint8_t command;
+	uint16_t index;
+	uint8_t subindex;
+	uint8_t data[4];
 
-void message_type::print() const {
+	uint16_t get_index() const;
+	uint16_t get_subindex() const;
+	uint8_t get_length() const;
+	uint8_t failed() const;
+	uint32_t get_data() const;
+	void print() const;
+	std::string get_error() const;
 
-	UINTDUMP(cob_id);
-	UINTDUMP(rtr);
-	UINTDUMP(len);
-	UINTDUMP(get_function_code());
-	UINTDUMP(get_node_id());
+};
 
-	for (unsigned i=0;i<8;++i) {
-		if (data[i]>0) {
-			LOG("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
-		}
-	}
-
-}
-
-}
+} // end namespace kaco

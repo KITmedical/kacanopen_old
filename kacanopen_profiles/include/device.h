@@ -32,8 +32,8 @@
 #pragma once
 
 #include "core.h"
-#include "entry_type.h"
-#include "data_type.h"
+#include "entry.h"
+#include "type.h"
 
 #include <vector>
 #include <map>
@@ -53,22 +53,22 @@ namespace kaco {
 		//! Gets the value of a dictionary entry by index via SDO
 		//! It does not change the corresponding internal value and therefore the new value
 		//! cannot be used by Transmit PDOs.
-		value_type get_entry_via_sdo(uint32_t index, uint8_t subindex, data_type type);
+		Value get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type);
 
 		//! Gets the value of a dictionary entry by name internally.
 		//! If there is no cached value or the entry is configured to send an SDO on request, the new value is fetched from the device via SDO.
 		//! Otherwise it returns the cached value. This makes sense, if a Reveive PDO is configured on the corresponding entry.
-		value_type get_entry(std::string name, uint8_t array_index=0);
+		Value get_entry(std::string name, uint8_t array_index=0);
 
 		//! Sets the value of a dictionary entry by index via SDO
 		//! It does not change the corresponding internal value and therefore the new value
 		//! cannot be used by Transmit PDOs.
-		void set_entry_via_sdo(uint32_t index, uint8_t subindex, const value_type& value);
+		void set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& value);
 
 		//! Sets the value of a dictionary entry by name internally.
 		//! If the entry is configured to send an SDO on update, the new value is also sent to the device via SDO.
 		//! If a PDO is configured on the corresponding entry, it will from now on use the new value stored internally.
-		void set_entry(std::string name, const value_type& value, uint8_t array_index=0);
+		void set_entry(std::string name, const Value& value, uint8_t array_index=0);
 
 	private:
 
@@ -77,15 +77,15 @@ namespace kaco {
 		Core& m_core;
 		uint8_t m_node_id;
 
-		std::map<std::string, entry_type> m_dictionary;
+		std::map<std::string, Entry> m_dictionary;
 
-		const std::vector<entry_type> profile301 {
+		const std::vector<Entry> profile301 {
 
-			entry_type(0x1000, 0, "device_type", data_type::uint32, access_type::read_only),
-			entry_type(0x1001, 0, "error_register", data_type::uint8, access_type::read_only),
+			Entry(0x1000, 0, "device_type", Type::uint32, AccessType::read_only),
+			Entry(0x1001, 0, "error_register", Type::uint8, AccessType::read_only),
 			
 			// TODO remove. This is CiA401!
-			entry_type(0x6200, "write_output", data_type::uint8, access_type::write_only)
+			Entry(0x6200, "write_output", Type::uint8, AccessType::write_only)
 			
 		};
 

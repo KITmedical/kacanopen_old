@@ -33,7 +33,7 @@
 #include <chrono>
 
 #include "master.h"
-#include "defines.h"
+#include "logger.h"
 
 int main(int argc, char** argv) {
 

@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "core.h"
-#include "defines.h"
+#include "logger.h"
 
 int main(int argc, char** argv) {
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 	
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    core.nmt.send_nmt_message(8,kaco::NMT::command::start_node);
+    core.nmt.send_nmt_message(8,kaco::NMT::Command::start_node);
 	
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 

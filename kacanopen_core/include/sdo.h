@@ -34,9 +34,8 @@
 #include <functional>
 #include <vector>
 
-#include "defines.h"
-#include "message_type.h"
-#include "sdo_response_type.h"
+#include "message.h"
+#include "sdo_response.h"
 
 namespace kaco {
 	
@@ -48,13 +47,11 @@ namespace kaco {
 	public:
 
 		//! type of a sdo message receiver function
-		struct sdo_callback_type {
-			typedef std::function< void(const sdo_response_type&) > sdo_callback_function_type;
+		struct SDOReceivedCallback {
+			typedef std::function< void(const SDOResponse&) > sdo_callback_function_type;
 			uint8_t node_id;
 			sdo_callback_function_type callback;
 		};
-
-		
 
 		SDO(Core& core);
 		~SDO();
@@ -63,15 +60,15 @@ namespace kaco {
 		
 		std::vector<uint8_t> upload(uint8_t node_id, uint16_t index, uint8_t subindex);
 
-		void process_incoming_message(const message_type& message);
+		void process_incoming_message(const Message& message);
 
 		bool send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 			uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-			sdo_response_type& response);
+			SDOResponse& response);
 
 	private:
 
-		enum flags : uint8_t {
+		enum Flag : uint8_t {
 
 			// client command specifiers
 			initiate_download_request = 0x20,
@@ -96,7 +93,7 @@ namespace kaco {
 
 		static const bool debug = true;
 		Core& m_core;
-		std::vector<sdo_callback_type> m_receive_callbacks;
+		std::vector<SDOReceivedCallback> m_receive_callbacks;
 		
 		uint8_t size_flag(uint8_t size);
 

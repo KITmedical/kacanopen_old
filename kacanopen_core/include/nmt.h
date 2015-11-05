@@ -31,8 +31,7 @@
  
 #pragma once
 
-#include "defines.h"
-#include "message_type.h"
+#include "message.h"
 
 #include <vector>
 #include <functional>
@@ -47,9 +46,9 @@ namespace kaco {
 	public:
 		
 		//! type of a message receiver function
-		typedef std::function< void(const uint8_t node_id) > new_device_callback_type;
+		typedef std::function< void(const uint8_t node_id) > NewDeviceCallback;
 
-		enum class command : uint8_t {
+		enum class Command : uint8_t {
 			start_node = 0x01,
 			stop_node = 0x02,
 			enter_preoperational = 0x80,
@@ -60,18 +59,17 @@ namespace kaco {
 		NMT(Core& core);
 		~NMT();
 
-		void process_incoming_message(const message_type& message);
-		void send_nmt_message(uint8_t node_id, command cmd);
-		void broadcast_nmt_message(command cmd);
+		void process_incoming_message(const Message& message);
+		void send_nmt_message(uint8_t node_id, Command cmd);
+		void broadcast_nmt_message(Command cmd);
 		void reset_all_nodes();
-
-		void register_new_device_callback(const new_device_callback_type& callback);	
+		void register_new_device_callback(const NewDeviceCallback& callback);	
 
 	private:
 
 		static const bool debug = true;
 		Core& m_core;
-		std::vector<new_device_callback_type> m_new_device_callbacks;
+		std::vector<NewDeviceCallback> m_new_device_callbacks;
 
 	};
 

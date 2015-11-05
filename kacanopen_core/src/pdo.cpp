@@ -30,6 +30,7 @@
  */
  
 #include "pdo.h"
+#include "logger.h"
 
  #include <iostream>
 
@@ -42,7 +43,7 @@ PDO::PDO(Core& core)
 PDO::~PDO() 
 	{ }
 
-void PDO::process_incoming_message(const message_type& message) {
+void PDO::process_incoming_message(const Message& message) {
 
 	uint8_t node_id = message.get_node_id();
 	std::vector<uint8_t> data;
@@ -55,7 +56,7 @@ void PDO::process_incoming_message(const message_type& message) {
 
 	// call registered callbacks
 	bool found_callback = false;
-	for (const pdo_callback_type& callback : m_receive_callbacks) {
+	for (const PDOReceivedCallback& callback : m_receive_callbacks) {
 		if (callback.node_id == node_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.

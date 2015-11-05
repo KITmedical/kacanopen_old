@@ -29,39 +29,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "sdo_response_type.h"
-#include "defines.h"
+#include "sdo_response.h"
+#include "logger.h"
 
 #include <cstdint>
-#include <iostream>
 #include <string>
 
 namespace kaco {
 
-uint16_t sdo_response_type::get_index() const {
+uint16_t SDOResponse::get_index() const {
 	return (((uint16_t)data[2])<<8) + (uint16_t)data[1];
 }
 
-uint16_t sdo_response_type::get_subindex() const {
+uint16_t SDOResponse::get_subindex() const {
 	return data[3];
 }
 
-uint8_t sdo_response_type::get_length() const {
+uint8_t SDOResponse::get_length() const {
 	return 4-((command&0x0C)>>2);
 }
 
-uint8_t sdo_response_type::failed() const {
+uint8_t SDOResponse::failed() const {
 	return command == 0x80;
 }
 
-uint32_t sdo_response_type::get_data() const {
+uint32_t SDOResponse::get_data() const {
 	return (((uint32_t) data[3+3]) << 24)
 		+ (((uint32_t) data[3+2]) << 16)
 		+ (((uint32_t) data[3+1]) << 8)
 		+ (uint32_t) data[3+0];
 }
 
-void sdo_response_type::print() const {
+void SDOResponse::print() const {
 
 	UINTDUMP(node_id);
 	UINTDUMP(command);
@@ -81,7 +80,7 @@ void sdo_response_type::print() const {
 
 }
 
-std::string sdo_response_type::get_error() const {
+std::string SDOResponse::get_error() const {
 	
 	if (!failed()) {
 		return "no error";

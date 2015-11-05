@@ -29,18 +29,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "dictionary.h"
-#include "core.h"
+#pragma once
 
-#include <iostream>
+#include <cstdint>
 
 namespace kaco {
 
-dictionary::dictionary(canopencxx_core& core) 
-	: m_core(core)
-	{ }
+	enum class Type : uint8_t {
 
-dictionary::~dictionary() 
-	{ }
+		uint8,
+		uint16,
+		uint32,
+		int8,
+		int16,
+		int32,
+		string,
+		invalid
 
-}
+	};
+
+} // end namespace kaco

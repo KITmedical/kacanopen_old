@@ -31,25 +31,21 @@
  
 #pragma once
 
-#include "defines.h"
+#include <cstdint>
 
 namespace kaco {
-	
-	// forward declaration
-	class canopencxx_core;
 
-	class dictionary {
+struct Message {
 
-	public:
+	uint16_t cob_id;	/**< message's ID */
+	uint8_t rtr;		/**< remote transmission request. (0 if not rtr message, 1 if rtr message) */
+	uint8_t len;		/**< message's length (0 to 8) */
+	uint8_t data[8]; /**< message's datas */
 
-		dictionary(canopencxx_core& core);
-		~dictionary();
+	uint8_t get_node_id() const;
+	uint8_t get_function_code() const;
+	void print() const;
 
-	private:
-
-		static const bool debug = true;
-		canopencxx_core& m_core;
-
-	};
+};
 
 } // end namespace kaco

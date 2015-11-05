@@ -32,6 +32,7 @@
 #include "device.h"
 #include "core.h"
 #include "utils.h"
+#include "logger.h"
 
 #include <cassert>
 
@@ -50,68 +51,68 @@ Device::~Device()
 	{ }
 
 void Device::start() {
-	m_core.nmt.send_nmt_message(m_node_id,NMT::command::start_node);
+	m_core.nmt.send_nmt_message(m_node_id,NMT::Command::start_node);
 }
 
-value_type Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, data_type type) {
+Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 	
 	std::vector<uint8_t> data = m_core.sdo.upload(m_node_id, index, subindex);
 
 	switch(type) {
 			
-		case data_type::uint8: {
+		case Type::uint8: {
 			uint8_t val = data[0];
-			return value_type(val);
+			return Value(val);
 		}
 			
-		case data_type::uint16: {
+		case Type::uint16: {
 			uint16_t val = data[0] + (data[1]<<8);
-			return value_type(val);
+			return Value(val);
 		}
 			
-		case data_type::uint32: {
+		case Type::uint32: {
 			uint32_t val = data[0] + (data[1]<<8) + (data[2]<<16) + (data[3]<<24);
-			return value_type(val);
+			return Value(val);
 		}
 			
-		case data_type::int8: {
+		case Type::int8: {
 			int8_t val = data[0];
-			return value_type(val);
+			return Value(val);
 		}
 			
-		case data_type::int16: {
+		case Type::int16: {
 			int16_t val = data[0] + (data[1]<<8);
-			return value_type(val);
+			return Value(val);
 		}
 			
-		case data_type::int32: {
+		case Type::int32: {
 			int32_t val = data[0] + (data[1]<<8) + (data[2]<<16) + (data[3]<<24);
-			return value_type(val);
+			return Value(val);
 		}
 
-		case data_type::string: {
+		case Type::string: {
 			// TODO: check correct encoding
 		    std::string val(reinterpret_cast<char const*>(data.data()), data.size());
-		    return value_type(val);
+		    return Value(val);
 		}
 
 		default: {
 			LOG("Unknown data type.");
-			return value_type();
+			return Value();
 		}
 
 	}
 
 }
 
-value_type Device::get_entry(std::string name, uint8_t array_index) {
+Value Device::get_entry(std::string name, uint8_t array_index) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		LOG("Dictionary entry \""<<name<<"\" not available.");
-		return value_type();
+		return Value();
 	}
 
-	entry_type& entry = m_dictionary[name];
+	Entry& entry = m_dictionary[name];
 
 	if (entry.sdo_on_read) {
 		
@@ -127,27 +128,27 @@ value_type Device::get_entry(std::string name, uint8_t array_index) {
 
 }
 
-void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const value_type& value) {
+void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& value) {
 
 	switch(value.type) {
 			
-		case data_type::uint8:
-		case data_type::int8: {
+		case Type::uint8:
+		case Type::int8: {
 			uint8_t byte0 = value.uint8;
 			m_core.sdo.download(m_node_id,index,subindex,1,{byte0});
 			break;
 		}
 
-		case data_type::uint16:
-		case data_type::int16: {
+		case Type::uint16:
+		case Type::int16: {
 			uint8_t byte0 = value.uint16 & 0xFF;
 			uint8_t byte1 = (value.uint16 >> 8) & 0xFF;
 			m_core.sdo.download(m_node_id,index,subindex,2,{byte0,byte1});
 			break;
 		}
 
-		case data_type::uint32:
-		case data_type::int32: {
+		case Type::uint32:
+		case Type::int32: {
 			uint8_t byte0 = value.uint32 & 0xFF;
 			uint8_t byte1 = (value.uint32 >> 8) & 0xFF;
 			uint8_t byte2 = (value.uint32 >> 16) & 0xFF;
@@ -156,7 +157,7 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const value_typ
 			break;
 		}
 
-		case data_type::string: {
+		case Type::string: {
 			LOG("Strings not yet supported.");
 			break;
 		}
@@ -170,14 +171,14 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const value_typ
 
 }
 
-void Device::set_entry(std::string name, const value_type& value, uint8_t array_index) {
+void Device::set_entry(std::string name, const Value& value, uint8_t array_index) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		LOG("Dictionary entry \""<<name<<"\" not available.");
 		return;
 	}
 
-	entry_type& entry = m_dictionary[name];
+	Entry& entry = m_dictionary[name];
 
 	if (value.type != entry.type) {
 		LOG("You passed a value of wrong type: "<<Utils::type_to_string(value.type));

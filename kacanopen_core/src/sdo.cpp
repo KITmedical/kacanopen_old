@@ -31,6 +31,7 @@
  
 #include "sdo.h"
 #include "core.h"
+#include "logger.h"
 
 #include <iostream>
 #include <chrono>
@@ -55,12 +56,12 @@ void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t s
 		
 		// expedited transfer
 
-		uint8_t command = flags::initiate_download_request
+		uint8_t command = Flag::initiate_download_request
 							| size_flag(size)
-							| flags::size_indicated
-							| flags::expedited_transfer;
+							| Flag::size_indicated
+							| Flag::expedited_transfer;
 
-		sdo_response_type response;
+		SDOResponse response;
 		bool success = send_sdo_and_wait(command, node_id, index, subindex,
 			data[0], data[1], data[2], data[3], response);
 
@@ -82,8 +83,8 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 	
 	std::vector<uint8_t> result;
 
-	uint8_t command = flags::initiate_upload_request;
-	sdo_response_type response;
+	uint8_t command = Flag::initiate_upload_request;
+	SDOResponse response;
 	bool success = send_sdo_and_wait(command, node_id, index, subindex,
 		0, 0, 0, 0, response);
 
@@ -92,7 +93,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 		return result;
 	}
 
-	if (response.command & flags::expedited_transfer) {
+	if (response.command & Flag::expedited_transfer) {
 
 		for (unsigned i=0; i<response.get_length(); ++i) {
 			result.push_back(response.data[3+i]);
@@ -100,7 +101,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 
 	} else {
 
-		if ((response.command & flags::size_indicated)==0) {
+		if ((response.command & Flag::size_indicated)==0) {
 			LOG("Cannot parse response. Command "<<(unsigned)response.command<<" is reserved for further use.");
 			return result;
 		}
@@ -119,9 +120,9 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 				return result;
 			}
 
-			uint8_t command = flags::upload_segment_request
+			uint8_t command = Flag::upload_segment_request
 								| toggle_bit;
-			sdo_response_type response;
+			SDOResponse response;
 			bool success = send_sdo_and_wait(command, node_id, 0, 0, 0, 0, 0, 0, response);
 
 			if (!success) {
@@ -133,7 +134,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 				return result;
 			}
 
-			if (toggle_bit != (response.command & flags::toggle_bit)) {
+			if (toggle_bit != (response.command & Flag::toggle_bit)) {
 				LOG("[Restrictive] Toggle bit is not equal to the request.");
 				return result;
 			}
@@ -145,8 +146,8 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 				--size;
 			}
 
-			toggle_bit = (toggle_bit>0) ? 0 : flags::toggle_bit;
-			more_segments = (response.command & flags::no_more_segments)==0;
+			toggle_bit = (toggle_bit>0) ? 0 : Flag::toggle_bit;
+			more_segments = (response.command & Flag::no_more_segments)==0;
 
 		}
 
@@ -161,9 +162,9 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 
 }
 
-void SDO::process_incoming_message(const message_type& message) {
+void SDO::process_incoming_message(const Message& message) {
 
-	sdo_response_type response;
+	SDOResponse response;
 	response.node_id = message.get_node_id();
 	response.command = message.data[0];
 	
@@ -175,7 +176,7 @@ void SDO::process_incoming_message(const message_type& message) {
 
 	// call registered callbacks
 	bool found_callback = false;
-	for (const sdo_callback_type& callback : m_receive_callbacks) {
+	for (const SDOReceivedCallback& callback : m_receive_callbacks) {
 		if (callback.node_id == response.node_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
@@ -192,12 +193,12 @@ void SDO::process_incoming_message(const message_type& message) {
 
 bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-	sdo_response_type& response) {
+	SDOResponse& response) {
 
 	bool received_result = false;
 	bool failed = false;
 
-	sdo_callback_type receiver = { node_id, [&] (const sdo_response_type& _response) {
+	SDOReceivedCallback receiver = { node_id, [&] (const SDOResponse& _response) {
 		//f (_response.node_id == node_id) { //&& _response.get_index() == index && _response.get_subindex() == subindex) {
 			// We should not check for index/subindex because this fails for segmented transfer.
 			// TODO: check for correct server command specifier?
@@ -209,7 +210,7 @@ bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	m_receive_callbacks.push_back(receiver);
 
 	// send message
-	message_type message;
+	Message message;
 	message.cob_id = 0x600+node_id;
 	message.rtr = false;
 	message.len = 8;

@@ -31,18 +31,82 @@
  
 #pragma once
 
+#include <cstdint>
 #include <string>
+
+#include "type.h"
+#include "value.h"
 
 namespace kaco {
 
-struct error_type {
+	enum AccessType {
+		read_only,
+		write_only,
+		read_write,
+		constant
+	};
 
-	// TODO: add type enum
+	struct Entry {
 
-	error_type() : success(true), message("") {}
-	bool success;
-	std::string message;
-	
-};
+		Entry() {}
+
+		// standard constructor
+		Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access)
+			: name(_name),
+				index(_index),
+				subindex(_subindex),
+				is_array(false),
+				access(_access),
+				type(_type),
+				value(),
+				valid(false),
+				sdo_on_read(true),
+				sdo_on_write(true),
+				is_slice(false),
+				slice_first_bit(0),
+				slice_last_bit(0),
+				description("")
+			{ }
+
+		// array constructor
+		Entry(uint32_t _index, std::string _name, Type _type, AccessType _access)
+			: name(_name),
+				index(_index),
+				subindex(0),
+				is_array(true),
+				access(_access),
+				type(_type),
+				value(),
+				valid(false),
+				sdo_on_read(true),
+				sdo_on_write(true),
+				is_slice(false),
+				slice_first_bit(0),
+				slice_last_bit(0),
+				description("")
+			{ }
+
+		std::string name;
+		uint16_t index;
+		
+		uint8_t subindex; // only used if is_array==false
+		bool is_array;
+
+		AccessType access;
+
+		Type type;
+		Value value;
+		bool valid;
+
+		bool sdo_on_read;
+		bool sdo_on_write;
+
+		bool is_slice;
+		uint8_t slice_first_bit;
+		uint8_t slice_last_bit;
+
+		std::string description;
+
+	};
 
 } // end namespace kaco

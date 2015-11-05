@@ -28,37 +28,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#pragma once
 
-#include <cstdint>
-#include <iostream>
+#include "utils.h"
+#include "type.h"
 
-typedef struct {
-	const char * busname;
-	const char * baudrate;
-} board_type;
+#include <string>
 
-typedef void* handle_type;
+namespace kaco {
 
-#define UINTDUMP(x) std::cout <<  #x << " = 0x" << std::hex << (uint64_t)x << std::endl;
-#define LOG(x) std::cout << x << std::endl;
-#define DEBUG(x) if (debug) {std::cout << x << std::endl;}
+std::string Utils::type_to_string(Type type) {
+	switch(type) {
+		case Type::uint8:
+			return "uint8";
+		case Type::uint16:
+			return "uint16";
+		case Type::uint32:
+			return "uint32";
+		case Type::int8:
+			return "int8";
+		case Type::int16:
+			return "int16";
+		case Type::int32:
+			return "int32";
+		case Type::string:
+			return "string";
+		default:
+			return "unknown type";
+	}
+}
 
-/*#ifdef CANOPEN_BIG_ENDIAN
-
-	#define UNS16_LE(v)  ((((UNS16)(v) & 0xff00) >> 8) | \
-			      (((UNS16)(v) & 0x00ff) << 8))
-
-	#define UNS32_LE(v)  ((((UNS32)(v) & 0xff000000) >> 24) |	\
-			      (((UNS32)(v) & 0x00ff0000) >> 8)  |	\
-			      (((UNS32)(v) & 0x0000ff00) << 8)  |	\
-			      (((UNS32)(v) & 0x000000ff) << 24))
-
-#else
-
-	#define UNS16_LE(v)  (v)
-
-	#define UNS32_LE(v)  (v)
-
-#endif*/
+} // end namespace kaco

@@ -34,18 +34,18 @@
 #include <chrono>
 #include <future>
 
-#include "defines.h"
+#include "logger.h"
 #include "core.h"
 
 namespace kaco {
 
 // linkage to driver
 
-extern "C" uint8_t canReceive_driver(handle_type, message_type *);
-extern "C" uint8_t canSend_driver(handle_type, message_type const *);
-extern "C" handle_type canOpen_driver(board_type *);
-extern "C" int32_t canClose_driver(handle_type);
-extern "C" uint8_t canChangeBaudRate_driver(handle_type, char *);
+extern "C" uint8_t canReceive_driver(CANHandle, Message *);
+extern "C" uint8_t canSend_driver(CANHandle, Message const *);
+extern "C" CANHandle canOpen_driver(CANBoard *);
+extern "C" int32_t canClose_driver(CANHandle);
+extern "C" uint8_t canChangeBaudRate_driver(CANHandle, char *);
 
 Core::Core()
 	: nmt(*this),
@@ -58,7 +58,7 @@ Core::~Core()
 
 bool Core::start() {
 
-    board_type board = {"slcan0", "500000"} ;
+    CANBoard board = {"slcan0", "500000"} ;
     m_handle = canOpen_driver(&board);
 
     if(!m_handle) {
@@ -84,7 +84,7 @@ void Core::stop() {
 
 void Core::receive_loop(std::atomic<bool>& running) {
 
-	message_type message;
+	Message message;
 
 	while (running) {
 
@@ -95,17 +95,17 @@ void Core::receive_loop(std::atomic<bool>& running) {
 
 }
 
-void Core::register_receive_callback(const callback_type& callback) {
+void Core::register_receive_callback(const MessageReceivedCallback& callback) {
 	m_receive_callbacks.push_back(callback);
 }
 
-void Core::received_message(const message_type& message) {
+void Core::received_message(const Message& message) {
 
 	DEBUG(" ");
 	DEBUG("Received message:");
 
 	// first call registered callbacks
-	for (const callback_type& callback : m_receive_callbacks) {
+	for (const MessageReceivedCallback& callback : m_receive_callbacks) {
 		std::async(callback, message);
 	}
 
@@ -175,7 +175,7 @@ void Core::received_message(const message_type& message) {
 
 }
 
-void Core::send(const message_type& message) {
+void Core::send(const Message& message) {
 	
 	if (debug) {
 		LOG("Sending message:")

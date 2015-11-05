@@ -37,11 +37,23 @@
 #include <thread>
 #include <atomic>
 
-#include "defines.h"
 #include "nmt.h"
 #include "sdo.h"
 #include "pdo.h"
-#include "message_type.h"
+#include "message.h"
+
+//-------------------------------------------//
+// Types used by the CAN driver.             //
+// Global scope for linking!                 //
+// TODO: Maybe encapsulate in a driver class //
+//-------------------------------------------//
+
+typedef struct {
+	const char * busname;
+	const char * baudrate;
+} CANBoard;
+
+typedef void* CANHandle;
 
 namespace kaco {
 
@@ -50,7 +62,7 @@ namespace kaco {
 	public:
 		
 		//! type of a message receiver function
-		typedef std::function< void(const message_type&) > callback_type;
+		typedef std::function< void(const Message&) > MessageReceivedCallback;
 
 		Core();
 		~Core();
@@ -60,8 +72,8 @@ namespace kaco {
 		bool start();
 		
 		void stop();
-		void register_receive_callback(const callback_type& callback);	
-		void send(const message_type& message);
+		void register_receive_callback(const MessageReceivedCallback& callback);	
+		void send(const Message& message);
 
 		// subprotocols
 		NMT nmt;
@@ -74,12 +86,12 @@ namespace kaco {
 		static const bool debug = true;
 
 		std::atomic<bool> m_running{false};
-		std::vector<callback_type> m_receive_callbacks;
+		std::vector<MessageReceivedCallback> m_receive_callbacks;
 		std::thread m_loop_thread;
-		handle_type m_handle;
+		CANHandle m_handle;
 
 		void receive_loop(std::atomic<bool>& running);
-		void received_message(const message_type& m);
+		void received_message(const Message& m);
 
 	};
 

@@ -29,23 +29,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#pragma once
+#include "message.h"
+#include "logger.h"
 
+#include <iostream>
 #include <cstdint>
 
 namespace kaco {
 
-	enum class data_type : uint8_t {
+uint8_t Message::get_node_id() const {
+	return cob_id & 0x7F;
+}
 
-		uint8,
-		uint16,
-		uint32,
-		int8,
-		int16,
-		int32,
-		string,
-		invalid
+uint8_t Message::get_function_code() const {
+	return cob_id >> 7;
+}
 
-	};
+void Message::print() const {
 
-} // end namespace kaco
+	UINTDUMP(cob_id);
+	UINTDUMP(rtr);
+	UINTDUMP(len);
+	UINTDUMP(get_function_code());
+	UINTDUMP(get_node_id());
+
+	for (unsigned i=0;i<8;++i) {
+		if (data[i]>0) {
+			LOG("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
+		}
+	}
+
+}
+
+}

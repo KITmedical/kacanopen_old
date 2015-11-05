@@ -35,8 +35,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "defines.h"
-#include "message_type.h"
+#include "message.h"
 
 namespace kaco {
 	
@@ -48,23 +47,23 @@ namespace kaco {
 	public:
 
 		//! type of a sdo message receiver function
-		struct pdo_callback_type {
+		struct PDOReceivedCallback {
 			// TODO: make data vector a reference?
-			typedef std::function< void(std::vector<uint8_t>) > pdo_callback_function_type;
+			typedef std::function< void(std::vector<uint8_t>) > Function;
 			uint8_t node_id;
-			pdo_callback_function_type callback;
+			Function callback;
 		};
 
 		PDO(Core& core);
 		~PDO();
 
-		void process_incoming_message(const message_type& message);
+		void process_incoming_message(const Message& message);
 
 	private:
 
 		static const bool debug = true;
 		Core& m_core;
-		std::vector<pdo_callback_type> m_receive_callbacks;
+		std::vector<PDOReceivedCallback> m_receive_callbacks;
 
 	};
 

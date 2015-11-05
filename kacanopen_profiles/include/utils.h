@@ -31,7 +31,7 @@
  
 #pragma once
 
-#include "data_type.h"
+#include "type.h"
 
 #include <string>
 
@@ -39,27 +39,8 @@ namespace kaco {
 
 struct Utils {
 
-	static std::string type_to_string(data_type type) {
-		switch(type) {
-			case data_type::uint8:
-				return "uint8";
-			case data_type::uint16:
-				return "uint16";
-			case data_type::uint32:
-				return "uint32";
-			case data_type::int8:
-				return "int8";
-			case data_type::int16:
-				return "int16";
-			case data_type::int32:
-				return "int32";
-			case data_type::string:
-				return "string";
-			default:
-				return "unknown type";
-		}
-	}
+	static std::string type_to_string(Type type);
 
 };
 
-} // end namespace cp
+} // end namespace kaco

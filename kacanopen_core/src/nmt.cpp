@@ -31,6 +31,7 @@
  
 #include "nmt.h"
 #include "core.h"
+#include "logger.h"
 
 #include <iostream>
 #include <cstdint>
@@ -45,21 +46,21 @@ NMT::NMT(Core& core)
 NMT::~NMT() 
 	{ }
 
-void NMT::send_nmt_message(uint8_t node_id, command cmd) {
+void NMT::send_nmt_message(uint8_t node_id, Command cmd) {
 	DEBUG("Set NMT state of "<<(unsigned)node_id<<" to "<<static_cast<uint32_t>(cmd));
-	message_type message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };
+	Message message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };
 	m_core.send(message);
 }
 
-void NMT::broadcast_nmt_message(command cmd) {
+void NMT::broadcast_nmt_message(Command cmd) {
 	send_nmt_message(0, cmd);
 }
 
 void NMT::reset_all_nodes() {
-	broadcast_nmt_message(command::reset_node);
+	broadcast_nmt_message(Command::reset_node);
 }
 
-void NMT::process_incoming_message(const message_type& message) {
+void NMT::process_incoming_message(const Message& message) {
 
 	DEBUG("NMT Error Control message from node "
 		<<(unsigned)message.get_node_id()<<".");
@@ -122,7 +123,7 @@ void NMT::process_incoming_message(const message_type& message) {
 
 }
 
-void NMT::register_new_device_callback(const new_device_callback_type& callback) {
+void NMT::register_new_device_callback(const NewDeviceCallback& callback) {
 	m_new_device_callbacks.push_back(callback);
 }
 

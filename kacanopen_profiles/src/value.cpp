@@ -29,41 +29,82 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "master.h"
-#include "core.h"
+#include "value.h"
 #include "logger.h"
 
 namespace kaco {
 
-Master::Master() {
-	
-	m_new_device_callback_functional = std::bind(&Master::new_device_callback, this, std::placeholders::_1);
-	core.nmt.register_new_device_callback(m_new_device_callback_functional);
-
+Value::Value() {
+	DEBUG("Creating empty value");
+	type = Type::invalid;
 }
 
-Master::~Master() 
-	{ }
-
-bool Master::start() {
-	bool success = core.start();
-	if (!success)
-		return false;
-    core.nmt.reset_all_nodes();
-    return true;
+Value::Value(uint8_t value) {
+	DEBUG("Creating uint8 value");
+	type = Type::uint8;
+	uint8 = value;
 }
 
-void Master::stop() {
-	core.stop();
+Value::Value(uint16_t value) {
+	DEBUG("Creating uint16 value");
+	type = Type::uint16;
+	uint16 = value;
 }
 
-std::vector<Device>& Master::get_devices() {
-	return m_devices;
+Value::Value(uint32_t value) {
+	DEBUG("Creating uint32 value");
+	type = Type::uint32;
+	uint32 = value;
 }
 
-void Master::new_device_callback(uint8_t node_id) {
-	m_devices.emplace_back(core, node_id);
+Value::Value(int8_t value) {
+	DEBUG("Creating int8 value");
+	type = Type::int8;
+	int8 = value;
 }
 
+Value::Value(int16_t value) {
+	DEBUG("Creating int16 value");
+	type = Type::int16;
+	int16 = value;
+}
+
+Value::Value(int32_t value) {
+	DEBUG("Creating int32 value");
+	type = Type::int32;
+	int32 = value;
+}
+
+Value::Value(const std::string& value) {
+	DEBUG("Creating string value");
+	type = Type::string;
+	string = value;
+}
+
+//----------------//
+// Cast operators //
+//----------------//
+
+/// converts a CanOpen type <mtypein> and a C++ type <mtypeout>
+/// to a cast operator
+#define CO_VALUE_TYPE_CAST_OP(mtypeout, mtypein) \
+	Value::operator mtypeout() const { \
+		if (type != Type::mtypein ) { \
+			LOG("Illegal conversion from "<<Utils::type_to_string(type)<<" to " #mtypein " !") \
+		} \
+		return mtypein; \
+	}
+
+/// converts a CanOpen type <mtypein> to a cast method to
+/// the C++ output type <mtypein>_t
+#define CO_VALUE_TYPE_CAST_OP_INT(mtype) CO_VALUE_TYPE_CAST_OP(mtype##_t, mtype)
+
+CO_VALUE_TYPE_CAST_OP_INT(uint8);
+CO_VALUE_TYPE_CAST_OP_INT(uint16);
+CO_VALUE_TYPE_CAST_OP_INT(uint32);
+CO_VALUE_TYPE_CAST_OP_INT(int8);
+CO_VALUE_TYPE_CAST_OP_INT(int16);
+CO_VALUE_TYPE_CAST_OP_INT(int32);
+CO_VALUE_TYPE_CAST_OP(std::string, string);
 
 } // end namespace kaco

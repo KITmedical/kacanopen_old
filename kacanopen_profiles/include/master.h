@@ -58,8 +58,8 @@ namespace kaco {
 		static const bool debug = true;
 
 		std::vector<Device> m_devices;
-
-		NMT::new_device_callback_type new_device_callback_functional;
+		NMT::NewDeviceCallback m_new_device_callback_functional;
+		
 		void new_device_callback(uint8_t node_id);
 
 	};

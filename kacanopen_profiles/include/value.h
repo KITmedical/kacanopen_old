@@ -32,27 +32,47 @@
 #pragma once
 
 #include <cstdint>
-#include <iostream>
 #include <string>
+
+#include "utils.h"
 
 namespace kaco {
 
-struct sdo_response_type {
+	struct Value {
 
-	uint8_t node_id;
-	uint8_t command;
-	uint16_t index;
-	uint8_t subindex;
-	uint8_t data[4];
+		static const bool debug = true;
 
-	uint16_t get_index() const;
-	uint16_t get_subindex() const;
-	uint8_t get_length() const;
-	uint8_t failed() const;
-	uint32_t get_data() const;
-	void print() const;
-	std::string get_error() const;
+		Type type;
 
-};
+		// std::string is non-trivial and should not be part of a union.
+		std::string string;
+
+		union {
+			uint8_t uint8;
+			uint16_t uint16;
+			uint32_t uint32;
+			int8_t int8;
+			int16_t int16;
+			int32_t int32;
+		};
+		
+		Value();
+		Value(uint8_t value);
+		Value(uint16_t value);
+		Value(uint32_t value);
+		Value(int8_t value);
+		Value(int16_t value);
+		Value(int32_t value);
+		Value(const std::string& value);
+
+		operator uint8_t() const;
+		operator uint16_t() const;
+		operator uint32_t() const;
+		operator int8_t() const;
+		operator int16_t() const;
+		operator int32_t() const;
+		operator std::string() const;
+
+	};
 
 } // end namespace kaco

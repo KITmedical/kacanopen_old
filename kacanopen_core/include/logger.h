@@ -32,20 +32,12 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
-namespace kaco {
+// TODO: Is it possible to build a zero-overhead debug logger using a logger class?
+// We have to check if compilers optimize out calls to methods where the body has
+// been deactivated using a static const boolean.
 
-struct message_type {
-
-	uint16_t cob_id;	/**< message's ID */
-	uint8_t rtr;		/**< remote transmission request. (0 if not rtr message, 1 if rtr message) */
-	uint8_t len;		/**< message's length (0 to 8) */
-	uint8_t data[8]; /**< message's datas */
-
-	uint8_t get_node_id() const;
-	uint8_t get_function_code() const;
-	void print() const;
-
-};
-
-} // end namespace kaco
+#define UINTDUMP(x) std::cout <<  #x << " = 0x" << std::hex << (uint64_t)x << std::endl;
+#define LOG(x) std::cout << x << std::endl;
+#define DEBUG(x) if (debug) {std::cout << x << std::endl;}

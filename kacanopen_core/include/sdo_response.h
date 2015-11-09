@@ -42,7 +42,7 @@ struct SDOResponse {
 	uint8_t command;
 	uint16_t index;
 	uint8_t subindex;
-	uint8_t data[4];
+	uint8_t data[7];
 
 	uint16_t get_index() const;
 	uint16_t get_subindex() const;

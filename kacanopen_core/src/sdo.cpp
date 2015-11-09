@@ -48,7 +48,7 @@ SDO::~SDO()
 void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& data) {
 
 	if (data.size()<size) {
-		LOG("Not enough data bytes provided!");
+		ERROR("[SDO::download] Not enough data bytes provided!");
 		return;
 	}
 
@@ -66,13 +66,13 @@ void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t s
 			data[0], data[1], data[2], data[3], response);
 
 		if (response.failed()) {
-			LOG(response.get_error());
+			ERROR("[SDO::upload] "<<response.get_error());
 		}
 
 	} else {
 
 		// segmented transfer
-		LOG("Segmented download not yet supported!");
+		ERROR("[SDO::download] Segmented download not yet supported!");
 		return;
 
 	}
@@ -89,7 +89,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 		0, 0, 0, 0, response);
 
 	if (response.failed()) {
-		LOG(response.get_error());
+		ERROR("[SDO::upload] "<<response.get_error());
 		return result;
 	}
 
@@ -102,7 +102,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 	} else {
 
 		if ((response.command & Flag::size_indicated)==0) {
-			LOG("Cannot parse response. Command "<<(unsigned)response.command<<" is reserved for further use.");
+			ERROR("[SDO::upload] Cannot parse response. Command "<<(unsigned)response.command<<" is reserved for further use.");
 			return result;
 		}
 
@@ -116,7 +116,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 		while (more_segments) {
 
 			if (size==0) {
-				LOG("[Restrictive] Uploaded already all "<<original_size<<" bytes but there are still more segments. Ignore...");
+				WARN("[SDO::upload] [Restrictive] Uploaded already all "<<original_size<<" bytes but there are still more segments. Ignore...");
 				return result;
 			}
 
@@ -126,16 +126,16 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 			bool success = send_sdo_and_wait(command, node_id, 0, 0, 0, 0, 0, 0, response);
 
 			if (!success) {
-				LOG("Abort segmented transfer due to timeout.");
+				ERROR("[SDO::upload] Abort segmented transfer due to timeout.");
 			}
 
 			if (response.failed()) {
-				LOG(response.get_error());
+				ERROR("[SDO::upload] "<<response.get_error());
 				return result;
 			}
 
 			if (toggle_bit != (response.command & Flag::toggle_bit)) {
-				LOG("[Restrictive] Toggle bit is not equal to the request.");
+				ERROR("[SDO::upload] [Restrictive] Toggle bit is not equal to the request.");
 				return result;
 			}
 
@@ -152,7 +152,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 		}
 
 		if (size>0) {
-			LOG("[Restrictive] Uploaded just "<<(original_size-size)<<" of "<<original_size<<" bytes but there are no more segments. Ignore...");
+			WARN("[SDO::upload] [Restrictive] Uploaded just "<<(original_size-size)<<" of "<<original_size<<" bytes but there are no more segments. Ignore...");
 			return result;
 		}
 
@@ -172,7 +172,7 @@ void SDO::process_incoming_message(const Message& message) {
 		response.data[i] = message.data[1+i];
 	}
 
-	DEBUG("Received SDO (transmit/server) from node "<<(unsigned)response.node_id);
+	DEBUG_LOG("Received SDO (transmit/server) from node "<<(unsigned)response.node_id);
 
 	// call registered callbacks
 	bool found_callback = false;
@@ -185,8 +185,8 @@ void SDO::process_incoming_message(const Message& message) {
 	}
 
 	if (!found_callback) {
-		DEBUG("Received unassigned SDO (transmit/server)");
-		response.print();
+		DEBUG_LOG("Received unassigned SDO (transmit/server)");
+		DEBUG(response.print();)
 	}
 
 }
@@ -230,7 +230,7 @@ bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	while (!received_result) {
 
 		if (std::chrono::system_clock::now() - start > timeout) {
-			LOG("send_sdo_and_wait timeout!");
+			ERROR("[SDO::send_sdo_and_wait] Timeout!");
 			failed = true;
 			break;
 		}
@@ -250,7 +250,7 @@ uint8_t SDO::size_flag(uint8_t size) {
 		case 3: return 0x04;
 		case 4: return 0x00;
 		default:
-			LOG("Size for must be <= 4!");
+			ERROR("[SDO::size_flag] Size for must be <= 4!");
 			return 0x0;
 	}
 }

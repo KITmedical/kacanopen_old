@@ -62,21 +62,21 @@ uint32_t SDOResponse::get_data() const {
 
 void SDOResponse::print() const {
 
-	UINTDUMP(node_id);
-	UINTDUMP(command);
-	UINTDUMP(get_index());
-	UINTDUMP(get_subindex());
+	DUMP_HEX(node_id);
+	DUMP_HEX(command);
+	DUMP_HEX(get_index());
+	DUMP_HEX(get_subindex());
 
 	for (unsigned i=0;i<7;++i) {
 		if (data[i]>0) {
-			LOG("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
+			PRINT("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
 		}
 	}
 
-	UINTDUMP(failed());
-	UINTDUMP(get_length());
-	UINTDUMP(get_data());
-	LOG(get_error());
+	DUMP_HEX(failed());
+	DUMP_HEX(get_length());
+	DUMP_HEX(get_data());
+	PRINT(get_error());
 
 }
 

@@ -62,7 +62,7 @@ bool Core::start() {
     m_handle = canOpen_driver(&board);
 
     if(!m_handle) {
-        LOG("Cannot open the CANOpen device.");
+        ERROR("Cannot open the CANOpen device.");
         return false;
     }
 
@@ -77,7 +77,7 @@ void Core::stop() {
 	m_running = false;
 	m_loop_thread.detach();
 
-	DEBUG("Calling canClose.");
+	DEBUG_LOG("Calling canClose.");
 	canClose_driver(m_handle);
 
 }
@@ -101,8 +101,8 @@ void Core::register_receive_callback(const MessageReceivedCallback& callback) {
 
 void Core::received_message(const Message& message) {
 
-	DEBUG(" ");
-	DEBUG("Received message:");
+	DEBUG_LOG(" ");
+	DEBUG_LOG("Received message:");
 
 	// first call registered callbacks
 	for (const MessageReceivedCallback& callback : m_receive_callbacks) {
@@ -113,20 +113,20 @@ void Core::received_message(const Message& message) {
 	switch (message.get_function_code()) {
 		
 		case 0: {
-			DEBUG("NMT Module Control");
-			message.print();
+			DEBUG_LOG("NMT Module Control");
+			DEBUG(message.print();)
 			break;
 		}
 
 		case 1: {
-			DEBUG("Sync or Emergency");
-			message.print();
+			DEBUG_LOG("Sync or Emergency");
+			DEBUG(message.print();)
 			break;
 		}
 
 		case 2: {
-			DEBUG("Time stamp");
-			message.print();
+			DEBUG_LOG("Time stamp");
+			DEBUG(message.print();)
 			break;
 		}
 
@@ -142,8 +142,8 @@ void Core::received_message(const Message& message) {
 		case 6:
 		case 8:
 		case 10: {
-			DEBUG("PDO receive");
-			message.print();
+			DEBUG_LOG("PDO receive");
+			DEBUG(message.print();)
 			break;
 		}
 		
@@ -153,7 +153,7 @@ void Core::received_message(const Message& message) {
 		}
 		
 		case 12: {
-			DEBUG("SDO (receive/client)");
+			DEBUG_LOG("SDO (receive/client)");
 			break;
 		}
 		
@@ -164,24 +164,21 @@ void Core::received_message(const Message& message) {
 		}
 
 		default: {
-			DEBUG("Unknown message:");
-			message.print();
+			DEBUG_LOG("Unknown message:");
+			DEBUG(message.print();)
 			break;
 		}
 
 	}
 
-	DEBUG(" ");
+	DEBUG_LOG(" ");
 
 }
 
 void Core::send(const Message& message) {
 	
-	if (debug) {
-		LOG("Sending message:")
-		message.print();
-	}
-
+	DEBUG_LOG_EXHAUSTIVE("Sending message:");
+	DEBUG_EXHAUSTIVE(message.print();)
 	canSend_driver(m_handle, &message);
 
 }

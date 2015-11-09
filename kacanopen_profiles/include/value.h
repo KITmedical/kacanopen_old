@@ -75,4 +75,12 @@ namespace kaco {
 
 	};
 
+	namespace value_printer {
+		std::ostream &operator<<(std::ostream &os, Value val);
+	}
+
 } // end namespace kaco
+// For correct usage of logger.h one should use the int8_printers, so
+// the int8_printers namespace is automatically included. Because of
+// this, logger.h should not be included in library headers.
+using namespace kaco::value_printer;

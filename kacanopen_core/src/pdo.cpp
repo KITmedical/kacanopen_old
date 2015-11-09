@@ -49,7 +49,7 @@ void PDO::process_incoming_message(const Message& message) {
 	uint8_t node_id = message.get_node_id();
 	std::vector<uint8_t> data;
 
-	DEBUG("Received transmit PDO with cob_id 0x"<<std::hex<<cob_id<<" (usually from node 0x"<<(unsigned)node_id<<")");
+	DEBUG_LOG("Received transmit PDO with cob_id 0x"<<std::hex<<cob_id<<" (usually from node 0x"<<node_id<<")");
 
 	for (unsigned i=0; i<message.len; ++i) {
 		data.push_back(message.data[i]);
@@ -65,13 +65,15 @@ void PDO::process_incoming_message(const Message& message) {
 		}
 	}
 
-	if (!found_callback && debug) {
-		LOG("PDO is unassigned. Here is the data (LSB):");
-		for (unsigned i=0; i<data.size(); ++i) {
-			std::cout << std::hex << (unsigned)data[i] << " ";
+	DEBUG(
+		if (!found_callback) {
+			PRINT("PDO is unassigned. Here is the data (LSB):");
+			for (unsigned i=0; i<data.size(); ++i) {
+				std::cout << std::hex << (unsigned)data[i] << " ";
+			}
+			std::cout << std::endl;
 		}
-		std::cout << std::endl;
-	}
+	)
 
 }
 

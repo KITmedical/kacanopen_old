@@ -97,7 +97,7 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 		}
 
 		default: {
-			LOG("Unknown data type.");
+			ERROR("[Device::get_entry_via_sdo] Unknown data type.");
 			return Value();
 		}
 
@@ -108,7 +108,7 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 const Value& Device::get_entry(std::string name, uint8_t array_index, AccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
-		LOG("Dictionary entry \""<<name<<"\" not available.");
+		ERROR("[Device::get_entry] Dictionary entry \""<<name<<"\" not available.");
 		return m_dummy_value;
 	}
 
@@ -116,7 +116,7 @@ const Value& Device::get_entry(std::string name, uint8_t array_index, AccessMeth
 
 	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_read)) {
 		
-		LOG("update_on_read.");
+		DEBUG_LOG("[Device::get_entry] update_on_read.");
 
 		uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
 		entry.set_value(get_entry_via_sdo(entry.index, subindex, entry.type), array_index);
@@ -157,12 +157,12 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 		}
 
 		case Type::string: {
-			LOG("Strings not yet supported.");
+			ERROR("[Device::set_entry_via_sdo] Strings not yet supported.");
 			break;
 		}
 
 		default: {
-			LOG("Unknown data type.");
+			ERROR("[Device::set_entry_via_sdo] Unknown data type.");
 			break;
 		}
 
@@ -173,15 +173,15 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 void Device::set_entry(std::string name, const Value& value, uint8_t array_index, AccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
-		LOG("Dictionary entry \""<<name<<"\" not available.");
+		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" not available.");
 		return;
 	}
 
 	Entry& entry = m_dictionary[name];
 
 	if (value.type != entry.type) {
-		LOG("You passed a value of wrong type: "<<Utils::type_to_string(value.type));
-		LOG("Dictionary entry \""<<name<<"\" must be of type "<<Utils::type_to_string(entry.type)<<".");
+		ERROR("[Device::set_entry] You passed a value of wrong type: "<<Utils::type_to_string(value.type));
+		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" must be of type "<<Utils::type_to_string(entry.type)<<".");
 		return;
 	}
 
@@ -189,7 +189,7 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 
 	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_write)) {
 		
-		LOG("update_on_write.");
+		DEBUG_LOG("[Device::set_entry] update_on_write.");
 
 		const uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
 		set_entry_via_sdo(entry.index, subindex, value);
@@ -204,14 +204,11 @@ void Device::add_pdo_mapping(uint16_t cob_id, std::string entry_name, uint8_t fi
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (last_byte+1-first_byte != type_size) {
-		LOG("[Device::add_pdo_mapping] PDO mapping has wrong size!");
-		UDECIMALDUMP(type_size);
-		UDECIMALDUMP(first_byte);
-		UDECIMALDUMP(last_byte);
+		ERROR("[Device::add_pdo_mapping] PDO mapping has wrong size!");
+		DUMP(type_size);
+		DUMP(first_byte);
+		DUMP(last_byte);
 	}
-
-
-
 
 	m_pdo_mappings.push_back({cob_id,entry_name,first_byte,last_byte,array_index});
 
@@ -228,14 +225,14 @@ void Device::pdo_received_callback(const PDOMapping& mapping, std::vector<uint8_
 	const uint8_t last_byte = mapping.last_byte;
 
 	if (data.size() <= first_byte || data.size() <= last_byte) {
-		LOG("[Device::pdo_received_callback] PDO has wrong size!");
-		UDECIMALDUMP(data.size());
-		UDECIMALDUMP(first_byte);
-		UDECIMALDUMP(last_byte);
+		ERROR("[Device::pdo_received_callback] PDO has wrong size!");
+		DUMP(data.size());
+		DUMP(first_byte);
+		DUMP(last_byte);
 	}
 
-	LOG("Updating entry "<<entry.name<<"...");
-	UDECIMALDUMP(array_index);
+	DEBUG_LOG("Updating entry "<<entry.name<<"...");
+	DEBUG_DUMP(array_index);
 
 	switch(entry.type) {
 			
@@ -269,12 +266,12 @@ void Device::pdo_received_callback(const PDOMapping& mapping, std::vector<uint8_
 		}
 
 		case Type::string: {
-			LOG("Mapping PDOs to string typed entries is not supported!");
+			ERROR("[Device::pdo_received_callback] Mapping PDOs to string typed entries is not supported!");
 			break;
 		}
 
 		default: {
-			LOG("Unknown data type.");
+			ERROR("[Device::pdo_received_callback] Unknown data type.");
 			break;
 		}
 

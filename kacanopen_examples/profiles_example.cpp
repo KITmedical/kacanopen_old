@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	LOG(master.get_devices().size());
+	PRINT(master.get_devices().size());
 
 	if (master.get_devices().size()<1)
 		return EXIT_FAILURE;
@@ -56,48 +56,48 @@ int main(int argc, char** argv) {
 
 
 
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::sdo));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::sdo));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::sdo));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::sdo));
 
 	// TODO: This is only for testing. write_output is CiA401 and should not be available here.
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0x0F, 0);
 
 	//uint8_t device_type = master.get_devices()[0].get_entry("device_type");
-	//UINTDUMP(device_type);
+	//DUMP_HEX(device_type);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF0, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF1, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF2, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF3, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF4, 0);
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
-	UINTDUMP((uint8_t)master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",0,kaco::AccessMethod::cache));
+	DUMP_HEX(master.get_devices()[0].get_entry("read_digital_input",1,kaco::AccessMethod::cache));
 	
 	master.get_devices()[0].set_entry("write_output", (uint8_t)0xF5, 0);
 

@@ -35,48 +35,48 @@
 namespace kaco {
 
 Value::Value() {
-	DEBUG("Creating empty value");
+	DEBUG_LOG("Creating empty value");
 	type = Type::invalid;
 }
 
 Value::Value(uint8_t value) {
-	DEBUG("Creating uint8 value");
+	DEBUG_LOG("Creating uint8 value");
 	type = Type::uint8;
 	uint8 = value;
 }
 
 Value::Value(uint16_t value) {
-	DEBUG("Creating uint16 value");
+	DEBUG_LOG("Creating uint16 value");
 	type = Type::uint16;
 	uint16 = value;
 }
 
 Value::Value(uint32_t value) {
-	DEBUG("Creating uint32 value");
+	DEBUG_LOG("Creating uint32 value");
 	type = Type::uint32;
 	uint32 = value;
 }
 
 Value::Value(int8_t value) {
-	DEBUG("Creating int8 value");
+	DEBUG_LOG("Creating int8 value");
 	type = Type::int8;
 	int8 = value;
 }
 
 Value::Value(int16_t value) {
-	DEBUG("Creating int16 value");
+	DEBUG_LOG("Creating int16 value");
 	type = Type::int16;
 	int16 = value;
 }
 
 Value::Value(int32_t value) {
-	DEBUG("Creating int32 value");
+	DEBUG_LOG("Creating int32 value");
 	type = Type::int32;
 	int32 = value;
 }
 
 Value::Value(const std::string& value) {
-	DEBUG("Creating string value");
+	DEBUG_LOG("Creating string value");
 	type = Type::string;
 	string = value;
 }
@@ -90,7 +90,7 @@ Value::Value(const std::string& value) {
 #define CO_VALUE_TYPE_CAST_OP(mtypeout, mtypein) \
 	Value::operator mtypeout() const { \
 		if (type != Type::mtypein ) { \
-			LOG("Illegal conversion from "<<Utils::type_to_string(type)<<" to " #mtypein " !") \
+			WARN("[Value cast operator] Illegal conversion from "<<Utils::type_to_string(type)<<" to " #mtypein " !") \
 		} \
 		return mtypein; \
 	}
@@ -106,5 +106,51 @@ CO_VALUE_TYPE_CAST_OP_INT(int8);
 CO_VALUE_TYPE_CAST_OP_INT(int16);
 CO_VALUE_TYPE_CAST_OP_INT(int32);
 CO_VALUE_TYPE_CAST_OP(std::string, string);
+
+//-------------------//
+// std::cout Printer //
+//-------------------//
+
+namespace value_printer {
+	std::ostream &operator<<(std::ostream &os, Value val) {
+		switch(val.type) {
+				
+			case Type::uint8: {
+				// 1-byte types are printed as char by default -> double casting.
+				return os << static_cast<uint32_t>(static_cast<uint8_t>(val));
+			}
+
+			case Type::uint16: {
+				return os << static_cast<uint16_t>(val);
+			}
+
+			case Type::uint32: {
+				return os << static_cast<uint32_t>(val);
+			}
+				
+			case Type::int8: {
+				// 1-byte types are printed as char by default -> double casting.
+				return os << static_cast<uint32_t>(static_cast<int8_t>(val));
+			}
+
+			case Type::int16: {
+				return os << static_cast<int16_t>(val);
+			}
+
+			case Type::int32: {
+				return os << static_cast<int32_t>(val);
+			}
+
+			case Type::string: {
+			    return os << static_cast<std::string>(val);
+			}
+
+			default: {
+				return os << "[Unknown value type]";
+			}
+
+		}
+	}
+}
 
 } // end namespace kaco

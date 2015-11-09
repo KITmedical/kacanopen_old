@@ -28,17 +28,66 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 #pragma once
 
-#include <cstdint>
 #include <iostream>
 
-// TODO: Is it possible to build a zero-overhead debug logger using a logger class?
-// We have to check if compilers optimize out calls to methods where the body has
-// been deactivated using a static const boolean.
+// DO NOT INCLUDE THIS IN A LIBRARY HEADER!
 
-#define UINTDUMP(x) std::cout <<  #x << " = 0x" << std::hex << (uint64_t)x << std::endl;
-#define UDECIMALDUMP(x) std::cout <<  #x << " = " << std::dec << (uint64_t)x << std::endl;
-#define LOG(x) std::cout << x << std::endl;
-#define DEBUG(x) if (debug) {std::cout << x << std::endl;}
+// defined/not defined by CMake
+// #define EXHAUSTIVE_DEBUGGING
+
+#define PRINT(x) std::cout << x << std::endl;
+#define WARN(x) PRINT("WARNING: " << x);
+#define ERROR(x) PRINT("ERROR: " << x);
+#define DUMP(x) PRINT(#x << " = " << std::dec << x);
+#define DUMP_HEX(x) PRINT(#x << " = 0x" << std::hex << x);
+
+#ifdef NDEBUG
+ 	#define DEBUG(x)
+ 	#define DEBUG_EXHAUSTIVE(x) x
+	#define DEBUG_LOG(x)
+	#define DEBUG_LOG_EXHAUSTIVE(x)
+	#define DEBUG_DUMP_HEX(x)
+	#define DEBUG_DUMP_HEX(x)
+#else
+ 	#define DEBUG(x) x
+ 	
+	#define DEBUG_LOG(x) PRINT("DEBUG: " << x);
+	#define DEBUG_DUMP(x) PRINT("DEBUG: " << #x << " = " << std::dec << x);
+	#define DEBUG_DUMP_HEX(x) PRINT("DEBUG: " << #x << " = 0x" << std::hex << x);
+
+	#ifdef EXHAUSTIVE_DEBUGGING
+ 		#define DEBUG_EXHAUSTIVE(x) x
+		#define DEBUG_LOG_EXHAUSTIVE(x) PRINT("DEBUG_EXHAUSTIVE: " << x);
+	#else
+ 		#define DEBUG_EXHAUSTIVE(x)
+		#define DEBUG_LOG_EXHAUSTIVE(x)
+	#endif
+
+#endif
+
+// Fix printing uint8_t and int8_t types using std::cout
+namespace kaco {
+	namespace int8_printers {
+
+		inline std::ostream &operator<<(std::ostream &os, char c) {
+		    return os << (std::is_signed<char>::value ? static_cast<int>(c)
+		                                              : static_cast<unsigned int>(c));
+		}
+
+		inline std::ostream &operator<<(std::ostream &os, signed char c) {
+		    return os << static_cast<int>(c);
+		}
+
+		inline std::ostream &operator<<(std::ostream &os, unsigned char c) {
+		    return os << static_cast<unsigned int>(c);
+		}
+	}
+}
+
+// For correct usage of logger.h one should use the int8_printers, so
+// the int8_printers namespace is automatically included. Because of
+// this, logger.h should not be included in library headers.
+using namespace kaco::int8_printers;

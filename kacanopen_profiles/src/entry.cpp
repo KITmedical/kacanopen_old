@@ -100,7 +100,7 @@ const Value& Entry::get_value(uint8_t array_index) const {
 		|| (is_array && (array_index>=array.size()
 		|| array_index>=array_entry_valid.size()
 		|| !array_entry_valid[array_index])) ) {
-		LOG("[Entry::get_value] Value not valid.");
+		ERROR("[Entry::get_value] Value not valid.");
 	}
 
 	if (is_array) {

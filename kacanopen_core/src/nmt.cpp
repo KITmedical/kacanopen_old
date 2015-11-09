@@ -47,7 +47,7 @@ NMT::~NMT()
 	{ }
 
 void NMT::send_nmt_message(uint8_t node_id, Command cmd) {
-	DEBUG("Set NMT state of "<<(unsigned)node_id<<" to "<<static_cast<uint32_t>(cmd));
+	DEBUG_LOG("Set NMT state of "<<(unsigned)node_id<<" to "<<static_cast<uint32_t>(cmd));
 	Message message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };
 	m_core.send(message);
 }
@@ -62,22 +62,22 @@ void NMT::reset_all_nodes() {
 
 void NMT::process_incoming_message(const Message& message) {
 
-	DEBUG("NMT Error Control message from node "
+	DEBUG_LOG("NMT Error Control message from node "
 		<<(unsigned)message.get_node_id()<<".");
 	
 	uint8_t data = message.data[0];
 	bool toggle_bit = data>>7;
 	uint8_t state = data&0x3F;
 
-	UINTDUMP(toggle_bit);
+	DUMP_HEX(toggle_bit);
 
 	switch (state) {
 		
 		case 0: {
-			DEBUG("New state is Initialising");
+			DEBUG_LOG("New state is Initialising");
 
 			for (const auto& callback : m_new_device_callbacks) {
-				LOG("callback!");
+				PRINT("callback!");
 				std::async(std::launch::async, callback, message.get_node_id());
 			}
 
@@ -85,37 +85,37 @@ void NMT::process_incoming_message(const Message& message) {
 		}
 		
 		case 1: {
-			DEBUG("New state is Disconnected");
+			DEBUG_LOG("New state is Disconnected");
 			break;
 		}
 		
 		case 2: {
-			DEBUG("New state is Connecting");
+			DEBUG_LOG("New state is Connecting");
 			break;
 		}
 		
 		case 3: {
-			DEBUG("New state is Preparing");
+			DEBUG_LOG("New state is Preparing");
 			break;
 		}
 		
 		case 4: {
-			DEBUG("New state is Stopped");
+			DEBUG_LOG("New state is Stopped");
 			break;
 		}
 		
 		case 5: {
-			DEBUG("New state is Operational");
+			DEBUG_LOG("New state is Operational");
 			break;
 		}
 		
 		case 127: {
-			DEBUG("New state is Pre-operational");
+			DEBUG_LOG("New state is Pre-operational");
 			break;
 		}
 		
 		default: {
-			DEBUG("New state is unknown: "<<(unsigned)state);
+			DEBUG_LOG("New state is unknown: "<<(unsigned)state);
 			break;
 		}
 

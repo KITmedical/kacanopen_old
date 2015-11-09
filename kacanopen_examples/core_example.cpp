@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     kaco::Core core;
 
 	auto callback = [] (const uint8_t node_id) {
-		LOG("New device! ID = "<<(unsigned)node_id);
+		PRINT("New device! ID = "<<(unsigned)node_id);
 	};
 	core.nmt.register_new_device_callback(callback);
 
@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	/*// get device type (usually expedited transfer)
 	std::vector<uint8_t> device_type = core.sdo.upload(8,0x1000,0x0);
     for (uint8_t device_type_byte : device_type) {
-    	UINTDUMP(device_type_byte);
+    	DUMP_HEX(device_type_byte);
     }
 	
 	std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 	// TODO: check correct encoding
     std::vector<uint8_t> device_name = core.sdo.upload(8,0x1008,0x0);
     std::string result(reinterpret_cast<char const*>(device_name.data()), device_name.size());
-    LOG("Device name: "<<result);*/
+    PRINT("Device name: "<<result);*/
 
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 	core.stop();

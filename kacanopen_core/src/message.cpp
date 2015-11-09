@@ -47,15 +47,15 @@ uint8_t Message::get_function_code() const {
 
 void Message::print() const {
 
-	UINTDUMP(cob_id);
-	UINTDUMP(rtr);
-	UINTDUMP(len);
-	UINTDUMP(get_function_code());
-	UINTDUMP(get_node_id());
+	DUMP_HEX(cob_id);
+	DUMP_HEX(rtr);
+	DUMP_HEX(len);
+	DUMP_HEX(get_function_code());
+	DUMP_HEX(get_node_id());
 
 	for (unsigned i=0;i<8;++i) {
 		if (data[i]>0) {
-			LOG("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
+			PRINT("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
 		}
 	}
 

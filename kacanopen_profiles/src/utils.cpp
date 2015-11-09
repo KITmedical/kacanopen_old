@@ -72,7 +72,7 @@ uint8_t Utils::get_type_size(Type type) {
 			return 4;
 		case Type::string:
 		default:
-			DEBUG("[Utils::get_type_size] Unknown type or type with variable size.");
+			ERROR("[Utils::get_type_size] Unknown type or type with variable size.");
 			return 0;
 	}
 }

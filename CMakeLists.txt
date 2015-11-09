@@ -8,6 +8,21 @@ include(CMakeSettings.txt)
 set(CAN_DRIVER can_${CAN_DRIVER_NAME})
 message(STATUS "Using CAN driver ${CAN_DRIVER}")
 
+if(${BUILD_ALL_DRIVERS})
+    message(STATUS "Building all available drivers.")
+endif()
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+    message(STATUS "You are in release mode.")
+else()
+    if(${EXHAUSTIVE_DEBUGGING})
+        message(STATUS "Enabled exhaustive debugging.")
+        add_definitions("-DEXHAUSTIVE_DEBUGGING")
+    else()
+        message(STATUS "Enabled debugging.")
+    endif()
+endif()
+
 
 ### includes ###
 

@@ -106,7 +106,7 @@ void Core::received_message(const Message& message) {
 
 	// first call registered callbacks
 	for (const MessageReceivedCallback& callback : m_receive_callbacks) {
-		std::async(callback, message);
+		std::async(std::launch::async, callback, message);
 	}
 
 	// sencondly process known message types

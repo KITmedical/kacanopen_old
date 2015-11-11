@@ -33,6 +33,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "utils.h"
 
@@ -65,6 +66,8 @@ namespace kaco {
 		Value(int32_t value);
 		Value(const std::string& value);
 
+		std::vector<uint8_t> get_bytes() const;
+
 		operator uint8_t() const;
 		operator uint16_t() const;
 		operator uint32_t() const;
@@ -72,6 +75,9 @@ namespace kaco {
 		operator int16_t() const;
 		operator int32_t() const;
 		operator std::string() const;
+
+		bool operator==(const Value& other) const;
+		bool operator!=(const Value& other) const;
 
 	};
 

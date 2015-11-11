@@ -81,6 +81,124 @@ Value::Value(const std::string& value) {
 	string = value;
 }
 
+std::vector<uint8_t> Value::get_bytes() const {
+
+	std::vector<uint8_t> result;
+
+	switch(type) {
+
+		case Type::uint8: {
+			result.push_back(uint8);
+			break;
+		}
+
+		case Type::uint16: {
+			result.push_back(uint16 & 0xFF);
+			result.push_back((uint16>>8) & 0xFF);
+			break;
+		}
+
+		case Type::uint32: {
+			result.push_back(uint32 & 0xFF);
+			result.push_back((uint32>>8) & 0xFF);
+			result.push_back((uint32>>16) & 0xFF);
+			result.push_back((uint32>>24) & 0xFF);
+			break;
+		}
+			
+		case Type::int8: {
+			result.push_back(int8);
+			break;
+		}
+
+		case Type::int16: {
+			result.push_back(int16 & 0xFF);
+			result.push_back((int16>>8) & 0xFF);
+			break;
+		}
+
+		case Type::int32: {
+			result.push_back(int32 & 0xFF);
+			result.push_back((int32>>8) & 0xFF);
+			result.push_back((int32>>16) & 0xFF);
+			result.push_back((int32>>24) & 0xFF);
+			break;
+		}
+
+		case Type::string: {
+			ERROR("[Value::get_bytes] Strings cannot be converted to byte vector.")
+			break;
+		}
+
+		default: {
+			ERROR("[Value::get_bytes] Unknown type.")
+			break;
+		}
+
+	}
+
+	return std::move(result);
+
+}
+
+bool Value::operator==(const Value& other) const {
+
+	DEBUG(
+
+		if (type != other.type) {
+			ERROR("[Value::operator==] Comparing values of different type.");
+			return false;
+		}
+
+		if (type == Type::invalid) {
+			ERROR("[Value::operator==] Comparing invalid value.");
+			return false;
+		}
+
+	)
+
+	switch(type) {
+
+		case Type::uint8: {
+			return uint8 == (uint8_t) other;
+		}
+
+		case Type::uint16: {
+			return uint16 == (uint16_t) other;
+		}
+
+		case Type::uint32: {
+			return uint32 == (uint32_t) other;
+		}
+			
+		case Type::int8: {
+			return int8 == (int8_t) other;
+		}
+
+		case Type::int16: {
+			return int16 == (int16_t) other;
+		}
+
+		case Type::int32: {
+			return int32 == (int32_t) other;
+		}
+
+		case Type::string: {
+			return string == (std::string) other;
+		}
+
+		default: {
+			ERROR("[Value::operator==] Comparing values of unknown type.")
+			return false;
+		}
+
+	}
+}
+
+bool Value::operator!=(const Value& other) const {
+	return !(operator==(other));
+}
+
 //----------------//
 // Cast operators //
 //----------------//

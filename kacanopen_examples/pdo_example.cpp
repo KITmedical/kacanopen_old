@@ -31,75 +31,55 @@
  
 #include <thread>
 #include <chrono>
+#include <cstdint>
 
 #include "master.h"
 #include "logger.h"
 
 int main(int argc, char** argv) {
 
+	PRINT("This example runs a counter completely without SDO transfers.");
+	PRINT("The CiA 401 device must be configured to receive 'write_output' via RPDO1 and to send 'read_digital_input' via TPDO1.");
+
 	kaco::Master master;
 	bool success = master.start();
-	if (!success)
-		return false;
+	if (!success) {
+		ERROR("Starting master failed.");
+		return EXIT_FAILURE;
+	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	PRINT(master.get_devices().size());
-
-	if (master.get_devices().size()<1)
+	if (master.get_devices().size()<1) {
+		ERROR("No devices found.");
 		return EXIT_FAILURE;
+	}
 
 	kaco::Device& device = master.get_devices()[0];
-
 	device.start();
 
 	DUMP(device.get_entry("manufacturer_device_name"));
 
-	// TODO: The following is only for testing. write_output etc. is CiA401 and should not be available here.
-
 	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0, 0); // index 0
 	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1, 1); // index 1
-
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::sdo));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::sdo));
-
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
 	
-	device.set_entry("write_output", (uint8_t)0xF0, 0);
+	// transmit PDO on change
+	device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}});
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
-
-	device.set_entry("write_output", (uint8_t)0xF1, 0);
-
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
+	// transmit PDO every 500ms
+	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));
 	
-	device.set_entry("write_output", (uint8_t)0xF2, 0);
+	for (uint8_t i=0; i<10; ++i) {
+		
+		PRINT("Set output to 0x"<<std::hex<<i<<" (via cache!) and wait 1 second");
+		device.set_entry("write_output", i, 0,kaco::WriteAccessMethod::cache);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
-	
-	device.set_entry("write_output", (uint8_t)0xF3, 0);
+		DUMP_HEX(device.get_entry("write_output",0,kaco::ReadAccessMethod::cache));
+		DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
+		DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
-	
-	device.set_entry("write_output", (uint8_t)0xF4, 0);
-
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
-	
-	device.set_entry("write_output", (uint8_t)0xF5, 0);
-
-	std::this_thread::sleep_for(std::chrono::seconds(4));
+	}
 
 	master.stop();
 

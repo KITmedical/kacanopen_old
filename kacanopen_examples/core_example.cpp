@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 	
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	/*// get device type (usually expedited transfer)
+	// get device type (usually expedited transfer)
 	std::vector<uint8_t> device_type = core.sdo.upload(8,0x1000,0x0);
     for (uint8_t device_type_byte : device_type) {
     	DUMP_HEX(device_type_byte);
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 	// TODO: check correct encoding
     std::vector<uint8_t> device_name = core.sdo.upload(8,0x1008,0x0);
     std::string result(reinterpret_cast<char const*>(device_name.data()), device_name.size());
-    PRINT("Device name: "<<result);*/
+    PRINT("Device name: "<<result);
 
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 	core.stop();

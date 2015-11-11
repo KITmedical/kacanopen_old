@@ -10,5 +10,5 @@ file(GLOB TARGET_SRC
 # Create library
 set(TARGET_NAME kacanopen_profiles)
 add_library(${TARGET_NAME} SHARED ${TARGET_SRC})
-set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 11)
+set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 14)
 target_link_libraries(${TARGET_NAME} kacanopen_core)

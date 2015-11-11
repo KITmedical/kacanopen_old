@@ -31,6 +31,7 @@
  
 #include "pdo.h"
 #include "logger.h"
+#include "core.h"
 
  #include <iostream>
 
@@ -43,7 +44,7 @@ PDO::PDO(Core& core)
 PDO::~PDO() 
 	{ }
 
-void PDO::process_incoming_message(const Message& message) {
+void PDO::process_incoming_message(const Message& message) const {
 
 	uint16_t cob_id = message.cob_id;
 	uint8_t node_id = message.get_node_id();
@@ -74,6 +75,28 @@ void PDO::process_incoming_message(const Message& message) {
 			std::cout << std::endl;
 		}
 	)
+
+}
+
+void PDO::send(uint16_t cob_id, const std::vector<uint8_t>& data) {
+	
+	if (data.size()>8) {
+		ERROR("[PDO::send] A PDO message can have 8 data bytes at most.");
+		return;
+	}
+
+	Message message;
+	message.cob_id = cob_id;
+	message.rtr = false;
+	message.len = data.size();
+	for (uint8_t i=0; i<data.size(); ++i) {
+		message.data[i] = data[i];
+	}
+
+	DEBUG_LOG("Sending the following PDO:");
+	DEBUG(message.print();)
+
+	m_core.send(message);
 
 }
 

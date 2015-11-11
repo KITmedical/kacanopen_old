@@ -46,14 +46,14 @@
 
 #ifdef NDEBUG
  	#define DEBUG(x)
- 	#define DEBUG_EXHAUSTIVE(x) x
 	#define DEBUG_LOG(x)
+	#define DEBUG_DUMP(x)
+	#define DEBUG_DUMP_HEX(x)
+
+ 	#define DEBUG_EXHAUSTIVE(x)
 	#define DEBUG_LOG_EXHAUSTIVE(x)
-	#define DEBUG_DUMP_HEX(x)
-	#define DEBUG_DUMP_HEX(x)
 #else
  	#define DEBUG(x) x
- 	
 	#define DEBUG_LOG(x) PRINT("DEBUG: " << x);
 	#define DEBUG_DUMP(x) PRINT("DEBUG: " << #x << " = " << std::dec << x);
 	#define DEBUG_DUMP_HEX(x) PRINT("DEBUG: " << #x << " = 0x" << std::hex << x);

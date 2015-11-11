@@ -34,6 +34,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <functional>
+#include <mutex>
+#include <memory>
 
 #include "type.h"
 #include "value.h"
@@ -48,45 +51,60 @@ namespace kaco {
 		constant
 	};
 
-	struct Entry {
+	class Entry {
 
+	public:
+
+		/// type of a callback for a value changed event
+		typedef std::function< void(const Value& value) > ValueChangedCallback;
+
+		/// constructs an empty entry
 		Entry();
 
-		// standard constructor
+		/// standard constructor
 		Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access);
 
-		// array constructor
+		/// array constructor
 		Entry(uint32_t _index, std::string _name, Type _type, AccessType _access);
 
-		std::string name;
-		uint16_t index;
-		
-		uint8_t subindex; // only used if is_array==false
-		bool is_array;
-
-		AccessType access;
-
-		Type type;
-		
-		Value value;
-		bool valid;
-
-		std::vector<Value> array;
-		std::vector<bool> array_entry_valid;
-
-		bool sdo_on_read;
-		bool sdo_on_write;
-
-		bool is_slice;
-		uint8_t slice_first_bit;
-		uint8_t slice_last_bit;
-
-		AccessMethod access_method;
-
-		std::string description;
-
+		/// Sets the value. If the entry is an array, array_index can be specified
 		void set_value(const Value& value, uint8_t array_index=0);
+
+		/// Returns the value. If the entry is an array, array_index can be specified
 		const Value& get_value(uint8_t array_index=0) const;
+
+		/// Registers a given function to be called when the value is changed.
+		void add_value_changed_callback(ValueChangedCallback callback);
+
+
+		uint16_t index;
+		uint8_t subindex; // only used if is_array==false
+		std::string name;
+		Type type;
+		AccessType access_type;
+
+		bool is_array = false;
+		ReadAccessMethod read_access_method = ReadAccessMethod::sdo;
+		WriteAccessMethod write_access_method = WriteAccessMethod::sdo;
+		std::string description = "";
+		
+		// maybe supported in future:
+		//bool is_slice;
+		//uint8_t slice_first_bit;
+		//uint8_t slice_last_bit;
+
+	private:
+
+		std::vector<Value> m_value;
+		std::vector<bool> m_valid;
+		std::vector<ValueChangedCallback> m_value_changed_callbacks;
+		Value m_dummy_value;
+
+		/// read_write_mutex locks get_value() and set_value() because a PDO
+		/// transmitter thread could read a value reference while it is
+		/// set by the main thread.
+		std::shared_ptr<std::mutex> read_write_mutex;
+
 
 	};
 

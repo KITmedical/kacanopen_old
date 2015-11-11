@@ -31,43 +31,44 @@
  
 #pragma once
 
+#include <string>
 #include <vector>
-#include <cstdint>
-#include <functional>
+#include <chrono>
+#include <map>
+#include <thread>
+#include <memory>
 
-#include "message.h"
+#include "mapping.h"
+#include "transmission_type.h"
 
 namespace kaco {
-	
-	// forward declaration
+
+	// forward declarations
 	class Core;
+	class Entry;
 
-	class PDO {
+	struct TransmitPDOMapping {
 
-	public:
+		TransmitPDOMapping(Core& core, const std::map<std::string, Entry>& dictionary, uint16_t cob_id_,
+			TransmissionType transmission_type_, std::chrono::milliseconds repeat_time_, const std::vector<Mapping>& mappings_);
 
-		//! type of a sdo message receiver function
-		struct PDOReceivedCallback {
-			// TODO: make data vector a reference?
-			typedef std::function< void(std::vector<uint8_t>) > Function;
-			uint16_t cob_id;
-			Function callback;
-		};
+		/// Stops the transmitter thread if there is one.
+		~TransmitPDOMapping();
 
-		PDO(Core& core);
-		~PDO();
-
-		void process_incoming_message(const Message& message) const;
-
-		void send(uint16_t cob_id, const std::vector<uint8_t>& data);
-
-		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
-
-	private:
-
-		static const bool debug = true;
 		Core& m_core;
-		std::vector<PDOReceivedCallback> m_receive_callbacks;
+		const std::map<std::string, Entry>& m_dictionary;
+
+		uint16_t cob_id;
+		TransmissionType transmission_type;
+		std::chrono::milliseconds repeat_time;
+		std::vector<Mapping> mappings;
+
+		// this is a shared pointer because threads cannot be copied,
+		// but TransmitPDOMapping is default-copy-constructed by std::vector.
+		std::shared_ptr<std::thread> transmitter;
+
+		void send() const;
+		bool check_correctness() const;
 
 	};
 

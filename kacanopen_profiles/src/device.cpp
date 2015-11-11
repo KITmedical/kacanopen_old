@@ -91,7 +91,6 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 		}
 
 		case Type::string: {
-			// TODO: check correct encoding
 		    std::string val(reinterpret_cast<char const*>(data.data()), data.size());
 		    return Value(val);
 		}
@@ -105,7 +104,7 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 
 }
 
-const Value& Device::get_entry(std::string name, uint8_t array_index, AccessMethod access_method) {
+const Value& Device::get_entry(std::string name, uint8_t array_index, ReadAccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		ERROR("[Device::get_entry] Dictionary entry \""<<name<<"\" not available.");
@@ -114,7 +113,7 @@ const Value& Device::get_entry(std::string name, uint8_t array_index, AccessMeth
 
 	Entry& entry = m_dictionary[name];
 
-	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_read)) {
+	if (access_method==ReadAccessMethod::sdo || (access_method==ReadAccessMethod::use_default && entry.read_access_method==ReadAccessMethod::sdo)) {
 		
 		DEBUG_LOG("[Device::get_entry] update_on_read.");
 
@@ -170,7 +169,7 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 
 }
 
-void Device::set_entry(std::string name, const Value& value, uint8_t array_index, AccessMethod access_method) {
+void Device::set_entry(std::string name, const Value& value, uint8_t array_index, WriteAccessMethod access_method) {
 	
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" not available.");
@@ -187,7 +186,7 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 
 	entry.set_value(value, array_index);
 
-	if (access_method==AccessMethod::sdo || (access_method==AccessMethod::use_default && entry.sdo_on_write)) {
+	if (access_method==WriteAccessMethod::sdo || (access_method==WriteAccessMethod::use_default && entry.write_access_method==WriteAccessMethod::sdo)) {
 		
 		DEBUG_LOG("[Device::set_entry] update_on_write.");
 
@@ -198,27 +197,79 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 
 }
 
-void Device::add_pdo_mapping(uint16_t cob_id, std::string entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index) {
+void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string&  entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index) {
+	
+	if (m_dictionary.find(entry_name) == m_dictionary.end()) {
+		ERROR("[Device::add_receive_pdo_mapping] Dictionary entry \""<<entry_name<<"\" not available.");
+		return;
+	}
 	
 	Entry& entry = m_dictionary[entry_name];
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (last_byte+1-first_byte != type_size) {
-		ERROR("[Device::add_pdo_mapping] PDO mapping has wrong size!");
+		ERROR("[Device::add_receive_pdo_mapping] PDO mapping has wrong size!");
 		DUMP(type_size);
 		DUMP(first_byte);
 		DUMP(last_byte);
 	}
 
-	m_pdo_mappings.push_back({cob_id,entry_name,first_byte,last_byte,array_index});
+	m_receive_pdo_mappings.push_back({cob_id,entry_name,first_byte,last_byte,array_index});
 
 	// TODO: this only works while add_pdo_received_callback takes callback by value.
-	auto binding = std::bind(&Device::pdo_received_callback, this, m_pdo_mappings.back(), std::placeholders::_1);
+	auto binding = std::bind(&Device::pdo_received_callback, this, m_receive_pdo_mappings.back(), std::placeholders::_1);
 	m_core.pdo.add_pdo_received_callback(cob_id, binding);
 
 }
 
-void Device::pdo_received_callback(const PDOMapping& mapping, std::vector<uint8_t> data) {
+
+void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping>& mappings, TransmissionType transmission_type, std::chrono::milliseconds repeat_time) {
+
+	m_transmit_pdo_mappings.emplace_back(m_core, m_dictionary, cob_id, transmission_type, repeat_time, mappings);
+	TransmitPDOMapping& pdo = m_transmit_pdo_mappings.back();
+
+	if (!pdo.check_correctness()) {
+		ERROR("The given PDO mapping is not correct.");
+		m_transmit_pdo_mappings.pop_back();
+		return;
+	}
+
+	if (transmission_type==TransmissionType::ON_CHANGE) {
+
+		for (const Mapping& mapping : pdo.mappings) {
+			
+			// entry exists because check_correctness() == true.
+			Entry& entry = m_dictionary.at(mapping.entry_name);
+
+			entry.add_value_changed_callback([&](const Value& value){
+				DEBUG_LOG("[Callback] Value of "<<mapping.entry_name<<" changed to "<<value);
+				pdo.send();
+			});
+		}
+
+	} else {
+
+		// transmission_type==TransmissionType::PERIODIC
+		
+		if (repeat_time == std::chrono::milliseconds(0)) {
+			WARN("[Device::add_transmit_pdo_mapping] Repeat time is 0. This could overload the bus.");
+		}
+
+		pdo.transmitter = std::move(std::shared_ptr<std::thread>(new std::thread([&pdo, repeat_time](){
+			
+			while (true) {
+				DEBUG_LOG("[Timer thread] Sending periodic PDO.");
+				pdo.send();
+				std::this_thread::sleep_for(repeat_time);
+			}
+
+		})));
+
+	}
+
+}
+
+void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data) {
 	Entry& entry = m_dictionary[mapping.entry_name];
 	const uint8_t array_index = mapping.array_index;
 	const uint8_t first_byte = mapping.first_byte;

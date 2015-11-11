@@ -33,81 +33,102 @@
 #include "logger.h"
 
 #include <cassert>
+#include <future>
 
 namespace kaco {
 
 Entry::Entry() {}
 
 // standard constructor
-Entry::Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access)
-	: name(_name),
-		index(_index),
+Entry::Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access_type)
+	: index(_index),
 		subindex(_subindex),
-		is_array(false),
-		access(_access),
+		name(_name),
 		type(_type),
-		value(),
-		valid(false),
-		sdo_on_read(true),
-		sdo_on_write(true),
-		is_slice(false),
-		slice_first_bit(0),
-		slice_last_bit(0),
-		access_method(AccessMethod::sdo),
-		description("")
+		access_type(_access_type),
+		read_write_mutex(new std::mutex)
 	{ }
 
 // array constructor
-Entry::Entry(uint32_t _index, std::string _name, Type _type, AccessType _access)
-	: name(_name),
-		index(_index),
+Entry::Entry(uint32_t _index, std::string _name, Type _type, AccessType _access_type)
+	: index(_index),
 		subindex(0),
-		is_array(true),
-		access(_access),
+		name(_name),
 		type(_type),
-		value(),
-		valid(false),
-		sdo_on_read(true),
-		sdo_on_write(true),
-		is_slice(false),
-		slice_first_bit(0),
-		slice_last_bit(0),
-		access_method(AccessMethod::sdo),
-		description("")
+		access_type(_access_type),
+		is_array(true),
+		read_write_mutex(new std::mutex)
 	{ }
 
-void Entry::set_value(const Value& _value, uint8_t array_index) {
-	if (is_array) {
+void Entry::set_value(const Value& value, uint8_t array_index) {
 
-		if (array.size()<=array_index)
-			array.resize(array_index+1);
-
-		if (array_entry_valid.size()<=array_index)
-			array_entry_valid.resize(array_index+1, false);
-
-		array[array_index] = _value;
-		array_entry_valid[array_index] = true;
-
-	} else {
-		value = _value;
-		valid = true;
+	if (value.type != type) {
+		ERROR("[Entry::set_value] You passed a value of wrong type.");
+		return;
 	}
+
+	if (array_index>0 && !is_array) {
+		ERROR("[Entry::set_value] This is no array but you specified an array_index.");
+		return;
+	}
+
+	bool value_changed = false;
+
+	{
+		std::lock_guard<std::mutex> lock(*read_write_mutex);
+
+		if (m_value.size()<=array_index) { 
+			m_value.resize(array_index+1);
+			value_changed = true;
+		}
+
+		if (m_valid.size()<=array_index) {
+			m_valid.resize(array_index+1, false);
+			value_changed = true;
+		}
+
+		if (!value_changed && m_value[array_index] != value) {
+			value_changed = true;
+		}
+
+		m_value[array_index] = value;
+		m_valid[array_index] = true;
+	}
+
+	if (value_changed) {
+		for (auto& callback : m_value_changed_callbacks) {
+			// TODO: currently callbacks are only internal and it's ok to call them synchonously.
+			//std::async(std::launch::async, callback, value);
+			callback(value);
+		}
+	}
+
 }
 
 const Value& Entry::get_value(uint8_t array_index) const {
+
+	std::lock_guard<std::mutex> lock(*read_write_mutex);
+
+	if (array_index>0 && !is_array) {
+		ERROR("[Entry::set_value] This is no array but you specified an array_index.");
+		return m_dummy_value;
+	}
 		
-	if ( (!is_array && !valid)
-		|| (is_array && (array_index>=array.size()
-		|| array_index>=array_entry_valid.size()
-		|| !array_entry_valid[array_index])) ) {
+	if ( array_index>=m_value.size()
+		|| array_index>=m_valid.size()
+		|| !m_valid[array_index] ) {
 		ERROR("[Entry::get_value] Value not valid.");
+		return m_dummy_value;
 	}
 
-	if (is_array) {
-		return array[array_index];
-	} else {
-		return value;
-	}
+	return m_value[array_index];
+
+}
+
+
+void Entry::add_value_changed_callback(ValueChangedCallback callback) {
+	// TODO std::move or reference?
+	m_value_changed_callbacks.push_back(callback);
 }
 
 } // end namespace kaco

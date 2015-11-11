@@ -31,43 +31,20 @@
  
 #pragma once
 
-#include <vector>
-#include <cstdint>
-#include <functional>
-
-#include "message.h"
+#include <string>
 
 namespace kaco {
-	
-	// forward declaration
-	class Core;
 
-	class PDO {
+	struct ReceivePDOMapping {
 
-	public:
+		uint16_t cob_id;
+		std::string entry_name;
+		uint8_t first_byte;
+		uint8_t last_byte;
 
-		//! type of a sdo message receiver function
-		struct PDOReceivedCallback {
-			// TODO: make data vector a reference?
-			typedef std::function< void(std::vector<uint8_t>) > Function;
-			uint16_t cob_id;
-			Function callback;
-		};
-
-		PDO(Core& core);
-		~PDO();
-
-		void process_incoming_message(const Message& message) const;
-
-		void send(uint16_t cob_id, const std::vector<uint8_t>& data);
-
-		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
-
-	private:
-
-		static const bool debug = true;
-		Core& m_core;
-		std::vector<PDOReceivedCallback> m_receive_callbacks;
+		// only relevant for arrays
+		// TODO: one byte correct?
+		uint8_t array_index;
 
 	};
 

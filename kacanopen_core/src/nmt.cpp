@@ -69,7 +69,7 @@ void NMT::process_incoming_message(const Message& message) {
 	bool toggle_bit = data>>7;
 	uint8_t state = data&0x3F;
 
-	DUMP_HEX(toggle_bit);
+	//DEBUG_DUMP(toggle_bit);
 
 	switch (state) {
 		
@@ -77,7 +77,7 @@ void NMT::process_incoming_message(const Message& message) {
 			DEBUG_LOG("New state is Initialising");
 
 			for (const auto& callback : m_new_device_callbacks) {
-				PRINT("callback!");
+				DEBUG_LOG("Calling new devoce callback (async)");
 				std::async(std::launch::async, callback, message.get_node_id());
 			}
 

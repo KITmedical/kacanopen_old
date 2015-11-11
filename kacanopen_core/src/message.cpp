@@ -53,10 +53,10 @@ void Message::print() const {
 	DUMP_HEX(get_function_code());
 	DUMP_HEX(get_node_id());
 
-	for (unsigned i=0;i<8;++i) {
-		if (data[i]>0) {
+	for (unsigned i=0;i<len;++i) {
+		//if (data[i]>0) {
 			PRINT("data["<<i<<"] = 0x"<<std::hex<<(unsigned)data[i]);
-		}
+		//}
 	}
 
 }

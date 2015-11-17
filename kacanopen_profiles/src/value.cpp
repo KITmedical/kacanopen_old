@@ -75,10 +75,68 @@ Value::Value(int32_t value) {
 	int32 = value;
 }
 
-Value::Value(const std::string& value) {
+Value::Value(const std::string& value) : string(value) {
 	DEBUG_LOG("Creating string value");
 	type = Type::string;
-	string = value;
+}
+
+Value::Value(Type type_, const std::vector<uint8_t>& data) {
+
+	type = type_;
+	
+	if (type != Type::string) {
+		// strings have variable size
+		const uint8_t type_size = Utils::get_type_size(type);
+		if (data.size() != type_size) {
+			ERROR("[Value constructor] Wrong byte vector size.");
+			DUMP(data.size());
+			DUMP(type_size);
+		}
+	}
+
+	switch(type) {
+			
+		case Type::uint8: {
+			uint8 = data[0];
+			break;
+		}
+			
+		case Type::int8: {
+			int8 = data[0];
+			break;
+		}
+
+		case Type::uint16: {
+			uint16 = (uint16_t)data[0] + ((uint16_t)data[1] << 8);
+			break;
+		}
+
+		case Type::int16: {
+			int16 = (int16_t)data[0] + ((int16_t)data[1] << 8);
+			break;
+		}
+
+		case Type::uint32: {
+			uint32 = (uint32_t)data[0] + ((uint32_t)data[1] << 8) + ((uint32_t)data[2] << 16) + ((uint32_t)data[3] << 24);
+		}
+
+		case Type::int32: {
+			int32 = (int32_t)data[0] + ((int32_t)data[1] << 8) + ((int32_t)data[2] << 16) + ((int32_t)data[3] << 24);
+			break;
+		}
+
+		case Type::string: {
+			string = std::string(reinterpret_cast<char const*>(data.data()), data.size());
+			break;
+		}
+
+		default: {
+			ERROR("[Value constructor] Unknown data type.");
+			break;
+		}
+
+	}
+
 }
 
 std::vector<uint8_t> Value::get_bytes() const {
@@ -126,7 +184,9 @@ std::vector<uint8_t> Value::get_bytes() const {
 		}
 
 		case Type::string: {
-			ERROR("[Value::get_bytes] Strings cannot be converted to byte vector.")
+			for (size_t i=0; i<string.length(); ++i) {
+				result.push_back((uint8_t)string[i]);
+			}
 			break;
 		}
 

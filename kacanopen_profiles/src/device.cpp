@@ -57,50 +57,7 @@ void Device::start() {
 Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 	
 	std::vector<uint8_t> data = m_core.sdo.upload(m_node_id, index, subindex);
-
-	switch(type) {
-			
-		case Type::uint8: {
-			uint8_t val = data[0];
-			return Value(val);
-		}
-			
-		case Type::uint16: {
-			uint16_t val = data[0] + (data[1]<<8);
-			return Value(val);
-		}
-			
-		case Type::uint32: {
-			uint32_t val = data[0] + (data[1]<<8) + (data[2]<<16) + (data[3]<<24);
-			return Value(val);
-		}
-			
-		case Type::int8: {
-			int8_t val = data[0];
-			return Value(val);
-		}
-			
-		case Type::int16: {
-			int16_t val = data[0] + (data[1]<<8);
-			return Value(val);
-		}
-			
-		case Type::int32: {
-			int32_t val = data[0] + (data[1]<<8) + (data[2]<<16) + (data[3]<<24);
-			return Value(val);
-		}
-
-		case Type::string: {
-		    std::string val(reinterpret_cast<char const*>(data.data()), data.size());
-		    return Value(val);
-		}
-
-		default: {
-			ERROR("[Device::get_entry_via_sdo] Unknown data type.");
-			return Value();
-		}
-
-	}
+	return std::move(Value(type, data));
 
 }
 
@@ -128,44 +85,8 @@ const Value& Device::get_entry(std::string name, uint8_t array_index, ReadAccess
 
 void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& value) {
 
-	switch(value.type) {
-			
-		case Type::uint8:
-		case Type::int8: {
-			uint8_t byte0 = value.uint8;
-			m_core.sdo.download(m_node_id,index,subindex,1,{byte0});
-			break;
-		}
-
-		case Type::uint16:
-		case Type::int16: {
-			uint8_t byte0 = value.uint16 & 0xFF;
-			uint8_t byte1 = (value.uint16 >> 8) & 0xFF;
-			m_core.sdo.download(m_node_id,index,subindex,2,{byte0,byte1});
-			break;
-		}
-
-		case Type::uint32:
-		case Type::int32: {
-			uint8_t byte0 = value.uint32 & 0xFF;
-			uint8_t byte1 = (value.uint32 >> 8) & 0xFF;
-			uint8_t byte2 = (value.uint32 >> 16) & 0xFF;
-			uint8_t byte3 = (value.uint32 >> 24) & 0xFF;
-			m_core.sdo.download(m_node_id,index,subindex,4,{byte0,byte1,byte2,byte3});
-			break;
-		}
-
-		case Type::string: {
-			ERROR("[Device::set_entry_via_sdo] Strings not yet supported.");
-			break;
-		}
-
-		default: {
-			ERROR("[Device::set_entry_via_sdo] Unknown data type.");
-			break;
-		}
-
-	}
+	const auto& bytes = value.get_bytes();
+	m_core.sdo.download(m_node_id,index,subindex,bytes.size(),bytes);
 
 }
 
@@ -282,51 +203,9 @@ void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector
 		DUMP(last_byte);
 	}
 
-	DEBUG_LOG("Updating entry "<<entry.name<<"...");
-	DEBUG_DUMP(array_index);
-
-	switch(entry.type) {
-			
-		case Type::uint8: {
-			entry.set_value(Value((uint8_t)data[first_byte+0]), array_index);
-			break;
-		}
-			
-		case Type::int8: {
-			entry.set_value(Value((int8_t)data[first_byte+0]), array_index);
-			break;
-		}
-
-		case Type::uint16: {
-			entry.set_value(Value((uint16_t)data[first_byte+0] + ((uint16_t)data[first_byte+1] << 8)), array_index);
-			break;
-		}
-
-		case Type::int16: {
-			entry.set_value(Value((int16_t)data[first_byte+0] + ((int16_t)data[first_byte+1] << 8)), array_index);
-			break;
-		}
-
-		case Type::uint32: {
-			entry.set_value(Value((uint32_t)data[first_byte+0] + ((uint32_t)data[first_byte+1] << 8) + ((uint32_t)data[first_byte+2] << 16) + ((uint32_t)data[first_byte+3] << 24)), array_index);
-		}
-
-		case Type::int32: {
-			entry.set_value(Value((int32_t)data[first_byte+0] + ((int32_t)data[first_byte+1] << 8) + ((int32_t)data[first_byte+2] << 16) + ((int32_t)data[first_byte+3] << 24)), array_index);
-			break;
-		}
-
-		case Type::string: {
-			ERROR("[Device::pdo_received_callback] Mapping PDOs to string typed entries is not supported!");
-			break;
-		}
-
-		default: {
-			ERROR("[Device::pdo_received_callback] Unknown data type.");
-			break;
-		}
-
-	}
+	DEBUG_LOG("Updating entry "<<entry.name<<" (in case it's an array, index="<<array_index<<")");
+	std::vector<uint8_t> bytes(data.begin()+offset, data.begin()+offset+type_size);
+	entry.set_value(Value(entry.type,bytes), array_index);
 
 }
 

@@ -66,6 +66,10 @@ namespace kaco {
 		Value(int32_t value);
 		Value(const std::string& value);
 
+		/// Creates a value given a type and the byte representation in a vector.
+		Value(Type type_, const std::vector<uint8_t>& data);
+
+		/// Returns the byte representation as a vector.
 		std::vector<uint8_t> get_bytes() const;
 
 		operator uint8_t() const;
@@ -86,6 +90,7 @@ namespace kaco {
 	}
 
 } // end namespace kaco
+
 // For correct usage of logger.h one should use the int8_printers, so
 // the int8_printers namespace is automatically included. Because of
 // this, logger.h should not be included in library headers.

@@ -75,7 +75,8 @@ namespace kaco {
 		void set_entry(std::string name, const Value& value, uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
 
 		/// Adds a receive PDO mapping. This means values sent by the device via PDO are saved into the dictionary cache.
-		void add_receive_pdo_mapping(uint16_t cob_id, const std::string&  entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index=0);
+		/// \param offset index of the first mapped byte in the PDO message
+		void add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_name, uint8_t offset, uint8_t array_index=0);
 
 		/// Adds a transmit PDO mapping. This means values from the dictionary cache are sent to the device.
 		///

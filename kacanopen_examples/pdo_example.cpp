@@ -60,11 +60,11 @@ int main(int argc, char** argv) {
 
 	DUMP(device.get_entry("manufacturer_device_name"));
 
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0, 0); // index 0
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1, 1); // index 1
+	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0); // offset 0, array index 0
+	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1); // offset 1, array index 1
 	
 	// transmit PDO on change
-	device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}});
+	device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0}}); // offset 0, array index 0
 
 	// transmit PDO every 500ms
 	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));

@@ -29,12 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cassert>
-
 #include "transmit_pdo_mapping.h"
 #include "core.h"
 #include "entry.h"
 #include "logger.h"
+
+#include <cassert>
 
 namespace kaco {
 
@@ -61,7 +61,7 @@ TransmitPDOMapping::~TransmitPDOMapping() {
 void TransmitPDOMapping::send() const {
 
 	std::vector<uint8_t> data(8,0);
-	uint8_t max_byte=0;
+	size_t max_byte=0;
 	
 	DEBUG_LOG("[TransmitPDOMapping::send] Sending transmit PDO with cob_id 0x"<<std::hex<<cob_id);
 
@@ -70,20 +70,19 @@ void TransmitPDOMapping::send() const {
 		const Entry& entry = m_dictionary.at(mapping.entry_name);
 		const Value& value = entry.get_value(mapping.array_index);
 		const std::vector<uint8_t> bytes = value.get_bytes();
-		assert(mapping.last_byte+1 - mapping.first_byte == bytes.size());
+		assert(mapping.offset+bytes.size() <= 8);
 
 		DEBUG_LOG("[TransmitPDOMapping::send] Mapping:");
-		DEBUG_DUMP(mapping.first_byte);
-		DEBUG_DUMP(mapping.last_byte);
+		DEBUG_DUMP(mapping.offset);
 		DEBUG_DUMP(mapping.entry_name);
 		DEBUG_DUMP_HEX(value);
 		
 		uint8_t count = 0;
-		for (uint8_t i=mapping.first_byte; i<mapping.last_byte+1; ++i) {
+		for (uint8_t i=mapping.offset; i<mapping.offset+bytes.size(); ++i) {
 			data[i] = bytes[count++];
 		}
 
-		max_byte = std::max(max_byte, mapping.last_byte);
+		max_byte = std::max(max_byte, mapping.offset+bytes.size());
 
 	}
 
@@ -99,16 +98,6 @@ bool TransmitPDOMapping::check_correctness() const {
 
 	for (const Mapping& mapping : mappings) {
 
-		if (mapping.first_byte > mapping.last_byte) {
-			ERROR("[TransmitPDOMapping::check_correctness] first_byte > last_byte");
-			return false;
-		}
-
-		if (mapping.first_byte > 7 || mapping.last_byte > 7) {
-			ERROR("[TransmitPDOMapping::check_correctness] first_byte > 7 or last_byte > 7");
-			return false;
-		}
-
 		if (m_dictionary.find(mapping.entry_name) == m_dictionary.end()) {
 			ERROR("[TransmitPDOMapping::check_correctness] Dictionary entry \""<<mapping.entry_name<<"\" not available.");
 			return false;
@@ -117,11 +106,10 @@ bool TransmitPDOMapping::check_correctness() const {
 		const Entry& entry = m_dictionary.at(mapping.entry_name);
 		const uint8_t type_size = Utils::get_type_size(entry.type);
 
-		if (mapping.last_byte+1-mapping.first_byte != type_size) {
-			ERROR("[TransmitPDOMapping::check_correctness] PDO mapping has wrong size!");
+		if (mapping.offset+type_size > 8) {
+			ERROR("[TransmitPDOMapping::check_correctness] mapping.offset+type_size > 8");
 			DUMP(type_size);
-			DUMP(mapping.first_byte);
-			DUMP(mapping.last_byte);
+			DUMP(mapping.offset);
 			return false;
 		}
 
@@ -130,7 +118,7 @@ bool TransmitPDOMapping::check_correctness() const {
 			return false;
 		}
 
-		for (uint8_t i=mapping.first_byte; i<mapping.last_byte; ++i) {
+		for (uint8_t i=mapping.offset; i<mapping.offset+type_size; ++i) {
 			if (byte_mapped[i]) {
 				ERROR("[TransmitPDOMapping::check_correctness] Overlapping mappings at byte index "<<i);
 				return false;
@@ -138,7 +126,7 @@ bool TransmitPDOMapping::check_correctness() const {
 			byte_mapped[i] = true;
 		}
 
-		size += mapping.last_byte - mapping.first_byte;
+		size += type_size;
 
 	}
 

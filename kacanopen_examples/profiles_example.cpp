@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
 
 	// TODO: The following is only for testing. write_output etc. is CiA401 and should not be available here.
 
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0, 0); // index 0
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1, 1); // index 1
+	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0); // offest 0, array index 0
+	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1); // offset 1, array index 1
 
 	DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::sdo));
 	DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::sdo));

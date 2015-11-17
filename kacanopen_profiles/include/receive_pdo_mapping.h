@@ -39,8 +39,9 @@ namespace kaco {
 
 		uint16_t cob_id;
 		std::string entry_name;
-		uint8_t first_byte;
-		uint8_t last_byte;
+
+		/// index of the first mapped byte in the PDO message
+		uint8_t offset;
 
 		// only relevant for arrays
 		// TODO: one byte correct?

@@ -118,7 +118,7 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 
 }
 
-void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string&  entry_name, uint8_t first_byte, uint8_t last_byte, uint8_t array_index) {
+void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_name, uint8_t offset, uint8_t array_index) {
 	
 	if (m_dictionary.find(entry_name) == m_dictionary.end()) {
 		ERROR("[Device::add_receive_pdo_mapping] Dictionary entry \""<<entry_name<<"\" not available.");
@@ -128,14 +128,13 @@ void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string&  entry_
 	Entry& entry = m_dictionary[entry_name];
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
-	if (last_byte+1-first_byte != type_size) {
-		ERROR("[Device::add_receive_pdo_mapping] PDO mapping has wrong size!");
+	if (offset+type_size > 8) {
+		ERROR("[Device::add_receive_pdo_mapping] offset+type_size > 8.");
 		DUMP(type_size);
-		DUMP(first_byte);
-		DUMP(last_byte);
+		DUMP(offset);
 	}
 
-	m_receive_pdo_mappings.push_back({cob_id,entry_name,first_byte,last_byte,array_index});
+	m_receive_pdo_mappings.push_back({cob_id,entry_name,offset,array_index});
 
 	// TODO: this only works while add_pdo_received_callback takes callback by value.
 	auto binding = std::bind(&Device::pdo_received_callback, this, m_receive_pdo_mappings.back(), std::placeholders::_1);
@@ -193,14 +192,14 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data) {
 	Entry& entry = m_dictionary[mapping.entry_name];
 	const uint8_t array_index = mapping.array_index;
-	const uint8_t first_byte = mapping.first_byte;
-	const uint8_t last_byte = mapping.last_byte;
+	const uint8_t offset = mapping.offset;
+	const uint8_t type_size = Utils::get_type_size(entry.type);
 
-	if (data.size() <= first_byte || data.size() <= last_byte) {
+	if (data.size() < offset+type_size) {
 		ERROR("[Device::pdo_received_callback] PDO has wrong size!");
 		DUMP(data.size());
-		DUMP(first_byte);
-		DUMP(last_byte);
+		DUMP(offset);
+		DUMP(type_size);
 	}
 
 	DEBUG_LOG("Updating entry "<<entry.name<<" (in case it's an array, index="<<array_index<<")");

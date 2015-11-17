@@ -40,7 +40,7 @@ namespace kaco {
 Entry::Entry() {}
 
 // standard constructor
-Entry::Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access_type)
+Entry::Entry(Entry::VariableTag tag, uint16_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access_type)
 	: index(_index),
 		subindex(_subindex),
 		name(_name),
@@ -50,7 +50,7 @@ Entry::Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, 
 	{ }
 
 // array constructor
-Entry::Entry(uint32_t _index, std::string _name, Type _type, AccessType _access_type)
+Entry::Entry(Entry::ArrayTag tag, uint16_t _index, std::string _name, Type _type, AccessType _access_type)
 	: index(_index),
 		subindex(0),
 		name(_name),

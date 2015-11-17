@@ -109,15 +109,38 @@ namespace kaco {
 
 		const std::vector<Entry> profile301 {
 
-			Entry(0x1000, 0, "device_type", Type::uint32, AccessType::read_only),
-			Entry(0x1001, 0, "error_register", Type::uint8, AccessType::read_only),
-			Entry(0x1008, 0, "manufacturer_device_name", Type::string, AccessType::constant),
+			Entry(Entry::variable_tag, 0x1000, 0, "device_type", Type::uint32, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x1001, 0, "error_register", Type::uint8, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x1008, 0, "manufacturer_device_name", Type::string, AccessType::constant),
 			
 			// TODO remove. This is CiA401!
-			Entry(0x6000, "read_digital_input", Type::uint8, AccessType::read_only),
-			Entry(0x6200, "write_output", Type::uint8, AccessType::write_only),
-			Entry(0x1400, 1, "rpdo1_cob_id", Type::uint32, AccessType::read_write),
-			Entry(0x1401, 1, "rpdo2_cob_id", Type::uint32, AccessType::read_write)
+			Entry(Entry::array_tag, 0x6000, "read_digital_input", Type::uint8, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6200, "write_output", Type::uint8, AccessType::write_only),
+			Entry(Entry::variable_tag, 0x1400, 1, "rpdo1_cob_id", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1401, 1, "rpdo2_cob_id", Type::uint32, AccessType::read_write),
+			
+
+			Entry(Entry::variable_tag, 0x1000, 0, "Device type", Type::uint32, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x1001, 0, "Error register", Type::uint8, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x1002, 0, "Manufacturer status register", Type::uint32, AccessType::read_only),
+			Entry(Entry::array_tag, 0x1003, "Pre-defined error field", Type::uint32, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x1005, 0, "COB-ID SYNC", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1006, 0, "Communication cycle period", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1007, 0, "Synchronous window length", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1008, 0, "Manufacturer device name", Type::string, AccessType::constant),
+			Entry(Entry::variable_tag, 0x1009, 0, "Manufacturer hardware version", Type::string, AccessType::constant),
+			Entry(Entry::variable_tag, 0x100A, 0, "Manufacturer software version", Type::string, AccessType::constant),
+			Entry(Entry::variable_tag, 0x100C, 0, "Guard time", Type::uint16, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x100D, 0, "Life time factor", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x1010, "Store parameters", Type::uint32, AccessType::read_write), // TODO: this is actually a record/array hybrid
+			Entry(Entry::array_tag, 0x1011, "Restore default parameters", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1012, 0, "COB-ID time stamp object", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1013, 0, "High resolution time stamp", Type::uint32, AccessType::read_write),
+
+			Entry(Entry::variable_tag, 0x1400, 1, "Receive PDO Communication Parameter 1/COB-ID", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1400, 2, "Receive PDO Communication Parameter 1/Transmission Type", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1401, 1, "Receive PDO Communication Parameter 2/COB-ID", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1401, 2, "Receive PDO Communication Parameter 2/Transmission Type", Type::uint32, AccessType::read_write)
 			
 		};
 

@@ -55,6 +55,12 @@ namespace kaco {
 
 	public:
 
+		struct VariableTag {};
+		struct ArrayTag {};
+
+		static const VariableTag variable_tag;
+		static const ArrayTag array_tag;
+
 		/// type of a callback for a value changed event
 		typedef std::function< void(const Value& value) > ValueChangedCallback;
 
@@ -62,10 +68,10 @@ namespace kaco {
 		Entry();
 
 		/// standard constructor
-		Entry(uint32_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access);
+		Entry(VariableTag tag, uint16_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access);
 
 		/// array constructor
-		Entry(uint32_t _index, std::string _name, Type _type, AccessType _access);
+		Entry(ArrayTag tag, uint16_t _index, std::string _name, Type _type, AccessType _access);
 
 		/// Sets the value. If the entry is an array, array_index can be specified
 		void set_value(const Value& value, uint8_t array_index=0);

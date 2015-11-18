@@ -57,14 +57,22 @@ int main(int argc, char** argv) {
 
 	kaco::Device& device = master.get_devices()[0];
 	device.start();
+	device.specialize();
 
-	DUMP(device.get_entry("manufacturer_device_name"));
+	uint16_t profile = device.get_device_profile_number();
+	
+	if (profile != 401) {
+		ERROR("This example is intended for use with a CiA 401 device. You plugged a device with profile number "<<profile);
+		return EXIT_FAILURE;
+	}
 
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 0, 0); // offset 0, array index 0
-	device.add_receive_pdo_mapping(0x188, "read_digital_input", 1, 1); // offset 1, array index 1
+	DUMP(device.get_entry("Manufacturer device name"));
+
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit", 0, 0); // offset 0, array index 0
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit", 1, 1); // offset 1, array index 1
 	
 	// transmit PDO on change
-	device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0}}); // offset 0, array index 0
+	device.add_transmit_pdo_mapping(0x208, {{"Write output 8-bit", 0, 0}}); // offset 0, array index 0
 
 	// transmit PDO every 500ms
 	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));
@@ -72,12 +80,12 @@ int main(int argc, char** argv) {
 	for (uint8_t i=0; i<10; ++i) {
 		
 		PRINT("Set output to 0x"<<std::hex<<i<<" (via cache!) and wait 1 second");
-		device.set_entry("write_output", i, 0,kaco::WriteAccessMethod::cache);
+		device.set_entry("Write output 8-bit", i, 0, kaco::WriteAccessMethod::cache);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		DUMP_HEX(device.get_entry("write_output",0,kaco::ReadAccessMethod::cache));
-		DUMP_HEX(device.get_entry("read_digital_input",0,kaco::ReadAccessMethod::cache));
-		DUMP_HEX(device.get_entry("read_digital_input",1,kaco::ReadAccessMethod::cache));
+		DUMP_HEX(device.get_entry("Write output 8-bit",0,kaco::ReadAccessMethod::cache));
+		DUMP_HEX(device.get_entry("Read input 8-bit",0,kaco::ReadAccessMethod::cache));
+		DUMP_HEX(device.get_entry("Read input 8-bit",1,kaco::ReadAccessMethod::cache));
 
 	}
 

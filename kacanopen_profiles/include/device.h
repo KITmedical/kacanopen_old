@@ -94,6 +94,12 @@ namespace kaco {
 		///
 		void add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping>& mappings, TransmissionType transmission_type=TransmissionType::ON_CHANGE, std::chrono::milliseconds repeat_time=std::chrono::milliseconds(0));
 
+		/// Returns the CiA profile number (determined via SDO)
+		uint16_t get_device_profile_number();
+
+		/// Adds entries to the dictionary according to the CiA profile number. Returns true if successful.
+		bool specialize();
+
 	private:
 
 		void pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data);
@@ -110,15 +116,15 @@ namespace kaco {
 
 		const std::vector<Entry> profile301 {
 
-			Entry(Entry::variable_tag, 0x1000, 0, "device_type", Type::uint32, AccessType::read_only),
+			/*Entry(Entry::variable_tag, 0x1000, 0, "device_type", Type::uint32, AccessType::read_only),
 			Entry(Entry::variable_tag, 0x1001, 0, "error_register", Type::uint8, AccessType::read_only),
-			Entry(Entry::variable_tag, 0x1008, 0, "manufacturer_device_name", Type::string, AccessType::constant),
+			Entry(Entry::variable_tag, 0x1008, 0, "manufacturer_device_name", Type::string, AccessType::constant),*/
 			
 			// TODO remove. This is CiA401!
-			Entry(Entry::array_tag, 0x6000, "read_digital_input", Type::uint8, AccessType::read_only),
+			/*Entry(Entry::array_tag, 0x6000, "read_digital_input", Type::uint8, AccessType::read_only),
 			Entry(Entry::array_tag, 0x6200, "write_output", Type::uint8, AccessType::write_only),
 			Entry(Entry::variable_tag, 0x1400, 1, "rpdo1_cob_id", Type::uint32, AccessType::read_write),
-			Entry(Entry::variable_tag, 0x1401, 1, "rpdo2_cob_id", Type::uint32, AccessType::read_write),
+			Entry(Entry::variable_tag, 0x1401, 1, "rpdo2_cob_id", Type::uint32, AccessType::read_write),*/
 			
 
 			Entry(Entry::variable_tag, 0x1000, 0, "Device type", Type::uint32, AccessType::read_only),
@@ -144,6 +150,67 @@ namespace kaco {
 			Entry(Entry::variable_tag, 0x1401, 2, "Receive PDO Communication Parameter 2/Transmission Type", Type::uint32, AccessType::read_write)
 			
 		};
+
+		const std::vector<Entry> profile401 {
+
+			Entry(Entry::array_tag, 0x6000, "Read input 8-bit", Type::uint8, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6002, "Polarity input 8-bit", Type::uint8, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6003, "Filter constant input 8-bit", Type::uint8, AccessType::read_only),
+			Entry(Entry::variable_tag, 0x6005, 0, "Global interrupt enable digital 8-bit", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6006, "Interrupt mask any change 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6007, "Interrupt mask low-to-high 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6008, "Interrupt mask high-to-low 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6020, "Read input bit 1 to 128", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6021, "Read input bit 129 to 256", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6022, "Read input bit 257 to 384", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6023, "Read input bit 385 to 512", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6024, "Read input bit 513 to 640", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6025, "Read input bit 641 to 768", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6026, "Read input bit 769 to 896", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6027, "Read input bit 897 to 1024", Type::boolean, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6030, "Polarity input bit 1 to 128", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6031, "Polarity input bit 129 to 256", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6032, "Polarity input bit 257 to 384", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6033, "Polarity input bit 385 to 512", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6034, "Polarity input bit 513 to 640", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6035, "Polarity input bit 641 to 768", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6036, "Polarity input bit 769 to 896", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6037, "Polarity input bit 897 to 1024", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6038, "Filter constant input bit 1 to 128", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6039, "Filter constant input bit 129 to 256", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603A, "Filter constant input bit 257 to 384", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603B, "Filter constant input bit 385 to 512", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603C, "Filter constant input bit 513 to 640", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603D, "Filter constant input bit 641 to 768", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603E, "Filter constant input bit 769 to 896", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x603F, "Filter constant input bit 897 to 1024", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6050, "Interrupt mask input bit 1 to 128", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6051, "Interrupt mask input bit 129 to 256", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6052, "Interrupt mask input bit 257 to 384", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6053, "Interrupt mask input bit 385 to 512", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6054, "Interrupt mask input bit 513 to 640", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6055, "Interrupt mask input bit 641 to 768", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6056, "Interrupt mask input bit 769 to 896", Type::boolean, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6057, "Interrupt mask input bit 897 to 1024", Type::boolean, AccessType::read_write),
+
+			// TODO ...
+
+			Entry(Entry::array_tag, 0x6100, "Read input 16-bit", Type::uint16, AccessType::read_only),
+			Entry(Entry::array_tag, 0x6102, "Polarity input 16-bit", Type::uint16, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6103, "Filter constant input 16-bit", Type::uint16, AccessType::read_write),
+			
+			// TODO ...
+
+			Entry(Entry::array_tag, 0x6200, "Write output 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6202, "Change polarity output 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6205, "Error mode output 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6207, "Error value output 8-bit", Type::uint8, AccessType::read_write),
+			Entry(Entry::array_tag, 0x6208, "Filter mask output 8-bit", Type::uint8, AccessType::read_write),
+			
+			// TODO ...
+			
+		};
+
 
 	};
 

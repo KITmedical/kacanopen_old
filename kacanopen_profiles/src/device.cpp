@@ -208,5 +208,26 @@ void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector
 
 }
 
+uint16_t Device::get_device_profile_number() {
+	uint32_t device_type = get_entry("Device type");
+	return (device_type & 0xFFFF);
+}
+
+bool Device::specialize() {
+	uint16_t profile = get_device_profile_number();
+	switch (profile) {
+		case 401: {
+			for (const auto& entry : profile401) {
+				m_dictionary[entry.name] = entry;
+			}
+			return true;
+		}
+		default: {
+			ERROR("Unknown CiA profile: "<<profile<<". Cannot specialize device.");
+			return false;
+		}
+	}
+}
+
 
 } // end namespace kaco

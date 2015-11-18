@@ -75,6 +75,12 @@ Value::Value(int32_t value) {
 	int32 = value;
 }
 
+Value::Value(bool value) {
+	DEBUG_LOG("Creating boolean value");
+	type = Type::boolean;
+	boolean = value;
+}
+
 Value::Value(const std::string& value) : string(value) {
 	DEBUG_LOG("Creating string value");
 	type = Type::string;
@@ -129,6 +135,11 @@ Value::Value(Type type_, const std::vector<uint8_t>& data) {
 			string = std::string(reinterpret_cast<char const*>(data.data()), data.size());
 			break;
 		}
+			
+		case Type::boolean: {
+			boolean = (data[0]>0);
+			break;
+		}
 
 		default: {
 			ERROR("[Value constructor] Unknown data type.");
@@ -180,6 +191,11 @@ std::vector<uint8_t> Value::get_bytes() const {
 			result.push_back((int32>>8) & 0xFF);
 			result.push_back((int32>>16) & 0xFF);
 			result.push_back((int32>>24) & 0xFF);
+			break;
+		}
+
+		case Type::boolean: {
+			result.push_back(boolean?0x01:0x00);
 			break;
 		}
 
@@ -243,6 +259,10 @@ bool Value::operator==(const Value& other) const {
 			return int32 == (int32_t) other;
 		}
 
+		case Type::boolean: {
+			return boolean == (bool) boolean;
+		}
+
 		case Type::string: {
 			return string == (std::string) other;
 		}
@@ -283,6 +303,7 @@ CO_VALUE_TYPE_CAST_OP_INT(uint32);
 CO_VALUE_TYPE_CAST_OP_INT(int8);
 CO_VALUE_TYPE_CAST_OP_INT(int16);
 CO_VALUE_TYPE_CAST_OP_INT(int32);
+CO_VALUE_TYPE_CAST_OP(bool, boolean);
 CO_VALUE_TYPE_CAST_OP(std::string, string);
 
 //-------------------//
@@ -317,6 +338,10 @@ namespace value_printer {
 
 			case Type::int32: {
 				return os << static_cast<int32_t>(val);
+			}
+
+			case Type::boolean: {
+				return os << (static_cast<bool>(val)?"TRUE":"FALSE");
 			}
 
 			case Type::string: {

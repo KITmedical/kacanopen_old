@@ -55,6 +55,7 @@ namespace kaco {
 			int8_t int8;
 			int16_t int16;
 			int32_t int32;
+			bool boolean;
 		};
 		
 		Value();
@@ -64,6 +65,7 @@ namespace kaco {
 		Value(int8_t value);
 		Value(int16_t value);
 		Value(int32_t value);
+		Value(bool value);
 		Value(const std::string& value);
 
 		/// Creates a value given a type and the byte representation in a vector.
@@ -78,6 +80,7 @@ namespace kaco {
 		operator int8_t() const;
 		operator int16_t() const;
 		operator int32_t() const;
+		operator bool() const;
 		operator std::string() const;
 
 		bool operator==(const Value& other) const;

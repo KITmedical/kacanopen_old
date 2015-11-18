@@ -52,6 +52,8 @@ std::string Utils::type_to_string(Type type) {
 			return "int16";
 		case Type::int32:
 			return "int32";
+		case Type::boolean:
+			return "boolean";
 		case Type::string:
 			return "string";
 		default:
@@ -63,6 +65,7 @@ uint8_t Utils::get_type_size(Type type) {
 	switch(type) {
 		case Type::uint8:
 		case Type::int8:
+		case Type::boolean:
 			return 1;
 		case Type::uint16:
 		case Type::int16:

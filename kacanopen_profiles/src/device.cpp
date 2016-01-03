@@ -54,6 +54,10 @@ void Device::start() {
 	m_core.nmt.send_nmt_message(m_node_id,NMT::Command::start_node);
 }
 
+uint8_t Device::get_node_id() const {
+	return m_node_id;
+}
+
 Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 	
 	std::vector<uint8_t> data = m_core.sdo.upload(m_node_id, index, subindex);

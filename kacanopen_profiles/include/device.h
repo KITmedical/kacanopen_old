@@ -53,6 +53,7 @@ namespace kaco {
 		~Device();
 
 		void start();
+		uint8_t get_node_id() const;
 
 		/// Gets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value

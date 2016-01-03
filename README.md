@@ -16,18 +16,40 @@ __KaCanOpen is still under active development and not yet recommended for produc
 
 ## Build and Run
 
-KaCanOpen can be built easily using CMake:
+KaCanOpen without the ROS part can be built easily using CMake:
 
 ```bash
 mkdir build
 cd build
-cmake -DCAN_DRIVER_NAME=<driver> ..
+cmake -DCAN_DRIVER_NAME=<driver> -DNO_ROS=On ..
 make
 ```
 
 where `<driver>` can be one of the following: _lincan, peak\_linux, serial, socket, virtual_. The requirements are a C++ compiler with C++14 support (tested with GCC 4.9 and Clang 3.5) and CMake >= 3.2. The _peak\_linux_ driver also needs installed [PCAN drivers](http://www.peak-system.com/fileadmin/media/linux/index.htm).
 
 The `examples` directory lists some examples on how to use KaCanOpen libraries. You can run them from the `build/examples` directory.
+
+KaCanOpen including the ROS part must be built using [Catkin](http://wiki.ros.org/catkin/Tutorials):
+
+```bash
+mkdir ~/arbitrary_path/catkin_ws
+cd ~/arbitrary_path/catkin_ws
+mkdir src
+cd src
+catkin_init_workspace
+ln -s /path_to_your_KaCanOpen_repository/ ./kacanopen
+cd ..
+catkin_make
+```
+
+You can run the example programs like that:
+
+```bash
+cd ~/arbitrary_path/catkin_ws
+source devel/setup.bash
+./build/kacanopen/kacanopen_examples/ros_example
+```
+
 
 ## License
 

@@ -28,6 +28,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_core/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_profiles/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_ros/include)
 
 
 ### source ###
@@ -35,5 +36,16 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_profiles/include)
 add_subdirectory(canfestival_drivers)
 add_subdirectory(kacanopen_core)
 add_subdirectory(kacanopen_profiles)
-add_subdirectory(kacanopen_ros)
 add_subdirectory(kacanopen_examples)
+
+if (NOT(${NO_ROS}))
+	
+	add_subdirectory(kacanopen_ros)
+
+	### catkin ###
+
+	catkin_package(
+	    CATKIN_DEPENDS message_runtime
+	)
+
+endif()

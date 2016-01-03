@@ -5,3 +5,5 @@ set(CAN_DRIVER_NAME "socket" CACHE STRING "The CAN driver to use. At the moment,
 option(BUILD_ALL_DRIVERS "Build all available drivers." OFF)
 
 option(EXHAUSTIVE_DEBUGGING "Enable exhaustive debugging." OFF)
+
+option(NO_ROS "Exclude anything depending on ROS" OFF)

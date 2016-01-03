@@ -87,7 +87,7 @@ void Entry::set_value(const Value& value, uint8_t array_index) {
 			value_changed = true;
 		}
 
-		if (!value_changed && m_value[array_index] != value) {
+		if (!value_changed && (m_value[array_index].type != type || m_value[array_index] != value) ) {
 			value_changed = true;
 		}
 

@@ -223,6 +223,7 @@ bool Value::operator==(const Value& other) const {
 
 		if (type != other.type) {
 			ERROR("[Value::operator==] Comparing values of different type.");
+			// abort();
 			return false;
 		}
 

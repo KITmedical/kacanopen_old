@@ -34,6 +34,10 @@
 #include "utils.h"
 #include "logger.h"
 
+#include "cia_301.h"
+#include "cia_401.h"
+#include "cia_402.h"
+
 #include <cassert>
 
 namespace kaco {
@@ -41,7 +45,7 @@ namespace kaco {
 Device::Device(Core& core, uint8_t node_id)
 	: m_core(core), m_node_id(node_id) {
 
-		for (const auto& entry : profile301) {
+		for (const auto& entry : cia_301::dictionary) {
 			m_dictionary[entry.name] = entry;
 		}
 
@@ -232,7 +236,13 @@ bool Device::specialize() {
 	uint16_t profile = get_device_profile_number();
 	switch (profile) {
 		case 401: {
-			for (const auto& entry : profile401) {
+			for (const auto& entry : cia_401::dictionary) {
+				m_dictionary[entry.name] = entry;
+			}
+			return true;
+		}
+		case 402: {
+			for (const auto& entry : cia_402::dictionary) {
 				m_dictionary[entry.name] = entry;
 			}
 			return true;

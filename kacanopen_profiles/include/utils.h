@@ -45,6 +45,10 @@ struct Utils {
 	static std::string type_to_string(Type type);
 	static uint8_t get_type_size(Type type);
 
+	/// Convert to lower case and replace all spaces
+	/// and '-' to underscores.
+	static std::string escape(std::string str);
+
 };
 
 } // end namespace kaco

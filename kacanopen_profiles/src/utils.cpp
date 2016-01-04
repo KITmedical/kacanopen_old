@@ -35,6 +35,7 @@
 
 #include <string>
 #include <cstdint>
+#include <algorithm>
 
 namespace kaco {
 
@@ -78,6 +79,14 @@ uint8_t Utils::get_type_size(Type type) {
 			ERROR("[Utils::get_type_size] Unknown type or type with variable size.");
 			return 0;
 	}
+}
+
+std::string Utils::escape(std::string str) {
+	std::string out = str;
+	std::transform(out.begin(), out.end(), out.begin(), ::tolower);
+	std::replace(out.begin(), out.end(), ' ', '_');
+	std::replace(out.begin(), out.end(), '-', '_');
+	return std::move(out);
 }
 
 } // end namespace kaco

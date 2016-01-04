@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 	uint16_t profile = device.get_device_profile_number();
 	
 	if (profile != 401) {
-		ERROR("This example is intended for use with a CiA 401 device. You plugged a device with profile number "<<profile);
+		ERROR("This example is intended for use with a CiA 401 device. You plugged a device with profile number "<<std::dec<<profile);
 		return EXIT_FAILURE;
 	}
 

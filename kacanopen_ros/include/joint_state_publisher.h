@@ -36,23 +36,32 @@
 #include "ros/ros.h"
  
 #include <string>
+#include <cmath>
 
 namespace kaco {
 
 	/// This class provides a Publisher implementation for
-	/// use with kaco::Bridge. It publishes a value from
-	/// a device's dictionary.
-	class EntryPublisher : public Publisher {
+	/// use with kaco::Bridge and a CiA 402 motor device.
+	/// It publishes the motor state as JointState messages
+	/// from the ROS common_messages package.
+	///
+	/// Currenty, only the motor angle is published.
+	/// You have to initialize the motor on your own.
+	/// The motor is expected to be in position mode.
+	class JointStatePublisher : public Publisher {
 
 	public:
 
 		/// Constructor
-		/// \param device The CanOpen device
-		/// \param entry_name The name of the entry. See device profile.
-		/// \param array_index If the entry is not an array, this should be zero, otherwise it's the array index
-		/// \param access_method You can choose default/sdo/pdo method. See kaco::Device docs.
-		EntryPublisher(Device& device, std::string entry_name,
-			uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
+		/// \param Device a CiA 402 compliant motor device object
+		/// \param position_0_degree The motor position (dictionary
+		/// entry "Position actual value") which represents a
+		/// 0 degree angle.
+		/// \param position_360_degree Like position_0_degree for
+		/// 360 degree state.
+		/// \param topic_name Custom topic name. Leave out for default.
+		JointStatePublisher(Device& device, int32_t position_0_degree,
+			int32_t position_360_degree, std::string topic_name = "");
 
 		/// \see interface Publisher
 		void advertise() override;
@@ -67,15 +76,17 @@ namespace kaco {
 		// TODO: let the user change this?
 		static const unsigned queue_size = 100;
 
-		ros::Publisher m_publisher;
-		std::string m_device_prefix;
-		std::string m_name;
+		/// converts "position actiual value" from CanOpen to radiant using m_position_0_degree and m_position_360_degree
+		double pos_to_rad(int32_t pos) const;
+
+		static constexpr double pi() { return std::acos(-1); }
 
 		Device& m_device;
-		std::string m_entry_name;
-		uint8_t m_array_index;
-		ReadAccessMethod m_access_method;
-		Type m_type;
+		int32_t m_position_0_degree;
+		int32_t m_position_360_degree;
+		std::string m_topic_name;
+
+		ros::Publisher m_publisher;
 
 	};
 

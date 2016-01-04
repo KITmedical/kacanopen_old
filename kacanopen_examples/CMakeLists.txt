@@ -9,6 +9,7 @@ file(GLOB TARGETS_SRC
 
 if (${NO_ROS})
 	list(REMOVE_ITEM TARGETS_SRC "${CMAKE_CURRENT_LIST_DIR}/ros_example.cpp")
+    list(REMOVE_ITEM TARGETS_SRC "${CMAKE_CURRENT_LIST_DIR}/ros_joint_state_example.cpp")
 endif()
 
 foreach(TARGET_SRC ${TARGETS_SRC})

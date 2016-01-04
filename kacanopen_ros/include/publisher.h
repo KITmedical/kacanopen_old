@@ -31,16 +31,19 @@
  
 #pragma once
 
-#include "master.h"
-#include <string>
-
 namespace kaco {
 
+	/// Interface, which provides methods for publishing topics.
 	class Publisher {
 
 	public:
 		
-		/// This will be called by kaco::Bridge::run()
+		/// Advertise the publisher to the network. This is called by
+		/// Bridge _after_ ros::init(). You should not call this
+		/// method by yourself.
+		virtual void advertise() = 0;
+		
+		/// This will be called repeatedly by kaco::Bridge::run()
 		virtual void publish() = 0;
 
 		// Virtual destructor must be defined!

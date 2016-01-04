@@ -31,10 +31,8 @@
  
 #pragma once
 
-#include "master.h"
 #include "device.h"
 #include "publisher.h"
-
 #include "ros/ros.h"
  
 #include <string>
@@ -56,20 +54,28 @@ namespace kaco {
 		EntryPublisher(Device& device, std::string entry_name,
 			uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
 
-		/// This will be called by kaco::Bridge::run()
+		/// \see interface Publisher
+		void advertise() override;
+
+		/// \see interface Publisher
 		void publish() override;
 
 	private:
 
 		static const bool debug = true;
 
-		ros::NodeHandle node;
-		ros::Publisher publisher;
+		// TODO: let the user change this?
+		static const unsigned queue_size = 100;
+
+		ros::Publisher m_publisher;
+		std::string m_device_prefix;
+		std::string m_name;
 
 		Device& m_device;
 		std::string m_entry_name;
 		uint8_t m_array_index;
 		ReadAccessMethod m_access_method;
+		Type m_type;
 
 	};
 

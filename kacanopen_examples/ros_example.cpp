@@ -32,6 +32,7 @@
 #include "bridge.h"
 #include "logger.h"
 #include "entry_publisher.h"
+#include "entry_subscriber.h"
  
 #include <thread>
 #include <chrono>
@@ -48,9 +49,6 @@ int main(int argc, char** argv) {
 	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-
-	// construct this before any publisher constructor is called.
-	kaco::Bridge bridge(master);
 
 	if (master.get_devices().size()<1) {
 		ERROR("No devices found.");
@@ -76,12 +74,21 @@ int main(int argc, char** argv) {
 	
 	// set some output (optional)
 	device.set_entry("Write output 8-bit", (uint8_t) 0xFF, 0);
-	
-	// create a publisher and add it to the bridge
-	auto epub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit", 1);
-	bridge.add_publisher(epub);
 
-	// run and publish everything reeatedly with 1 Hz
+	// Create bridge / init a ROS node
+	kaco::Bridge bridge;
+	
+	// create a publisher for reading second 8-bit input and add it to the bridge
+	// communication via POD
+	auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit", 1);
+	bridge.add_publisher(iopub);
+	
+	// create a subscriber for editing IO output and add it to the bridge
+	// communication via SOD
+	auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit", 0);
+	bridge.add_subscriber(iosub);
+
+	// run ROS loop and publish everything repeatedly with 1 Hz
 	bridge.run(1);
 
 	master.stop();

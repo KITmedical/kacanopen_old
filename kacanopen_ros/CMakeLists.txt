@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
     FILES
-    entry_data.msg
+#    entry_data.msg
 # Message1.msg
 # Message2.msg
 )

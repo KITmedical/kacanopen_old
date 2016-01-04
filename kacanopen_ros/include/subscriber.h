@@ -29,48 +29,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "bridge.h"
-#include "logger.h"
-#include "ros/ros.h"
+#pragma once
 
 namespace kaco {
 
-Bridge::Bridge() {
+	/// Interface, which provides methods for subscribing topics.
+	class Subscriber {
 
-    int argc = 0;
-    char *argv[] {};
-    ros::init(argc, argv, "canopen_bridge");
+	public:
+		
+		/// Advertise the subscriber to the network. This is called by
+		/// Bridge _after_ ros::init(). You should not call this
+		/// method by yourself.
+		virtual void advertise() = 0;
 
-}
+		// Virtual destructor must be defined!
+    	virtual ~Subscriber() { }
 
-Bridge::~Bridge() 
-	{ }
-
-void Bridge::add_publisher(std::shared_ptr<Publisher> publisher) {
-    m_publishers.push_back(publisher);
-    publisher->advertise();
-}
-
-void Bridge::add_subscriber(std::shared_ptr<Subscriber> subscriber) {
-    m_subscribers.push_back(subscriber);
-    subscriber->advertise();
-}
-
-void Bridge::run(double loop_rate) {
-
-    ros::Rate rate(loop_rate);
-    
-    while(ros::ok()) {
-
-        for (std::shared_ptr<Publisher> publisher : m_publishers) {
-            publisher->publish();
-        }
-
-        ros::spinOnce();
-        rate.sleep();
-
-    }
-
-}
+	};
 
 } // end namespace kaco

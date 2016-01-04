@@ -31,46 +31,67 @@
  
 #pragma once
 
-#include "master.h"
-#include "publisher.h"
+#include "device.h"
 #include "subscriber.h"
+#include "ros/ros.h"
 
+#include "std_msgs/UInt8.h"
+#include "std_msgs/UInt16.h"
+#include "std_msgs/UInt32.h"
+#include "std_msgs/Int8.h"
+#include "std_msgs/Int16.h"
+#include "std_msgs/Int32.h"
+#include "std_msgs/Bool.h"
+#include "std_msgs/String.h"
+ 
 #include <string>
-#include <vector>
-#include <memory>
-
+#include <thread>
 
 namespace kaco {
 
-	/// This class is a bridge between a ROS network and a CanOpen network.
-	class Bridge {
+	class EntrySubscriber : public Subscriber {
 
 	public:
 
-		/// Constructor. Initializes a ROS node.
-		Bridge();
+		/// This class provides a Publisher implementation for
+		/// use with kaco::Bridge. It publishes a value from
+		/// a device's dictionary.
+		///
+		/// \param device The CanOpen device
+		/// \param entry_name The name of the entry. See device profile.
+		/// \param array_index If the entry is not an array, this should be zero, otherwise it's the array index
+		/// \param access_method You can choose default/sdo/pdo method. See kaco::Device docs.
+		EntrySubscriber(Device& device, std::string entry_name,
+			uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
 
-		~Bridge();
-
-		/// Run the ROS loop, which publishes messages of all registered Publishers,
-		/// and allows ROS to call subscribed callbacks.
-		/// \param loop_rate Loop rate in hertz. Default is 10 Hz.
-		void run(double loop_rate = 10);
-
-		/// Adds a Publisher, which can advertise itself and publish messages
-		/// inside Bridge::run().
-		void add_publisher(std::shared_ptr<Publisher> publisher);
-
-		/// Adds a Subscriber, which can advertise itself and receive
-		/// messages on its own.
-		void add_subscriber(std::shared_ptr<Subscriber> subscriber);
+		/// \see interface Subscriber
+		void advertise() override;
 
 	private:
 
+		void receive_uint8(const std_msgs::UInt8& msg);
+		void receive_uint16(const std_msgs::UInt16& msg);
+		void receive_uint32(const std_msgs::UInt32& msg);
+		void receive_int8(const std_msgs::Int8& msg);
+		void receive_int16(const std_msgs::Int16& msg);
+		void receive_int32(const std_msgs::Int32& msg);
+		void receive_boolean(const std_msgs::Bool& msg);
+		void receive_string(const std_msgs::String& msg);
+
 		static const bool debug = true;
 
-		std::vector<std::shared_ptr<Publisher>> m_publishers;
-		std::vector<std::shared_ptr<Subscriber>> m_subscribers;
+		// TODO: let the user change this?
+		static const unsigned queue_size = 10000;
+
+		ros::Subscriber m_subscriber;
+		std::string m_device_prefix;
+		std::string m_name;
+
+		Device& m_device;
+		std::string m_entry_name;
+		uint8_t m_array_index;
+		WriteAccessMethod m_access_method;
+		Type m_type;
 
 	};
 

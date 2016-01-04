@@ -32,17 +32,23 @@ The `examples` directory lists some examples on how to use KaCanOpen libraries. 
 KaCanOpen including the ROS part must be built using [Catkin](http://wiki.ros.org/catkin/Tutorials):
 
 ```bash
+# init workspace if you don't have one yet
 mkdir ~/arbitrary_path/catkin_ws
 cd ~/arbitrary_path/catkin_ws
 mkdir src
 cd src
 catkin_init_workspace
+
+# link the KaCanOpen code or clone the repository directly into ~/arbitrary_path/catkin_ws/src
 ln -s /path_to_your_KaCanOpen_repository/ ./kacanopen
 cd ..
-catkin_make
+
+# build the project using catkin
+# catkin_make will forward arguments to CMake
+catkin_make -DCAN_DRIVER_NAME=<driver>
 ```
 
-You can run the example programs like that:
+You can run the given example programs like that:
 
 ```bash
 cd ~/arbitrary_path/catkin_ws

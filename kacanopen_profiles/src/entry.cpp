@@ -125,6 +125,10 @@ const Value& Entry::get_value(uint8_t array_index) const {
 
 }
 
+Type Entry::get_type() const {
+	return type;
+}
+
 
 void Entry::add_value_changed_callback(ValueChangedCallback callback) {
 	// TODO std::move or reference?

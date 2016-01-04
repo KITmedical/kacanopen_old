@@ -87,6 +87,17 @@ const Value& Device::get_entry(std::string name, uint8_t array_index, ReadAccess
 
 }
 
+Type Device::get_entry_type(std::string name) {
+
+	if (m_dictionary.find(name) == m_dictionary.end()) {
+		ERROR("[Device::get_entry_type] Dictionary entry \""<<name<<"\" not available.");
+		return Type::invalid;
+	}
+
+	return m_dictionary[name].get_type();
+
+}
+
 void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& value) {
 
 	const auto& bytes = value.get_bytes();

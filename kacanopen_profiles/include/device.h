@@ -65,6 +65,9 @@ namespace kaco {
 		/// Otherwise it returns the cached value. This makes sense, if a Reveive PDO is configured on the corresponding entry.
 		const Value& get_entry(std::string name, uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
 
+		/// Returns the type of a dictionary entry identified by name as it is defined in the local dictionary.
+		Type get_entry_type(std::string name);
+
 		/// Sets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value
 		/// cannot be used by Transmit PDOs.

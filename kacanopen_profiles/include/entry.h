@@ -79,6 +79,9 @@ namespace kaco {
 		/// Returns the value. If the entry is an array, array_index can be specified
 		const Value& get_value(uint8_t array_index=0) const;
 
+		/// Returns the data type.
+		Type get_type() const;
+
 		/// Registers a given function to be called when the value is changed.
 		void add_value_changed_callback(ValueChangedCallback callback);
 

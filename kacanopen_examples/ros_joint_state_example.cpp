@@ -32,6 +32,8 @@
 #include "bridge.h"
 #include "logger.h"
 #include "joint_state_publisher.h"
+#include "joint_state_subscriber.h"
+#include "cia_402.h"
  
 #include <thread>
 #include <chrono>
@@ -66,12 +68,23 @@ int main(int argc, char** argv) {
 	}
 
 	DUMP(device.get_entry("Manufacturer device name"));
+	
+	PRINT("Enable operation");
+	device.set_entry("Controlword", (uint16_t) 0x0006); // shutdown
+	device.set_entry("Controlword", (uint16_t) 0x0007); // switch on
+	device.set_entry("Controlword", (uint16_t) 0x000F); // enable operation
+
+	PRINT("Set position mode");
+	device.set_entry("Modes of operation", (int8_t) kaco::cia_402::ModeOfOperation::PROFILE_POSITION_MODE);
 
 	// Create bridge / init a ROS node
 	kaco::Bridge bridge;
 	
-	auto jspub = std::make_shared<kaco::JointStatePublisher>(device, -10, -2);
+	auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
 	bridge.add_publisher(jspub);
+	
+	auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
+	bridge.add_subscriber(jssub);
 
 	// run ROS loop and publish everything repeatedly with 1 Hz
 	bridge.run(1);

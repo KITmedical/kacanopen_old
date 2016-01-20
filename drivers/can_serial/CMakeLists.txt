@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
-project(CanFestival_driver_serial C)
+
+message(STATUS "Configuring serial driver")
+
 
 set(LIB_NAME can_serial)
 set(HUB_NAME can_serial_hub)
@@ -14,3 +16,6 @@ install(TARGETS ${LIB_NAME} ${HUB_NAME}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
 )
+
+# Install
+kacanopen_install("${LIB_NAME};${HUB_NAME}" FALSE)

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(KaCanOpen C CXX)
+project(kacanopen C CXX)
 
 
 ### settings ###
@@ -26,26 +26,61 @@ endif()
 
 ### includes ###
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_core/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_profiles/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/kacanopen_ros/include)
-
-
-### source ###
-
-add_subdirectory(canfestival_drivers)
-add_subdirectory(kacanopen_core)
-add_subdirectory(kacanopen_profiles)
-add_subdirectory(kacanopen_examples)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/core/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/master/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/ros_bridge/include)
 
 if (NOT(${NO_ROS}))
-	
-	add_subdirectory(kacanopen_ros)
 
-	### catkin ###
-
-	catkin_package(
-	    CATKIN_DEPENDS message_runtime
-	)
+    catkin_package(
+       INCLUDE_DIRS core/include master/include ros_bridge/include
+       LIBRARIES ${CAN_DRIVER} kacanopen_core kacanopen_profiles kacanopen_ros
+       CATKIN_DEPENDS message_runtime
+    )
 
 endif()
+
+
+### Installation ###
+
+# argument 1: targets
+# argument 2: if true, install ${CMAKE_CURRENT_LIST_DIR}/include/
+# call this from subproject's CMake files
+macro(kacanopen_install)
+    message(STATUS "Configuring installation for target(s) ${ARGV0}")
+    if (${NO_ROS})
+        install(TARGETS ${ARGV0}
+            LIBRARY DESTINATION lib
+            RUNTIME DESTINATION bin
+        )
+        if (${ARGV1})
+            install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+                DESTINATION include/kacanopen
+            )
+        endif()
+    else()
+        install(TARGETS ${ARGV0}
+            LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+            RUNTIME DESTINATION bin
+        )
+        if (${ARGV1})
+            install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include
+                DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+            )
+        endif()
+    endif()
+endmacro()
+
+
+### Source code ###
+
+if (NOT(${NO_ROS}))
+    add_subdirectory(ros_bridge)
+endif()
+
+add_subdirectory(drivers)
+add_subdirectory(core)
+add_subdirectory(master)
+add_subdirectory(examples)
+
+

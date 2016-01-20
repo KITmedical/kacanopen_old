@@ -32,23 +32,26 @@
 #pragma once
 
 #include "device.h"
-#include "publisher.h"
+#include "subscriber.h"
 #include "ros/ros.h"
+#include "sensor_msgs/JointState.h"
  
 #include <string>
 #include <cmath>
 
 namespace kaco {
 
-	/// This class provides a Publisher implementation for
+	/// This class provides a Subscriber implementation for
 	/// use with kaco::Bridge and a CiA 402 motor device.
-	/// It publishes the motor state as JointState messages
-	/// from the ROS common_messages package.
+	/// It listens for JointState messages from ROS
+	/// common_messages package and updates the motor device
+	/// accordingly.
 	///
-	/// Currenty, only the motor angle is published.
+	/// Currenty, only the motor angle is regarded.
 	/// You have to initialize the motor on your own.
-	/// The motor is expected to be in position mode.
-	class JointStatePublisher : public Publisher {
+	/// The motor is expected to be in position mode and
+	/// operational state.
+	class JointStateSubscriber : public Subscriber {
 
 	public:
 
@@ -60,14 +63,11 @@ namespace kaco {
 		/// \param position_360_degree Like position_0_degree for
 		/// 360 degree state.
 		/// \param topic_name Custom topic name. Leave out for default.
-		JointStatePublisher(Device& device, int32_t position_0_degree,
+		JointStateSubscriber(Device& device, int32_t position_0_degree,
 			int32_t position_360_degree, std::string topic_name = "");
 
-		/// \see interface Publisher
+		/// \see interface Subscriber
 		void advertise() override;
-
-		/// \see interface Publisher
-		void publish() override;
 
 	private:
 
@@ -76,8 +76,11 @@ namespace kaco {
 		// TODO: let the user change this?
 		static const unsigned queue_size = 100;
 
-		/// converts "position actiual value" from CanOpen to radiant using m_position_0_degree and m_position_360_degree
-		double pos_to_rad(int32_t pos) const;
+		/// Callback "received ROS JointState message"
+		void receive(const sensor_msgs::JointState& msg);
+
+		/// converts radiant to "Target position" value from CanOpen using m_position_0_degree and m_position_360_degree
+		int32_t rad_to_pos(double pos) const;
 
 		/// constant PI
 		static constexpr double pi() { return std::acos(-1); }
@@ -87,7 +90,7 @@ namespace kaco {
 		int32_t m_position_360_degree;
 		std::string m_topic_name;
 
-		ros::Publisher m_publisher;
+		ros::Subscriber m_subscriber;
 
 	};
 

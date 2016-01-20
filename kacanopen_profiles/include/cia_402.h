@@ -39,6 +39,9 @@ namespace kaco {
 
 			// DEVICE CONTROL
 
+
+			Entry(Entry::variable_tag, 0x6040, 0, "Controlword", Type::uint16, AccessType::read_write),
+
 			Entry(Entry::variable_tag, 0x6060, 0, "Modes of operation", Type::int8, AccessType::read_write),
 			Entry(Entry::variable_tag, 0x6061, 0, "Modes of operation display", Type::int8, AccessType::read_only),
 

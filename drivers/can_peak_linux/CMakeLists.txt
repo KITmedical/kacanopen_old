@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
-project(CanFestival_driver_peak_linux C)
+
+message(STATUS "Configuring peak_linux driver")
+
 set(TARGET_NAME can_peak_linux)
 
 # PCAN_PREFIX is an optional search path which can be defined by the user
@@ -33,6 +35,5 @@ include_directories(${PCAN_INCLUDE_DIR})
 add_library(${TARGET_NAME} SHARED ${TARGET_SRC})
 target_link_libraries(${TARGET_NAME} ${PCAN_LIBRARY})
 
-install(TARGETS ${TARGET_NAME}
-    LIBRARY DESTINATION lib
-)
+# Install
+kacanopen_install(${LIB_NAME} FALSE)

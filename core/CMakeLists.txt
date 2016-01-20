@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
-project(KaCanOpen_core CXX)
+
+message(STATUS "Configuring core")
 
 find_package(Threads)
 
@@ -16,6 +17,5 @@ target_link_libraries(${TARGET_NAME} ${CAN_DRIVER})
 target_link_libraries(${TARGET_NAME} ${CMAKE_DL_LIBS})
 target_link_libraries(${TARGET_NAME} ${CMAKE_THREAD_LIBS_INIT})
 
-install(TARGETS ${TARGET_NAME}
-  LIBRARY DESTINATION lib
-)
+# Install
+kacanopen_install(${TARGET_NAME} TRUE)

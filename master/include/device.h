@@ -104,6 +104,8 @@ namespace kaco {
 		/// Adds entries to the dictionary according to the CiA profile number. Returns true if successful.
 		bool specialize();
 
+		void print_dictionary() const;
+
 	private:
 
 		void pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data);

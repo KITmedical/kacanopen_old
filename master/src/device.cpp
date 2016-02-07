@@ -39,6 +39,7 @@
 #include "cia_402.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace kaco {
 
@@ -252,6 +253,23 @@ bool Device::specialize() {
 			return false;
 		}
 	}
+}
+
+void Device::print_dictionary() const {
+
+	std::vector< kaco::Entry > entries;
+
+	for (const auto& pair : m_dictionary) {
+		entries.push_back(pair.second);
+	}
+
+	// sort by index and subindex
+	std::sort(entries.begin(), entries.end());
+
+	for (const auto& entry : entries) {
+		entry.print();
+	}
+
 }
 
 

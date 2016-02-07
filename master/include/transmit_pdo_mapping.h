@@ -39,7 +39,7 @@
 #include <memory>
 
 #include "mapping.h"
-#include "transmission_type.h"
+#include "types.h"
 
 namespace kaco {
 

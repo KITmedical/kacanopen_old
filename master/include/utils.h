@@ -40,14 +40,34 @@ namespace kaco {
 
 struct Utils {
 
-	static const bool debug = true;
-
+	/// Converts data types to a string.
 	static std::string type_to_string(Type type);
+
+	/// Returns the size of a data type in bytes.
 	static uint8_t get_type_size(Type type);
 
-	/// Convert to lower case and replace all spaces
-	/// and '-' to underscores.
+	/// Maps type codes from an EDS file to a data type
+	/// \see enum DataType in types.h
+	static Type type_code_to_type(uint16_t code);
+
+	/// Converts entry names to lower case and replaces all spaces and '-' by underscores.
 	static std::string escape(std::string str);
+
+	/// Converts a string containing a hexadecimal numer to unsigned.
+	static unsigned long long  hexstr_to_uint(std::string str);
+
+	/// Converts a string containing a decimal numer to unsigned.
+	static unsigned long long  decstr_to_uint(std::string str);
+
+	/// Converts a string representation of AccessType from an EDS file to AccessType.
+	static AccessType string_to_access_type(std::string str);
+
+	/// Converts access types to a string.
+	static std::string access_type_to_string(AccessType type);
+
+private:
+
+	static const bool debug = true;
 
 };
 

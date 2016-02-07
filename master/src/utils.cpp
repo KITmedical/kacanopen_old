@@ -80,12 +80,80 @@ uint8_t Utils::get_type_size(Type type) {
 	}
 }
 
+Type Utils::type_code_to_type(uint16_t code) {
+	switch (code) {
+		case (uint16_t) DataType::BOOLEAN: return Type::boolean;
+		case (uint16_t) DataType::INTEGER8: return Type::int8;
+		case (uint16_t) DataType::INTEGER16: return Type::int16;
+		case (uint16_t) DataType::INTEGER32: return Type::int32;
+		case (uint16_t) DataType::UNSIGNED8: return Type::uint8;
+		case (uint16_t) DataType::UNSIGNED16: return Type::uint16;
+		case (uint16_t) DataType::UNSIGNED32: return Type::uint32;
+		//case REAL32: return Type::;
+		case (uint16_t) DataType::VISIBLE_STRING: return Type::string;
+		//case OCTET_STRING: return Type::;
+		//case UNICODE_STRING: return Type::;
+		//case TIME_OF_DAY: return Type::;
+		//case TIME_DIFFERENCE: return Type::;
+		//case LARGEDATA: return Type::;
+		//case INTEGER24: return Type::;
+		//case REAL64: return Type::;
+		//case INTEGER40: return Type::;
+		default: return Type::invalid;
+	}
+}
+
 std::string Utils::escape(std::string str) {
 	std::string out = str;
 	std::transform(out.begin(), out.end(), out.begin(), ::tolower);
 	std::replace(out.begin(), out.end(), ' ', '_');
 	std::replace(out.begin(), out.end(), '-', '_');
 	return std::move(out);
+}
+
+unsigned long long Utils::hexstr_to_uint(std::string str) {
+	try {
+		return std::stoull(str, nullptr, 16);
+	} catch ( const std::exception& e ) {
+		ERROR(e.what());
+		return 0;
+	}
+}
+
+unsigned long long Utils::decstr_to_uint(std::string str) {
+	try {
+		return std::stoull(str, nullptr, 10);
+	} catch ( const std::exception& e ) {
+		ERROR(e.what());
+		return 0;
+	}
+}
+
+AccessType Utils::string_to_access_type(std::string str) {
+	if (str == "ro") {
+		return AccessType::read_only;
+	} else if (str == "wo") {
+		return AccessType::write_only;
+	} else if (str == "const") {
+		return AccessType::constant;
+	} else if (str == "rw" || str == "rwr" || str == "rww") {
+		return AccessType::read_write;
+	} else {
+		ERROR("[Utils::str_to_access_type] Invalid access type string. Returning AccessType::read_write.")
+		return AccessType::read_write;
+	}
+}
+
+std::string Utils::access_type_to_string(AccessType type) {
+	switch(type) {
+		case AccessType::read_only: return "ro";
+		case AccessType::write_only: return "wo";
+		case AccessType::constant: return "const";
+		case AccessType::read_write: return "rw";
+		default:
+			ERROR("[Utils::access_type_to_string] Unknown access type!");
+			return "unknown access type";
+	}
 }
 
 } // end namespace kaco

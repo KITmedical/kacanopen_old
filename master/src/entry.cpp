@@ -34,6 +34,7 @@
 
 #include <cassert>
 #include <future>
+#include <iomanip>
 
 namespace kaco {
 
@@ -109,19 +110,29 @@ const Value& Entry::get_value(uint8_t array_index) const {
 
 	std::lock_guard<std::mutex> lock(*read_write_mutex);
 
-	if (array_index>0 && !is_array) {
-		ERROR("[Entry::set_value] This is no array but you specified an array_index.");
-		return m_dummy_value;
-	}
-		
-	if ( array_index>=m_value.size()
-		|| array_index>=m_valid.size()
-		|| !m_valid[array_index] ) {
+	if (valid(array_index)) {
+		return m_value[array_index];
+	} else {
 		ERROR("[Entry::get_value] Value not valid.");
 		return m_dummy_value;
 	}
 
-	return m_value[array_index];
+}
+
+bool Entry::valid(uint8_t array_index) const {
+
+	if (array_index>0 && !is_array) {
+		ERROR("[Entry::valid] This is no array but you specified an array_index.");
+		return false;
+	}
+
+	if ( array_index>=m_value.size()
+		|| array_index>=m_valid.size()
+		|| !m_valid[array_index] ) {
+		return false;
+	}
+
+	return true;
 
 }
 
@@ -129,10 +140,34 @@ Type Entry::get_type() const {
 	return type;
 }
 
-
 void Entry::add_value_changed_callback(ValueChangedCallback callback) {
 	// TODO std::move or reference?
 	m_value_changed_callbacks.push_back(callback);
+}
+
+void Entry::print() const {
+
+	std::cout << "0x"<<std::hex<<index;
+	std::cout << "/";
+	std::cout << std::dec<<(unsigned)subindex;
+	std::cout << "\t";
+	std::cout << Utils::access_type_to_string(access_type);
+	std::cout << "\t";
+	std::cout << std::setw(75) << std::left << name;
+	std::cout << " ";
+
+	if (valid()) {
+		std::cout << std::setw(10) << get_value();
+	} else {
+		std::cout << std::setw(10) << "empty";
+	}
+
+	std::cout << std::endl;
+
+}
+
+bool Entry::operator<(const Entry& other) const {
+	return (index<other.index) || (index==other.index && subindex<other.subindex);
 }
 
 } // end namespace kaco

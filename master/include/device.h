@@ -33,7 +33,7 @@
 
 #include "core.h"
 #include "entry.h"
-#include "type.h"
+#include "types.h"
 #include "receive_pdo_mapping.h"
 #include "transmit_pdo_mapping.h"
 #include "access_method.h"

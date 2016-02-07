@@ -30,7 +30,6 @@
  */
 
 #include "utils.h"
-#include "type.h"
 #include "logger.h"
 
 #include <string>

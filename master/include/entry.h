@@ -38,7 +38,7 @@
 #include <mutex>
 #include <memory>
 
-#include "type.h"
+#include "types.h"
 #include "value.h"
 #include "access_method.h"
 

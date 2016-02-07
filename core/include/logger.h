@@ -40,7 +40,7 @@
 
 #define PRINT(x) std::cout << x << std::endl;
 #define WARN(x) PRINT("WARNING: " << x);
-#define ERROR(x) PRINT("ERROR: " << x);
+#define ERROR(x) std::cerr << "ERROR: " << x << std::endl;
 #define DUMP(x) PRINT(#x << " = " << std::dec << x);
 #define DUMP_HEX(x) PRINT(#x << " = 0x" << std::hex << x);
 
@@ -53,14 +53,14 @@
  	#define DEBUG_EXHAUSTIVE(x)
 	#define DEBUG_LOG_EXHAUSTIVE(x)
 #else
- 	#define DEBUG(x) x
-	#define DEBUG_LOG(x) PRINT("DEBUG: " << x);
-	#define DEBUG_DUMP(x) PRINT("DEBUG: " << #x << " = " << std::dec << x);
-	#define DEBUG_DUMP_HEX(x) PRINT("DEBUG: " << #x << " = 0x" << std::hex << x);
+ 	#define DEBUG(x) if (debug) { x }
+	#define DEBUG_LOG(x) if (debug) { PRINT("DEBUG: " << x); }
+	#define DEBUG_DUMP(x) if (debug) { PRINT("DEBUG: " << #x << " = " << std::dec << x); }
+	#define DEBUG_DUMP_HEX(x) if (debug) { PRINT("DEBUG: " << #x << " = 0x" << std::hex << x); }
 
 	#ifdef EXHAUSTIVE_DEBUGGING
- 		#define DEBUG_EXHAUSTIVE(x) x
-		#define DEBUG_LOG_EXHAUSTIVE(x) PRINT("DEBUG_EXHAUSTIVE: " << x);
+ 		#define DEBUG_EXHAUSTIVE(x) if (debug) { x }
+		#define DEBUG_LOG_EXHAUSTIVE(x) if (debug) { PRINT("DEBUG_EXHAUSTIVE: " << x); }
 	#else
  		#define DEBUG_EXHAUSTIVE(x)
 		#define DEBUG_LOG_EXHAUSTIVE(x)

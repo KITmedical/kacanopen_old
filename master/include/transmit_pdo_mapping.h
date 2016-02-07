@@ -70,6 +70,8 @@ namespace kaco {
 		void send() const;
 		bool check_correctness() const;
 
+		static const bool debug = false;
+
 	};
 
 } // end namespace kaco

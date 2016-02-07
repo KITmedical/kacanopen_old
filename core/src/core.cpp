@@ -53,8 +53,11 @@ Core::Core()
 		pdo(*this)
 	{ }
 	
-Core::~Core()
-	{ }
+Core::~Core() {
+	if (m_running) {
+		stop();
+	}
+}
 
 bool Core::start() {
 

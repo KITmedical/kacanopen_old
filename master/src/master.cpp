@@ -42,18 +42,23 @@ Master::Master() {
 
 }
 
-Master::~Master() 
-	{ }
+Master::~Master() {
+	if (m_running) {
+		stop();
+	}
+}
 
 bool Master::start() {
 	bool success = core.start();
 	if (!success)
 		return false;
+	m_running = true;
     core.nmt.reset_all_nodes();
     return true;
 }
 
 void Master::stop() {
+	m_running = false;
 	core.stop();
 }
 

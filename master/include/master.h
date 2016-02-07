@@ -59,6 +59,7 @@ namespace kaco {
 
 		std::vector<Device> m_devices;
 		NMT::NewDeviceCallback m_new_device_callback_functional;
+		bool m_running{false};
 
 		void new_device_callback(uint8_t node_id);
 

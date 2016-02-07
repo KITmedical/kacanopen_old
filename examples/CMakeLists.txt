@@ -8,6 +8,8 @@ file(GLOB TARGETS_SRC
     "*.cpp"
 )
 
+add_definitions("-DEXAMPLES_PATH=\"${CMAKE_CURRENT_LIST_DIR}\"")
+
 if (NOT(${NO_ROS}))
 	#list(REMOVE_ITEM TARGETS_SRC "${CMAKE_CURRENT_LIST_DIR}/ros_*")
     file(GLOB TARGETS_SRC_ROS

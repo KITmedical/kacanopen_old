@@ -25,7 +25,7 @@ cmake -DCAN_DRIVER_NAME=<driver> -DNO_ROS=On ..
 make
 ```
 
-where `<driver>` can be one of the following: _lincan, peak\_linux, serial, socket, virtual_. The requirements are a C++ compiler with C++14 support (tested with GCC 4.9 and Clang 3.5) and CMake >= 3.2. The _peak\_linux_ driver also needs installed [PCAN drivers](http://www.peak-system.com/fileadmin/media/linux/index.htm).
+where `<driver>` can be one of the following: _lincan, peak\_linux, serial, socket, virtual_. The requirements are a C++ compiler with C++14 support (tested with [GCC](https://gcc.gnu.org/) >= 4.9, [Clang](http://clang.llvm.org/) >= 3.5), [CMake](https://cmake.org/) >= 3.2 and [Boost](http://www.boost.org/) >= 1.46.1. The _peak\_linux_ driver also needs installed [PCAN drivers](http://www.peak-system.com/fileadmin/media/linux/index.htm).
 
 The `examples` directory lists some examples on how to use KaCanOpen libraries. You can run them from the `build/examples` directory.
 
@@ -46,16 +46,14 @@ cd ..
 # build the project using catkin
 # catkin_make will forward arguments to CMake
 catkin_make -DCAN_DRIVER_NAME=<driver>
-```
 
-You can run the given example programs like that:
-
-```bash
+# run example programs
 cd ~/arbitrary_path/catkin_ws
-source install/setup.bash
-./install/bin/kacanopen_example_ros
+source devel/setup.bash
+./devel/lib/kacanopen/kacanopen_example_ros
 ```
 
+If your system is missing a suitable boost installation, you can download and extract the latest Boost release from [here](http://www.boost.org/) and specify its path using the following catkin/CMake argument: _-DBOOST_ROOT=/path/to/boost_
 
 ## License
 

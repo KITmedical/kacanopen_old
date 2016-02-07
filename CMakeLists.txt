@@ -24,6 +24,32 @@ else()
 endif()
 
 
+### GCC ist not supported until 4.9 ###
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+        message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
+    endif()
+endif()
+
+
+
+### dependencies ###
+
+find_package(Threads)
+
+find_package(Boost 1.46.1 REQUIRED)     
+
+# Boost required for property_tree / ini_parser
+if(NOT(Boost_FOUND))
+    message(FATAL_ERROR "Boost > 1.46.1 not found. Boost is required for ini_parser class. This is a header-only library. You can simply download the latest boost package from http://www.boost.org/, extract it into any directory and include it using the following catkin/CMake argument: -DBOOST_ROOT=\"/path/to/boost/\"")
+endif()
+
+message(STATUS "Found Boost headers in ${Boost_INCLUDE_DIRS}")
+include_directories(${Boost_INCLUDE_DIRS})
+
+
+
 ### includes ###
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/core/include)

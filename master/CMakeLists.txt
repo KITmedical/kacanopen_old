@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 message(STATUS "Configuring master")
 
-find_package(Threads)
-
 file(GLOB TARGET_SRC
     "src/*.cpp"
 )

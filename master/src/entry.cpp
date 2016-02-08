@@ -38,7 +38,9 @@
 
 namespace kaco {
 
-Entry::Entry() {}
+Entry::Entry()
+	: read_write_mutex(new std::mutex)
+	{ }
 
 // standard constructor
 Entry::Entry(Entry::VariableTag tag, uint16_t _index, uint8_t _subindex, std::string _name, Type _type, AccessType _access_type)

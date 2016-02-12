@@ -1,0 +1,1786 @@
+[FileInfo]
+CreatedBy=Dr. Fritz Faulhaber GmbH & Co KG
+ModifiedBy=Dr. Fritz Faulhaber GmbH & Co KG
+Description=Series MCLM-CF
+CreationTime=04:01PM
+CreationDate=02-13-2012
+ModificationTime=04:01PM
+ModificationDate=02-13-2012
+FileName=605.3150.66-B-EK-2.eds
+FileVersion=1
+FileRevision=1
+EDSVersion=4.0
+
+[DeviceInfo]
+VendorName=Faulhaber
+VendorNumber=327
+ProductName=MCLM-CF
+ProductNumber=3150
+RevisionNumber=1
+OrderCode=0
+BaudRate_10=1
+BaudRate_20=1
+BaudRate_50=1
+BaudRate_125=1
+BaudRate_250=1
+BaudRate_500=1
+BaudRate_800=1
+BaudRate_1000=1
+SimpleBootUpMaster=0
+SimpleBootUpSlave=1
+Granularity=0
+DynamicChannelsSupported=0
+CompactPDO=0
+GroupMessaging=0
+NrOfRXPDO=3
+NrOfTXPDO=3
+LSS_Supported=1
+
+[DummyUsage]
+Dummy0001=0
+Dummy0002=0
+Dummy0003=0
+Dummy0004=0
+Dummy0005=0
+Dummy0006=0
+Dummy0007=0
+
+[Comments]
+Lines=7
+Line1=Dr. Fritz Faulhaber GmbH & Co KG
+Line2=Daimlerstr. 23
+Line3=71101 Schoenaich
+Line4=http://www.faulhaber-group.com
+Line5=
+Line6=EDS for Series MCLM-CF
+Line7=with Firmware 605.3150.66-B
+
+[MandatoryObjects]
+SupportedObjects=3
+1=0x1000
+2=0x1001
+3=0x1018
+
+[1000]
+ParameterName=Device Type
+ObjectType=0x7
+DataType=0x0007
+AccessType=const
+DefaultValue=0x00020192
+PDOMapping=0
+
+[1001]
+ParameterName=Error Register
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[1018]
+ParameterName=Identity Object
+ObjectType=0x9
+SubNumber=5
+
+[1018sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=4
+PDOMapping=0
+
+[1018sub1]
+ParameterName=Vendor ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=327
+PDOMapping=0
+
+[1018sub2]
+ParameterName=Product Code
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=3150
+PDOMapping=0
+
+[1018sub3]
+ParameterName=Revision number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+
+[1018sub4]
+ParameterName=Serial number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[OptionalObjects]
+SupportedObjects=62
+1=0x1003
+2=0x1005
+3=0x1008
+4=0x1009
+5=0x100A
+6=0x100C
+7=0x100D
+8=0x1010
+9=0x1011
+10=0x1014
+11=0x1200
+12=0x1400
+13=0x1401
+14=0x1402
+15=0x1600
+16=0x1601
+17=0x1602
+18=0x1800
+19=0x1801
+20=0x1802
+21=0x1A00
+22=0x1A01
+23=0x1A02
+24=0x6040
+25=0x6041
+26=0x6060
+27=0x6061
+28=0x6062
+29=0x6063
+30=0x6064
+31=0x6067
+32=0x6068
+33=0x6069
+34=0x606B
+35=0x606C
+36=0x606D
+37=0x606E
+38=0x606F
+39=0x6070
+40=0x607A
+41=0x607C
+42=0x607D
+43=0x607E
+44=0x607F
+45=0x6081
+46=0x6083
+47=0x6084
+48=0x6085
+49=0x6086
+50=0x608F
+51=0x6093
+52=0x6096
+53=0x6097
+54=0x6098
+55=0x6099
+56=0x609A
+57=0x60F9
+58=0x60FA
+59=0x60FB
+60=0x60FC
+61=0x60FF
+62=0x6510
+
+[1003]
+ParameterName=Pre-defined Error Field
+ObjectType=0x8
+SubNumber=3
+
+[1003sub0]
+ParameterName=Number Of Errors
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=0
+
+[1003sub1]
+ParameterName=Standard Error Field
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=100
+
+[1003sub2]
+ParameterName=Standard Error Field
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=100
+
+[1005]
+ParameterName=COB-ID SYNC
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=0x80
+PDOMapping=0
+
+[1008]
+ParameterName=Manufacturer Device Name
+ObjectType=0x7
+DataType=0x0009
+AccessType=const
+PDOMapping=0
+
+[1009]
+ParameterName=Manufacturer Hardware Version
+ObjectType=0x7
+DataType=0x0009
+AccessType=const
+PDOMapping=0
+
+[100A]
+ParameterName=Manufacturer Software Version
+ObjectType=0x7
+DataType=0x0009
+AccessType=const
+PDOMapping=0
+
+[100C]
+ParameterName=Guard Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[100D]
+ParameterName=Life Time Factor
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFF
+
+[1010]
+ParameterName=Store Parameters
+ObjectType=0x8
+SubNumber=4
+
+[1010sub0]
+ParameterName=Largest Supported Sub-index
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+LowLimit=3
+HighLimit=3
+
+[1010sub1]
+ParameterName=Save All Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1010sub2]
+ParameterName=Save Communication Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1010sub3]
+ParameterName=Save Application Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1011]
+ParameterName=Restore  Parameters
+ObjectType=0x8
+SubNumber=4
+
+[1011sub0]
+ParameterName=Largest Supported Sub-index
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+
+[1011sub1]
+ParameterName=Restore All Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1011sub2]
+ParameterName=Restore Communication Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1011sub3]
+ParameterName=Restore Manufacture Parameters
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+PDOMapping=0
+ObjFlags=1
+
+[1014]
+ParameterName=COB ID EMCY
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x80
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1200]
+ParameterName=1st Server SDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1200sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=2
+HighLimit=2
+
+[1200sub1]
+ParameterName=COB-ID Client->Server (Rx)
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x600
+PDOMapping=0
+
+[1200sub2]
+ParameterName=COB-ID Server->Client (Tx)
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x580
+PDOMapping=0
+
+[1400]
+ParameterName=1st Receive PDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1400sub0]
+ParameterName=Largest Sub-Index Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=2
+HighLimit=2
+
+[1400sub1]
+ParameterName=COB-ID Used by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x200
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1400sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=255
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[1401]
+ParameterName=2nd Receive PDO parameter
+ObjectType=0x9
+SubNumber=3
+
+[1401sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=2
+HighLimit=2
+
+[1401sub1]
+ParameterName=COB-ID used by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x300
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1401sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=255
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[1402]
+ParameterName=3rd Receive PDO Parameters
+ObjectType=0x9
+SubNumber=3
+
+[1402sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=2
+HighLimit=2
+
+[1402sub1]
+ParameterName=COB-ID used by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x400
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1402sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=255
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[1600]
+ParameterName=1st Receive PDO Mapping
+ObjectType=0x9
+SubNumber=2
+
+[1600sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+LowLimit=0
+HighLimit=1
+
+[1600sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x60400010
+PDOMapping=0
+
+[1601]
+ParameterName=2nd Receive PDO Mapping
+ObjectType=0x9
+SubNumber=3
+
+[1601sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[1601sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23010108
+PDOMapping=0
+
+[1601sub2]
+ParameterName=PDO Mapping for the 2nd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23010220
+PDOMapping=0
+
+[1602]
+ParameterName=3rd Receive PDO Mapping
+ObjectType=0x9
+SubNumber=6
+
+[1602sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=5
+PDOMapping=0
+LowLimit=0
+HighLimit=5
+
+[1602sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23030108
+PDOMapping=0
+
+[1602sub2]
+ParameterName=PDO Mapping for the 2nd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23030208
+PDOMapping=0
+
+[1602sub3]
+ParameterName=PDO Mapping for the 3rd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23030308
+PDOMapping=0
+
+[1602sub4]
+ParameterName=PDO Mapping for the 4th Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23030408
+PDOMapping=0
+
+[1602sub5]
+ParameterName=PDO Mapping for the 5th Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23030508
+PDOMapping=0
+
+[1800]
+ParameterName=1st Transmit PDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1800sub0]
+ParameterName=Largest Sub-Index Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+
+[1800sub1]
+ParameterName=COB-ID Used by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x180
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1800sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=255
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[1801]
+ParameterName=2nd Transmit PDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1801sub0]
+ParameterName=Largest Sub-Index Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+
+[1801sub1]
+ParameterName=COB-ID Used  by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x280
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1801sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=253
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[1802]
+ParameterName=3rd Transmit PDO Parameter
+ObjectType=0x9
+SubNumber=3
+
+[1802sub0]
+ParameterName=Largest Sub-Index Supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+
+[1802sub1]
+ParameterName=COB-ID Used  by PDO
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=$NODEID+0x380
+PDOMapping=0
+LowLimit=0x00000001
+HighLimit=0xFFFFFFFF
+
+[1802sub2]
+ParameterName=Transmission Type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=253
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[1A00]
+ParameterName=1st Transmit PDO Mapping
+ObjectType=0x9
+SubNumber=2
+
+[1A00sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+LowLimit=0
+HighLimit=1
+
+[1A00sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x60410010
+PDOMapping=0
+
+[1A01]
+ParameterName=2nd Transmit PDO Mapping
+ObjectType=0x9
+SubNumber=4
+
+[1A01sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+LowLimit=0
+HighLimit=3
+
+[1A01sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23010108
+PDOMapping=0
+
+[1A01sub2]
+ParameterName=PDO Mapping for the 2nd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23020120
+PDOMapping=0
+
+[1A01sub3]
+ParameterName=PDO Mapping for the 3rd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23020208
+PDOMapping=0
+
+[1A02]
+ParameterName=3rd Transmit PDO  Mapping
+ObjectType=0x9
+SubNumber=3
+
+[1A02sub0]
+ParameterName=Number Of Mapped Application Objects In PDO
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[1A02sub1]
+ParameterName=PDO Mapping for the 1st Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23040120
+PDOMapping=0
+
+[1A02sub2]
+ParameterName=PDO Mapping for the 2nd Application Object to be Mapped
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x23040220
+PDOMapping=0
+
+[6040]
+ParameterName=Controlword
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x0000
+PDOMapping=1
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[6041]
+ParameterName=Statusword
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+DefaultValue=0x0060
+PDOMapping=1
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[6060]
+ParameterName=Modes Of Operation
+ObjectType=0x7
+DataType=0x0002
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=-1
+HighLimit=6
+
+[6061]
+ParameterName=Modes Of Operation Display
+ObjectType=0x7
+DataType=0x0002
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[6062]
+ParameterName=Position Demand Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[6063]
+ParameterName=Position Actual Internal Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-1800000000
+HighLimit=1800000000
+
+[6064]
+ParameterName=Position Actual Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[6067]
+ParameterName=Position Window
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=0
+HighLimit=2147483647
+
+[6068]
+ParameterName=Position Window Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=200
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[6069]
+ParameterName=Velocity Sensor Actual Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[606B]
+ParameterName=Velocity Demand Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[606C]
+ParameterName=Velocity Actual Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[606D]
+ParameterName=Velocity Window
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[606E]
+ParameterName=Velocity Window Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=200
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[606F]
+ParameterName=Velocity Threshold
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[6070]
+ParameterName=Velocity Threshold Time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=200
+PDOMapping=0
+LowLimit=0
+HighLimit=0xFFFF
+
+[607A]
+ParameterName=Target Position
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[607C]
+ParameterName=Home Offset
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=0
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[607D]
+ParameterName=Software Position Limit
+ObjectType=0x8
+SubNumber=3
+
+[607Dsub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[607Dsub1]
+ParameterName=Negative Position Limit
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=-1666
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[607Dsub2]
+ParameterName=Positive Position Limit
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=1666
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[607E]
+ParameterName=Polarity
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[607F]
+ParameterName=Max Profile Velocity
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=10000
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6081]
+ParameterName=Profile Velocity
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6083]
+ParameterName=Profile Acceleration
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=30000
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6084]
+ParameterName=Profile Deceleration
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=30000
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6085]
+ParameterName=Quick Stop Deceleration
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=30000
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6086]
+ParameterName=Motion Profile Type
+ObjectType=0x7
+DataType=0x0003
+AccessType=rww
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=0
+
+[608F]
+ParameterName=Position Encoder Resolution
+ObjectType=0x8
+SubNumber=3
+
+[608Fsub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[608Fsub1]
+ParameterName=Encoder Increments
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=2048
+PDOMapping=0
+LowLimit=8
+HighLimit=0xFFFF
+
+[608Fsub2]
+ParameterName=Motor Revolutions
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=1
+
+[6093]
+ParameterName=Position Factor
+ObjectType=0x8
+SubNumber=3
+
+[6093sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[6093sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6093sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6096]
+ParameterName=Velocity Factor
+ObjectType=0x8
+SubNumber=3
+
+[6096sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[6096sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6096sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6097]
+ParameterName=Acceleration Factor
+ObjectType=0x8
+SubNumber=3
+
+[6097sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[6097sub1]
+ParameterName=Numerator
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6097sub2]
+ParameterName=Divisor
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=1
+PDOMapping=0
+LowLimit=1
+HighLimit=65536
+
+[6098]
+ParameterName=Homing Method
+ObjectType=0x7
+DataType=0x0002
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=-128
+HighLimit=127
+
+[6099]
+ParameterName=Homing Velocities
+ObjectType=0x8
+SubNumber=3
+
+[6099sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[6099sub1]
+ParameterName=Switch Seek Velocity
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=40
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[6099sub2]
+ParameterName=Homing Velocity
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=0
+HighLimit=4294967295
+
+[609A]
+ParameterName=Homing Acceleration
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=50
+PDOMapping=0
+LowLimit=0
+HighLimit=2147483647
+
+[60F9]
+ParameterName=Velocity Control Parameter Set
+ObjectType=0x9
+SubNumber=3
+
+[60F9sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[60F9sub1]
+ParameterName=P
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=20
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[60F9sub2]
+ParameterName=I
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=10
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[60FA]
+ParameterName=Control Effort
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-32768
+HighLimit=32767
+
+[60FB]
+ParameterName=Position Control Parameter Set
+ObjectType=0x9
+SubNumber=3
+
+[60FBsub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[60FBsub1]
+ParameterName=PP
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=80
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[60FBsub2]
+ParameterName=PD
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=10
+PDOMapping=0
+LowLimit=0
+HighLimit=255
+
+[60FC]
+ParameterName=Position Demand Internal Value
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+LowLimit=-1800000000
+HighLimit=1800000000
+
+[60FF]
+ParameterName=Target Velocity
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=0
+PDOMapping=0
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[6510]
+ParameterName=Drive Data
+ObjectType=0x9
+SubNumber=4
+
+[6510sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+LowLimit=0
+HighLimit=3
+
+[6510sub1]
+ParameterName=Motor Type
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=-1
+HighLimit=9
+
+[6510sub2]
+ParameterName=Kn
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=14000
+PDOMapping=0
+LowLimit=0
+HighLimit=16383
+
+[6510sub3]
+ParameterName=Rm
+ObjectType=0x7
+DataType=0x0007
+AccessType=rww
+DefaultValue=200000
+PDOMapping=0
+LowLimit=0
+HighLimit=320000
+
+[ManufacturerObjects]
+SupportedObjects=11
+1=0x2301
+2=0x2302
+3=0x2303
+4=0x2304
+5=0x2310
+6=0x2311
+7=0x2320
+8=0x2360
+9=0x2400
+10=0x2403
+11=0x2404
+
+[2301]
+ParameterName=FAULHABER Command
+ObjectType=0x9
+SubNumber=3
+
+[2301sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[2301sub1]
+ParameterName=Command Number
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0x00
+PDOMapping=1
+LowLimit=0x00
+HighLimit=0xFF
+
+[2301sub2]
+ParameterName=Command Argument
+ObjectType=0x7
+DataType=0x0004
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[2302]
+ParameterName=FAULHABER Command Answer
+ObjectType=0x9
+SubNumber=3
+
+[2302sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+LowLimit=0
+HighLimit=2
+
+[2302sub1]
+ParameterName=Command Result
+ObjectType=0x7
+DataType=0x0004
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+LowLimit=-2147483648
+HighLimit=2147483647
+
+[2302sub2]
+ParameterName=Error Code
+ObjectType=0x7
+DataType=0x0002
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+LowLimit=-128
+HighLimit=127
+
+[2303]
+ParameterName=Trace Configuration
+ObjectType=0x9
+SubNumber=6
+
+[2303sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=5
+PDOMapping=0
+LowLimit=0
+HighLimit=5
+
+[2303sub1]
+ParameterName=1st Binary Data
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+LowLimit=0
+HighLimit=255
+
+[2303sub2]
+ParameterName=2nd Binary Data
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0
+PDOMapping=1
+LowLimit=0
+HighLimit=255
+
+[2303sub3]
+ParameterName=Time Flag Enable
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+LowLimit=0
+HighLimit=255
+
+[2303sub4]
+ParameterName=Number Of Requested Packets
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+LowLimit=0
+HighLimit=255
+
+[2303sub5]
+ParameterName=Distance Between Requested Packets
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=1
+PDOMapping=1
+LowLimit=0
+HighLimit=255
+
+[2304]
+ParameterName=Trace Data
+ObjectType=0x9
+SubNumber=4
+
+[2304sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+LowLimit=0
+HighLimit=3
+
+[2304sub1]
+ParameterName=1st Packet Result
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+LowLimit=0
+HighLimit=0xFFFFFFFF
+
+[2304sub2]
+ParameterName=2nd Packet Result
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0
+PDOMapping=1
+LowLimit=0
+HighLimit=0xFFFFFFFF
+
+[2304sub3]
+ParameterName=Timecode
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=255
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310]
+ParameterName=Switch Settings
+ObjectType=0x9
+SubNumber=7
+
+[2310sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=6
+PDOMapping=0
+LowLimit=0
+HighLimit=6
+
+[2310sub1]
+ParameterName=Homing Negative Limit
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310sub2]
+ParameterName=Homing Positive Limit
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310sub3]
+ParameterName=Homing Switch
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310sub4]
+ParameterName=Notify Switch
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310sub5]
+ParameterName=Switch Polarity
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x07
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2310sub6]
+ParameterName=Switch Polarity Enable in Homing
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0xFF
+
+[2311]
+ParameterName=Notify Status
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0x00
+PDOMapping=0
+LowLimit=0x00
+HighLimit=0x0F
+
+[2320]
+ParameterName=FAULHABER Fault Register
+ObjectType=0x9
+SubNumber=5
+
+[2320sub0]
+ParameterName=Number Of Entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=4
+PDOMapping=0
+LowLimit=0
+HighLimit=4
+
+[2320sub1]
+ParameterName=Internal Fault Register
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+DefaultValue=0x0000
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[2320sub2]
+ParameterName=Emergency Switches
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x00FF
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[2320sub3]
+ParameterName=Fault Switches
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x0000
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[2320sub4]
+ParameterName=Error Outputs
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x00FF
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+
+[2360]
+ParameterName=Tm
+ObjectType=0x7
+DataType=0x0005
+AccessType=rww
+DefaultValue=18
+PDOMapping=0
+LowLimit=8
+HighLimit=60
+
+[2400]
+ParameterName=Baudrate
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+LowLimit=0
+HighLimit=0xff
+
+[2403]
+ParameterName=Special Settings
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x0000
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+ObjFlags=0x2
+
+[2404]
+ParameterName=Service Settings
+ObjectType=0x7
+DataType=0x0006
+AccessType=rww
+DefaultValue=0x0000
+PDOMapping=0
+LowLimit=0x0000
+HighLimit=0xFFFF
+ObjFlags=0x2

@@ -1,0 +1,20 @@
+Description of the provided EDS files:
+
+605.3150.51-V-EK-2-60.eds	Firmware 3150.51V for 3564K024B CC
+605.3150.51-V-EK-3-60.eds	Firmware 3150.51V for MCBL300x
+605.3150.52-V-EK-2-60.eds	Firmware 3150.52V for MCDC300x
+605.3150.55-D-EK-2-60.eds	Firmware 3150.55D for MCLM300x
+605.3150.60-B-EK-2-60.eds	Firmware 3150.60B for MCBL-Series CF/CC/CCD
+605.3150.65-B-EK-2-60.eds	Firmware 3150.65B for MCBL300x AES CF
+605.3150.66-B-EK-2-60.eds	Firmware 3150.66B for MCLM300x CF
+605.3150.71-A-EK-2-60.eds	Firmware 3150.71A for 3564K024B CC (equals 3150.51U)
+605.3150.71-A-EK-3-60.eds	Firmware 3150.71A for MCBL300x (equals 3150.51U)
+605.3150.73-A-EK-2-60.eds	Firmware 3150.73A for MCBL300x (equals 3150.51V)
+605.3150.67-A-EK-2-60.eds	Firmware 3150.67A for MCBL-Series CO/COD
+605.3150.67-B-EK-2-60.eds	Firmware 3150.67B for MCBL-Series CO/COD
+605.3150.68-A-EK-2-60.eds	Firmware 3150.68A for MCDC300x CO
+605.3150.68-B-EK-2-60.eds	Firmware 3150.68B for MCDC300x CO
+605.3150.69-A-EK-2-60.eds	Firmware 3150.69A for MCLM300x CO
+605.3150.69-B-EK-2-60.eds	Firmware 3150.69B for MCLM300x CO
+605.3150.70-A-EK-2-60.eds	Firmware 3150.70A for MCBL300x AES CO
+605.3150.70-B-EK-2-60.eds	Firmware 3150.70B for MCBL300x AES CO

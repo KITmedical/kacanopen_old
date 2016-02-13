@@ -37,8 +37,7 @@ endif()
 ### dependencies ###
 
 find_package(Threads)
-
-find_package(Boost 1.46.1 REQUIRED)     
+find_package(Boost 1.46.1 COMPONENTS system filesystem REQUIRED) 
 
 # Boost required for property_tree / ini_parser
 if(NOT(Boost_FOUND))
@@ -47,6 +46,10 @@ endif()
 
 message(STATUS "Found Boost headers in ${Boost_INCLUDE_DIRS}")
 include_directories(${Boost_INCLUDE_DIRS})
+
+message(STATUS "Found Boost system library: ${Boost_SYSTEM_LIBRARY}")
+message(STATUS "Found Boost filesystem library: ${Boost_FILESYSTEM_LIBRARY}")
+message(STATUS "Found Threads library: ${CMAKE_THREAD_LIBS_INIT}")
 
 
 
@@ -97,6 +100,16 @@ macro(kacanopen_install)
     endif()
 endmacro()
 
+
+# Install EDS library
+message(STATUS "Configuring installation for EDS library")
+add_definitions("-DSHARE_SOURCE_PATH=\"${CMAKE_CURRENT_LIST_DIR}/master/share\"")
+add_definitions("-DSHARE_INSTALLED_PATH=\"${CMAKE_INSTALL_PREFIX}/share/kacanopen\"")
+message(STATUS "SHARE_SOURCE_PATH set to ${CMAKE_CURRENT_LIST_DIR}/share.")
+message(STATUS "SHARE_INSTALLED_PATH set to ${CMAKE_INSTALL_PREFIX}/share/kacanopen.")
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/master/share/
+    DESTINATION share/kacanopen
+)
 
 ### Source code ###
 

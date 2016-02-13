@@ -31,11 +31,13 @@
 
 #include "eds_reader.h"
 #include "logger.h"
+
 #include <tuple>
 #include <algorithm>
 
-// done by CMake:
-//#define EXAMPLES_PATH ${CMAKE_CURRENT_LIST_DIR} in examples dictionary
+// This is set by CMake...
+//#define SHARE_SOURCE_PATH ...
+//#define SHARE_INSTALLED_PATH ...
 
 int main(int argc, char** argv) {
 
@@ -44,13 +46,29 @@ int main(int argc, char** argv) {
 	std::map<std::string, kaco::Entry> map;
 	kaco::EDSReader reader(map);
 
-	std::string path = EXAMPLES_PATH "/example.eds"; // default file
+	bool success = false;
+	std::string path;
+	
 	if (argc>1 && argv[1]) {
+		
 		path = std::string(argv[1]);
-	}
+		PRINT("Loading EDS file from "<<path);
+		success = reader.load_file(path);
 
-	PRINT("Loading EDS file from "<<path);
-	bool success = reader.load_file(path);
+	} else {
+
+		path = SHARE_SOURCE_PATH "/example.eds";
+		PRINT("Loading default EDS file from "<<path);
+		success = reader.load_file(path);
+
+		if (!success) {
+
+			path = SHARE_INSTALLED_PATH "/example.eds";
+			PRINT("Another try: Loading default EDS file from "<<path);
+			success = reader.load_file(path);
+		}
+
+	}
 
 	if (!success) {
 		ERROR("Loading file not successful. You can specify the path to the EDS file as command line argument.");

@@ -1,0 +1,7 @@
+This is an EDS file library for use with KaCanOpen.
+Please DO NOT REMOVE THIS FILE, as it is used for
+library discovery.
+
+Dictionary names are either "cia" for default CiA profile EDS files
+or the vendor id for product specific EDS files from the corresponding
+vendor.

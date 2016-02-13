@@ -2,13 +2,9 @@ cmake_minimum_required(VERSION 3.2)
 
 message(STATUS "Configuring examples")
 
-find_package(Threads)
-
 file(GLOB TARGETS_SRC
     "*.cpp"
 )
-
-add_definitions("-DEXAMPLES_PATH=\"${CMAKE_CURRENT_LIST_DIR}\"")
 
 if (NOT(${NO_ROS}))
 	#list(REMOVE_ITEM TARGETS_SRC "${CMAKE_CURRENT_LIST_DIR}/ros_*")

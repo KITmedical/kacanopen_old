@@ -43,6 +43,9 @@ struct Utils {
 	/// Converts data types to a string.
 	static std::string type_to_string(Type type);
 
+	/// Converts CanOpen data types to a string.
+	static std::string data_type_to_string(DataType type);
+
 	/// Returns the size of a data type in bytes.
 	static uint8_t get_type_size(Type type);
 

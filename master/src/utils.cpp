@@ -61,6 +61,43 @@ std::string Utils::type_to_string(Type type) {
 	}
 }
 
+std::string Utils::data_type_to_string(DataType type) {
+	#define ENUM_CASE(name) case DataType::name: return #name;
+	switch(type) {
+		ENUM_CASE(BOOLEAN)
+		ENUM_CASE(INTEGER8)
+		ENUM_CASE(INTEGER16)
+		ENUM_CASE(INTEGER32)
+		ENUM_CASE(UNSIGNED8)
+		ENUM_CASE(UNSIGNED16)
+		ENUM_CASE(UNSIGNED32)
+		ENUM_CASE(REAL32)
+		ENUM_CASE(VISIBLE_STRING)
+		ENUM_CASE(OCTET_STRING)
+		ENUM_CASE(UNICODE_STRING)
+		ENUM_CASE(TIME_OF_DAY)
+		ENUM_CASE(TIME_DIFFERENCE)
+		ENUM_CASE(LARGEDATA)
+		ENUM_CASE(INTEGER24)
+		ENUM_CASE(REAL64)
+		ENUM_CASE(INTEGER40)
+		ENUM_CASE(INTEGER48)
+		ENUM_CASE(INTEGER56)
+		ENUM_CASE(INTEGER64)
+		ENUM_CASE(UNSIGNED40)
+		ENUM_CASE(UNSIGNED48)
+		ENUM_CASE(UNSIGNED56)
+		ENUM_CASE(UNSIGNED64)
+		ENUM_CASE(PDO_COMMUNICATION_PARAMETER)
+		ENUM_CASE(PDO_MAPPING)
+		ENUM_CASE(SDO_PARAMETER)
+		ENUM_CASE(IDENTITY)
+		default:
+			return "[Utils::data_type_to_string] Unknown type with id "+std::to_string(static_cast<uint16_t>(type));
+	}
+	#undef ENUM_CASE
+}
+
 uint8_t Utils::get_type_size(Type type) {
 	switch(type) {
 		case Type::uint8:
@@ -99,7 +136,9 @@ Type Utils::type_code_to_type(uint16_t code) {
 		//case INTEGER24: return Type::;
 		//case REAL64: return Type::;
 		//case INTEGER40: return Type::;
-		default: return Type::invalid;
+		default:
+			ERROR("[Utils::type_code_to_type] Data type "<<data_type_to_string(static_cast<DataType>(code))<<" not yet supported.");
+			return Type::invalid;
 	}
 }
 

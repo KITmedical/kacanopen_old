@@ -37,6 +37,8 @@
 #include "receive_pdo_mapping.h"
 #include "transmit_pdo_mapping.h"
 #include "access_method.h"
+#include "eds_library.h"
+#include "eds_reader.h"
 
 #include <vector>
 #include <map>
@@ -101,9 +103,14 @@ namespace kaco {
 		/// Returns the CiA profile number (determined via SDO)
 		uint16_t get_device_profile_number();
 
-		/// Adds entries to the dictionary according to the CiA profile number. Returns true if successful.
-		bool specialize();
+		/// Tries to load the most specific EDS file available in KaCanOpen's internal EDS library.
+		/// This is either device specific, CiA profile specific, or mandatory CiA 301.
+		bool load_dictionary_from_library();
 
+		/// Loads the dictionary from a custom EDS file.
+		bool load_dictionary_from_eds(std::string path);
+
+		/// Prints the dictionary together with currently cached values.
 		void print_dictionary() const;
 
 	private:
@@ -119,6 +126,7 @@ namespace kaco {
 		std::vector<ReceivePDOMapping> m_receive_pdo_mappings;
 		std::vector<TransmitPDOMapping> m_transmit_pdo_mappings;
 		const Value m_dummy_value;
+		EDSLibrary m_eds_library;
 
 	};
 

@@ -158,10 +158,9 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 	entry.subindex = subindex;
 
 	if (entry.type == Type::invalid) {
-		ERROR("[EDSReader::parse_var] Invalid data type: "<<str_data_type<<" / 0x"<<std::hex<<(uint16_t) Utils::hexstr_to_uint(str_data_type));
-		DUMP(Utils::type_to_string(entry.type));
-		DUMP(Utils::type_to_string(Utils::type_code_to_type((uint16_t) Utils::hexstr_to_uint(str_data_type))));
-		return false;
+		ERROR("[EDSReader::parse_var] "<<entry.name<<": Ignoring entry due to unsupported data type.");
+		return true;
+		// TODO: return false; ? At the moment, unsupported entries are not considered as error.
 	}
 
 	entry.access_type = Utils::string_to_access_type(str_access_type);
@@ -193,7 +192,7 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 	}
 
 	DEBUG_LOG("[EDSReader::parse_var] Inserting entry "<<var_name<<".");
-	m_map[var_name] = entry;
+	m_map[var_name] = std::move(entry);
 
 	return true;
 

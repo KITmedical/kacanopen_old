@@ -59,7 +59,12 @@ int main(int argc, char** argv) {
 	// should be a 401 device
 	kaco::Device& device = master.get_devices()[0];
 	device.start();
-	device.specialize();
+	
+	if (!device.load_dictionary_from_library()) {
+		ERROR("No suitable EDS file found for this device.");
+		return EXIT_FAILURE;
+	}
+
 	const uint16_t profile = device.get_device_profile_number();
 	
 	if (profile != 402) {
@@ -67,15 +72,17 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	DUMP(device.get_entry("Manufacturer device name"));
+	device.print_dictionary();
+
+	DUMP(device.get_entry("manufacturer_device_name"));
 	
 	PRINT("Enable operation");
-	device.set_entry("Controlword", (uint16_t) 0x0006); // shutdown
-	device.set_entry("Controlword", (uint16_t) 0x0007); // switch on
-	device.set_entry("Controlword", (uint16_t) 0x000F); // enable operation
+	device.set_entry("controlword", (uint16_t) 0x0006); // shutdown
+	device.set_entry("controlword", (uint16_t) 0x0007); // switch on
+	device.set_entry("controlword", (uint16_t) 0x000F); // enable operation
 
 	PRINT("Set position mode");
-	device.set_entry("Modes of operation", (int8_t) kaco::cia_402::ModeOfOperation::PROFILE_POSITION_MODE);
+	device.set_entry("modes_of_operation", (int8_t) kaco::cia_402::ModeOfOperation::PROFILE_POSITION_MODE);
 
 	// Create bridge / init a ROS node
 	kaco::Bridge bridge;

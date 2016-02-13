@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	// should be a 401 device
 	kaco::Device& device = master.get_devices()[0];
 	device.start();
-	device.specialize();
+	device.load_dictionary_from_library();
 	uint16_t profile = device.get_device_profile_number();
 	
 	if (profile != 401) {
@@ -69,23 +69,23 @@ int main(int argc, char** argv) {
 	DUMP(device.get_entry("Manufacturer device name"));
 
 	// map PDOs (optional)
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit", 0, 0); // offest 0, array index 0
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit", 1, 1); // offset 1, array index 1
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offest 0
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
 	
 	// set some output (optional)
-	device.set_entry("Write output 8-bit", (uint8_t) 0xFF, 0);
+	device.set_entry("Write output 8-bit/Digital Outputs 1-8", (uint8_t) 0xFF, 0);
 
 	// Create bridge / init a ROS node
 	kaco::Bridge bridge;
 	
 	// create a publisher for reading second 8-bit input and add it to the bridge
 	// communication via POD
-	auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit", 1);
+	auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit/Digital Inputs 9-16");
 	bridge.add_publisher(iopub);
 	
 	// create a subscriber for editing IO output and add it to the bridge
 	// communication via SOD
-	auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit", 0);
+	auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit/Digital Outputs 1-8");
 	bridge.add_subscriber(iosub);
 
 	// run ROS loop and publish everything repeatedly with 1 Hz

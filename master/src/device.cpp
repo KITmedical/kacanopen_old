@@ -34,20 +34,23 @@
 #include "utils.h"
 #include "logger.h"
 
-#include "cia_301.h"
-#include "cia_401.h"
-#include "cia_402.h"
-
 #include <cassert>
 #include <algorithm>
 
 namespace kaco {
 
 Device::Device(Core& core, uint8_t node_id)
-	: m_core(core), m_node_id(node_id) {
+	: m_core(core), m_node_id(node_id), m_eds_library(m_dictionary) {
 
-		for (const auto& entry : cia_301::dictionary) {
-			m_dictionary[entry.name] = entry;
+		bool success = m_eds_library.lookup_library();
+
+		if (!success) {
+			ERROR("[Device constructor] EDS library not found. Please fix or manage dictionary by yourself.");
+		} else {
+			success = m_eds_library.load_mandatory_entries();
+			if (!success) {
+				ERROR("[Device constructor] Could not load mandatory dictionary entries. Please fix or manage dictionary by yourself.");
+			}
 		}
 
 	}
@@ -247,26 +250,71 @@ uint16_t Device::get_device_profile_number() {
 	return (device_type & 0xFFFF);
 }
 
-bool Device::specialize() {
-	uint16_t profile = get_device_profile_number();
-	switch (profile) {
-		case 401: {
-			for (const auto& entry : cia_401::dictionary) {
-				m_dictionary[entry.name] = entry;
+bool Device::load_dictionary_from_library() {
+
+	if (m_eds_library.ready()) {
+		
+		uint16_t profile = get_device_profile_number();
+		uint32_t vendor_id = get_entry("Identity object/Vendor-ID");
+		uint32_t product_code = get_entry("Identity object/Product Code");
+		uint32_t revision_number = get_entry("Identity object/Revision number");
+
+		m_dictionary.clear();
+		bool success = m_eds_library.load_manufacturer_eds(vendor_id, product_code, revision_number);
+
+		if (success) {
+			DEBUG_LOG("[load_dictionary_from_library] Successfully loaded device specific dictionary: "<<std::dec<<vendor_id<<"/"<<product_code<<"."<<revision_number);
+		} else {
+			success = m_eds_library.load_default_eds(profile);
+			if (success) {
+				DEBUG_LOG("[load_dictionary_from_library] Successfully loaded generic CiA profile dictionary: cia/"<<std::dec<<profile<<".eds");
+			} else {
+				success = m_eds_library.load_mandatory_entries();
+				if (success) {
+					DEBUG_LOG("[load_dictionary_from_library] Successfully loaded mandatory CiA 301 entries");
+				} else {
+					DEBUG_LOG("[load_dictionary_from_library] Could not automatically load the dictionary. Please manage dictionary by yourself.");
+					return false;
+				}
 			}
-			return true;
 		}
-		case 402: {
-			for (const auto& entry : cia_402::dictionary) {
-				m_dictionary[entry.name] = entry;
-			}
-			return true;
-		}
-		default: {
-			ERROR("Unknown CiA profile: "<<profile<<". Cannot specialize device.");
+
+	} else {
+		ERROR("[Device::load_dictionary_from_library] EDS library not ready. Please manage dictionary by yourself.");
+		return false;
+	}
+
+	return true;
+
+}
+
+bool Device::load_dictionary_from_eds(std::string path) {
+
+	if (m_eds_library.ready()) {
+
+		m_dictionary.clear();
+		EDSReader reader(m_dictionary);
+		bool success = reader.load_file(path);
+
+		if (!success) {
+			ERROR("[EDSLibrary::load_dictionary_from_eds] Loading file not successful.");
 			return false;
 		}
+
+		success = reader.import_entries();
+
+		if (!success) {
+			ERROR("[EDSLibrary::load_dictionary_from_eds] Importing entries failed.");
+			return false;
+		}
+
+	} else {
+		ERROR("[Device::load_dictionary_from_eds] EDS library not ready. Please manage dictionary by yourself.");
+		return false;
 	}
+
+	return true;
+
 }
 
 void Device::print_dictionary() const {

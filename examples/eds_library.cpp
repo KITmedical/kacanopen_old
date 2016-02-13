@@ -28,22 +28,64 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#pragma once
 
-namespace kaco {
+#include "logger.h"
+#include "eds_reader.h"
+#include "eds_library.h"
 
-	namespace cia_402 {
-		
-		enum ModeOfOperation : int8_t {
-			PROFILE_POSITION_MODE = 1,
-			VELOCITY_MODE = 2,
-			PROFILE_VELOCITY_MODE = 3,
-			TORQUE_PROFILE_MODE = 4,
-			HOMING_MODE = 6,
-			INTERPOLATED_POSITION_MODE = 7
-		};
+#include <tuple>
+#include <algorithm>
 
-	};
+void print_dictionary(const std::map<std::string, kaco::Entry>& map) {
 
-} // end namespace kaco
+	PRINT("\nHere is the dictionary:");
+
+	std::vector< kaco::Entry > entries;
+
+	for (const auto& pair : map) {
+		entries.push_back(pair.second);
+	}
+
+	// sort by index and subindex
+	std::sort(entries.begin(), entries.end());
+
+	for (const auto& entry : entries) {
+		entry.print();
+	}
+
+}
+
+int main(int argc, char** argv) {
+
+	PRINT("This example loads dictionaries from the EDS library.");
+
+	std::map<std::string, kaco::Entry> map;
+	kaco::EDSReader reader(map);
+
+	kaco::EDSLibrary library(map);
+	bool success = library.lookup_library();
+
+	if (!success) {
+		ERROR("EDS library not found.");
+		return EXIT_FAILURE;
+	}
+
+	success = library.load_default_eds(402);
+	if (!success) {
+		ERROR("load_default_eds(402) failed.");
+	} else {
+		print_dictionary(map);
+	}
+
+	// This should fail.
+	map.clear();
+	success = library.load_default_eds(405);
+	if (!success) {
+		ERROR("load_default_eds(405) failed.");
+	} else {
+		print_dictionary(map);
+	}
+
+	return EXIT_SUCCESS;
+
+}

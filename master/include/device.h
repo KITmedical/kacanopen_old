@@ -63,10 +63,10 @@ namespace kaco {
 		/// Gets the value of a dictionary entry by name internally.
 		/// If there is no cached value or the entry is configured to send an SDO on request, the new value is fetched from the device via SDO.
 		/// Otherwise it returns the cached value. This makes sense, if a Reveive PDO is configured on the corresponding entry.
-		const Value& get_entry(std::string name, uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
+		const Value& get_entry(const std::string& entry_name, uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
 
 		/// Returns the type of a dictionary entry identified by name as it is defined in the local dictionary.
-		Type get_entry_type(std::string name);
+		Type get_entry_type(const std::string& entry_name);
 
 		/// Sets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value
@@ -76,7 +76,7 @@ namespace kaco {
 		/// Sets the value of a dictionary entry by name internally.
 		/// If the entry is configured to send an SDO on update, the new value is also sent to the device via SDO.
 		/// If a PDO is configured on the corresponding entry, it will from now on use the new value stored internally.
-		void set_entry(std::string name, const Value& value, uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
+		void set_entry(const std::string& entry_name, const Value& value, uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
 
 		/// Adds a receive PDO mapping. This means values sent by the device via PDO are saved into the dictionary cache.
 		/// \param offset index of the first mapped byte in the PDO message

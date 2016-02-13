@@ -70,9 +70,11 @@ Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 
 }
 
-const Value& Device::get_entry(std::string name, uint8_t array_index, ReadAccessMethod access_method) {
+const Value& Device::get_entry(const std::string& entry_name, uint8_t array_index, ReadAccessMethod access_method) {
 	
-	if (m_dictionary.find(name) == m_dictionary.end()) {
+	const std::string name = Utils::escape(entry_name);
+
+	if (m_dictionary.count(name) == 0) {
 		ERROR("[Device::get_entry] Dictionary entry \""<<name<<"\" not available.");
 		return m_dummy_value;
 	}
@@ -92,9 +94,11 @@ const Value& Device::get_entry(std::string name, uint8_t array_index, ReadAccess
 
 }
 
-Type Device::get_entry_type(std::string name) {
+Type Device::get_entry_type(const std::string& entry_name) {
+	
+	const std::string name = Utils::escape(entry_name);
 
-	if (m_dictionary.find(name) == m_dictionary.end()) {
+	if (m_dictionary.count(name) == 0) {
 		ERROR("[Device::get_entry_type] Dictionary entry \""<<name<<"\" not available.");
 		return Type::invalid;
 	}
@@ -110,9 +114,11 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 
 }
 
-void Device::set_entry(std::string name, const Value& value, uint8_t array_index, WriteAccessMethod access_method) {
+void Device::set_entry(const std::string& entry_name, const Value& value, uint8_t array_index, WriteAccessMethod access_method) {
 	
-	if (m_dictionary.find(name) == m_dictionary.end()) {
+	const std::string name = Utils::escape(entry_name);
+
+	if (m_dictionary.count(name) == 0) {
 		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" not available.");
 		return;
 	}
@@ -140,12 +146,16 @@ void Device::set_entry(std::string name, const Value& value, uint8_t array_index
 
 void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_name, uint8_t offset, uint8_t array_index) {
 	
-	if (m_dictionary.find(entry_name) == m_dictionary.end()) {
-		ERROR("[Device::add_receive_pdo_mapping] Dictionary entry \""<<entry_name<<"\" not available.");
+	// TODO: update entry's default access method
+
+	const std::string name = Utils::escape(entry_name);
+
+	if (m_dictionary.count(name) == 0) {
+		ERROR("[Device::add_receive_pdo_mapping] Dictionary entry \""<<name<<"\" not available.");
 		return;
 	}
 	
-	Entry& entry = m_dictionary[entry_name];
+	Entry& entry = m_dictionary[name];
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (offset+type_size > 8) {
@@ -154,7 +164,7 @@ void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_n
 		DUMP(offset);
 	}
 
-	m_receive_pdo_mappings.push_back({cob_id,entry_name,offset,array_index});
+	m_receive_pdo_mappings.push_back({cob_id,name,offset,array_index});
 
 	// TODO: this only works while add_pdo_received_callback takes callback by value.
 	auto binding = std::bind(&Device::pdo_received_callback, this, m_receive_pdo_mappings.back(), std::placeholders::_1);
@@ -177,9 +187,11 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 	if (transmission_type==TransmissionType::ON_CHANGE) {
 
 		for (const Mapping& mapping : pdo.mappings) {
+	
+			const std::string entry_name = Utils::escape(mapping.entry_name);
 			
 			// entry exists because check_correctness() == true.
-			Entry& entry = m_dictionary.at(mapping.entry_name);
+			Entry& entry = m_dictionary.at(entry_name);
 
 			entry.add_value_changed_callback([entry_name, &pdo](const Value& value){
 				DEBUG_LOG("[Callback] Value of "<<entry_name<<" changed to "<<value);
@@ -210,7 +222,9 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 }
 
 void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data) {
-	Entry& entry = m_dictionary[mapping.entry_name];
+	
+	const std::string entry_name = Utils::escape(mapping.entry_name);
+	Entry& entry = m_dictionary[entry_name];
 	const uint8_t array_index = mapping.array_index;
 	const uint8_t offset = mapping.offset;
 	const uint8_t type_size = Utils::get_type_size(entry.type);

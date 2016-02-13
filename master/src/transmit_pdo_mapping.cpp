@@ -67,14 +67,15 @@ void TransmitPDOMapping::send() const {
 
 	for (const Mapping& mapping : mappings) {
 
-		const Entry& entry = m_dictionary.at(mapping.entry_name);
+		const std::string entry_name = Utils::escape(mapping.entry_name);
+		const Entry& entry = m_dictionary.at(entry_name);
 		const Value& value = entry.get_value(mapping.array_index);
 		const std::vector<uint8_t> bytes = value.get_bytes();
 		assert(mapping.offset+bytes.size() <= 8);
 
 		DEBUG_LOG("[TransmitPDOMapping::send] Mapping:");
 		DEBUG_DUMP(mapping.offset);
-		DEBUG_DUMP(mapping.entry_name);
+		DEBUG_DUMP(entry_name);
 		DEBUG_DUMP_HEX(value);
 		
 		uint8_t count = 0;
@@ -97,13 +98,15 @@ bool TransmitPDOMapping::check_correctness() const {
 	std::vector<bool> byte_mapped(8,false);
 
 	for (const Mapping& mapping : mappings) {
+		
+		const std::string entry_name = Utils::escape(mapping.entry_name);
 
-		if (m_dictionary.find(mapping.entry_name) == m_dictionary.end()) {
-			ERROR("[TransmitPDOMapping::check_correctness] Dictionary entry \""<<mapping.entry_name<<"\" not available.");
+		if (m_dictionary.count(entry_name) == 0) {
+			ERROR("[TransmitPDOMapping::check_correctness] Dictionary entry \""<<entry_name<<"\" not available.");
 			return false;
 		}
 
-		const Entry& entry = m_dictionary.at(mapping.entry_name);
+		const Entry& entry = m_dictionary.at(entry_name);
 		const uint8_t type_size = Utils::get_type_size(entry.type);
 
 		if (mapping.offset+type_size > 8) {
@@ -114,7 +117,7 @@ bool TransmitPDOMapping::check_correctness() const {
 		}
 
 		if (mapping.array_index > 0 && !entry.is_array) {
-			ERROR("[TransmitPDOMapping::check_correctness] array_index specified but entry \""<<mapping.entry_name<<"\" is no array.");
+			ERROR("[TransmitPDOMapping::check_correctness] array_index specified but entry \""<<entry_name<<"\" is no array.");
 			return false;
 		}
 

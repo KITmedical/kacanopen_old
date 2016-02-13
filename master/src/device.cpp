@@ -181,8 +181,8 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 			// entry exists because check_correctness() == true.
 			Entry& entry = m_dictionary.at(mapping.entry_name);
 
-			entry.add_value_changed_callback([&](const Value& value){
-				DEBUG_LOG("[Callback] Value of "<<mapping.entry_name<<" changed to "<<value);
+			entry.add_value_changed_callback([entry_name, &pdo](const Value& value){
+				DEBUG_LOG("[Callback] Value of "<<entry_name<<" changed to "<<value);
 				pdo.send();
 			});
 		}

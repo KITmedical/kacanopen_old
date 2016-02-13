@@ -174,7 +174,7 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 		
 		try {
 			std::smatch matches;
-			if (std::regex_match(var_name, matches, std::regex("(.+)_([[:xdigit:]]{1,3})"))) {
+			if (std::regex_match(var_name, matches, std::regex("^(.+)_([[:xdigit:]]{1,3})$"))) {
 		    	assert(matches.size()>2);
 		    	uint8_t count = Utils::decstr_to_uint(matches[2]);
 		    	++count;

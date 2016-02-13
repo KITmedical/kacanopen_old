@@ -65,11 +65,27 @@ namespace kaco {
 		UNICODE_STRING = 0xB,
 		TIME_OF_DAY = 0xC,
 		TIME_DIFFERENCE = 0xD,
+		// 0xE reserved
 		LARGEDATA = 0xF, // DOMAIN
 		INTEGER24 = 0x10,
 		REAL64 = 0x11,
 		INTEGER40 = 0x12,
-		// ... 
+		INTEGER48 = 0x13,
+		INTEGER56 = 0x14,
+		INTEGER64 = 0x15,
+		// 0x17 reserved
+		UNSIGNED40 = 0x18,
+		UNSIGNED48 = 0x19,
+		UNSIGNED56 = 0x1A,
+		UNSIGNED64 = 0x1B,
+		// 0x1C - 0x1F reserved
+		PDO_COMMUNICATION_PARAMETER = 0x20,
+		PDO_MAPPING = 0x21,
+		SDO_PARAMETER = 0x22,
+		IDENTITY = 0x23,
+		// 0x24 - 0x3F reserved
+		// 0x40 - 0x5F Manufacturer specific
+		// 0x60 - 0x25F Device profile specific
 	};
 
 	/// Type of an object in the dictionary together with the according key / index

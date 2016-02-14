@@ -34,12 +34,18 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <limits>
 
 #include "utils.h"
 
 namespace kaco {
 
 	struct Value {
+		
+		// Check real32 / real64 support
+		static_assert(std::numeric_limits<float>::is_iec559, "Your machine doesn't use IEEE 754 compliant single-precision floating point numbers.");
+		static_assert(sizeof(float)==4, "sizeof(float)!=4 on your machine.");
+		static_assert(sizeof(double)==8, "sizeof(double)!=8 on your machine.");
 
 		static const bool debug = false;
 
@@ -55,6 +61,8 @@ namespace kaco {
 			int8_t int8;
 			int16_t int16;
 			int32_t int32;
+			float real32;
+			double real64;
 			bool boolean;
 		};
 		
@@ -65,6 +73,8 @@ namespace kaco {
 		Value(int8_t value);
 		Value(int16_t value);
 		Value(int32_t value);
+		Value(float value);
+		Value(double value);
 		Value(bool value);
 		Value(const std::string& value);
 
@@ -80,6 +90,8 @@ namespace kaco {
 		operator int8_t() const;
 		operator int16_t() const;
 		operator int32_t() const;
+		operator float() const;
+		operator double() const;
 		operator bool() const;
 		operator std::string() const;
 

@@ -44,6 +44,8 @@ namespace kaco {
 		int8,
 		int16,
 		int32,
+		real32,
+		real64,
 		string,
 		boolean,
 		invalid

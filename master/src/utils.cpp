@@ -52,6 +52,10 @@ std::string Utils::type_to_string(Type type) {
 			return "int16";
 		case Type::int32:
 			return "int32";
+		case Type::real32:
+			return "real32";
+		case Type::real64:
+			return "real64";
 		case Type::boolean:
 			return "boolean";
 		case Type::string:
@@ -109,7 +113,10 @@ uint8_t Utils::get_type_size(Type type) {
 			return 2;
 		case Type::uint32:
 		case Type::int32:
+		case Type::real32:
 			return 4;
+		case Type::real64:
+			return 8;
 		case Type::string:
 		default:
 			ERROR("[Utils::get_type_size] Unknown type or type with variable size.");
@@ -126,7 +133,7 @@ Type Utils::type_code_to_type(uint16_t code) {
 		case (uint16_t) DataType::UNSIGNED8: return Type::uint8;
 		case (uint16_t) DataType::UNSIGNED16: return Type::uint16;
 		case (uint16_t) DataType::UNSIGNED32: return Type::uint32;
-		//case REAL32: return Type::;
+		case (uint16_t) DataType::REAL32: return Type::real32;
 		case (uint16_t) DataType::VISIBLE_STRING: return Type::string;
 		//case OCTET_STRING: return Type::;
 		//case UNICODE_STRING: return Type::;
@@ -134,7 +141,7 @@ Type Utils::type_code_to_type(uint16_t code) {
 		//case TIME_DIFFERENCE: return Type::;
 		//case LARGEDATA: return Type::;
 		//case INTEGER24: return Type::;
-		//case REAL64: return Type::;
+		case (uint16_t) DataType::REAL64: return Type::real64;
 		//case INTEGER40: return Type::;
 		default:
 			ERROR("[Utils::type_code_to_type] Data type "<<data_type_to_string(static_cast<DataType>(code))<<" not yet supported.");

@@ -75,6 +75,18 @@ Value::Value(int32_t value) {
 	int32 = value;
 }
 
+Value::Value(float value) {
+	DEBUG_LOG("Creating real32 value");
+	type = Type::real32;
+	real32 = value;
+}
+
+Value::Value(double value) {
+	DEBUG_LOG("Creating real64 value");
+	type = Type::real64;
+	real64 = value;
+}
+
 Value::Value(bool value) {
 	DEBUG_LOG("Creating boolean value");
 	type = Type::boolean;
@@ -124,10 +136,26 @@ Value::Value(Type type_, const std::vector<uint8_t>& data) {
 
 		case Type::uint32: {
 			uint32 = (uint32_t)data[0] + ((uint32_t)data[1] << 8) + ((uint32_t)data[2] << 16) + ((uint32_t)data[3] << 24);
+			break;
 		}
 
 		case Type::int32: {
 			int32 = (int32_t)data[0] + ((int32_t)data[1] << 8) + ((int32_t)data[2] << 16) + ((int32_t)data[3] << 24);
+			break;
+		}
+
+		case Type::real32: {
+			// TODO: test this
+			const uint32_t val = (uint32_t)data[0] + ((uint32_t)data[1] << 8) + ((uint32_t)data[2] << 16) + ((uint32_t)data[3] << 24);
+			real32 = reinterpret_cast<const float&>(val);
+			break;	
+		}
+
+		case Type::real64: {
+			// TODO: test this
+			const uint64_t val = (uint64_t)data[0] + ((uint64_t)data[1] << 8) + ((uint64_t)data[2] << 16) + ((uint64_t)data[3] << 24)
+				+ ((uint64_t)data[4] << 32) + ((uint64_t)data[5] << 40) + ((uint64_t)data[6] << 48) + ((uint64_t)data[7] << 56);
+			real64 = reinterpret_cast<const double&>(val);
 			break;
 		}
 
@@ -191,6 +219,30 @@ std::vector<uint8_t> Value::get_bytes() const {
 			result.push_back((int32>>8) & 0xFF);
 			result.push_back((int32>>16) & 0xFF);
 			result.push_back((int32>>24) & 0xFF);
+			break;
+		}
+
+		case Type::real32: {
+			// TODO: test this
+			const uint32_t val = reinterpret_cast<const uint32_t&>(real32);
+			result.push_back(val & 0xFF);
+			result.push_back((val>>8) & 0xFF);
+			result.push_back((val>>16) & 0xFF);
+			result.push_back((val>>24) & 0xFF);
+			break;
+		}
+
+		case Type::real64: {
+			// TODO: test this
+			const uint64_t val = reinterpret_cast<const uint64_t&>(real64);
+			result.push_back(val & 0xFF);
+			result.push_back((val>>8) & 0xFF);
+			result.push_back((val>>16) & 0xFF);
+			result.push_back((val>>24) & 0xFF);
+			result.push_back((val>>32) & 0xFF);
+			result.push_back((val>>40) & 0xFF);
+			result.push_back((val>>48) & 0xFF);
+			result.push_back((val>>56) & 0xFF);
 			break;
 		}
 
@@ -260,6 +312,14 @@ bool Value::operator==(const Value& other) const {
 			return int32 == (int32_t) other;
 		}
 
+		case Type::real32: {
+			return real32 == (float) real32;
+		}
+
+		case Type::real64: {
+			return real64 == (double) real64;
+		}
+
 		case Type::boolean: {
 			return boolean == (bool) boolean;
 		}
@@ -305,6 +365,8 @@ CO_VALUE_TYPE_CAST_OP_INT(int8);
 CO_VALUE_TYPE_CAST_OP_INT(int16);
 CO_VALUE_TYPE_CAST_OP_INT(int32);
 CO_VALUE_TYPE_CAST_OP(bool, boolean);
+CO_VALUE_TYPE_CAST_OP(float, real32);
+CO_VALUE_TYPE_CAST_OP(double, real64);
 CO_VALUE_TYPE_CAST_OP(std::string, string);
 
 //-------------------//
@@ -339,6 +401,14 @@ namespace value_printer {
 
 			case Type::int32: {
 				return os << static_cast<int32_t>(val);
+			}
+
+			case Type::real32: {
+				return os << static_cast<float>(val);
+			}
+
+			case Type::real64: {
+				return os << static_cast<double>(val);
 			}
 
 			case Type::boolean: {

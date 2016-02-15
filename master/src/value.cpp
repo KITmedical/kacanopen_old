@@ -265,7 +265,7 @@ std::vector<uint8_t> Value::get_bytes() const {
 
 	}
 
-	return std::move(result);
+	return result;
 
 }
 

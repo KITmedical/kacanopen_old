@@ -69,7 +69,7 @@ uint8_t Device::get_node_id() const {
 Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
 	
 	std::vector<uint8_t> data = m_core.sdo.upload(m_node_id, index, subindex);
-	return std::move(Value(type, data));
+	return Value(type, data);
 
 }
 

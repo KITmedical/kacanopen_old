@@ -143,8 +143,7 @@ Type Entry::get_type() const {
 }
 
 void Entry::add_value_changed_callback(ValueChangedCallback callback) {
-	// TODO std::move or reference?
-	m_value_changed_callbacks.push_back(callback);
+	m_value_changed_callbacks.push_back(std::move(callback));
 }
 
 void Entry::print() const {

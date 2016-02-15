@@ -154,7 +154,7 @@ std::string Utils::escape(std::string str) {
 	std::transform(out.begin(), out.end(), out.begin(), ::tolower);
 	std::replace(out.begin(), out.end(), ' ', '_');
 	std::replace(out.begin(), out.end(), '-', '_');
-	return std::move(out);
+	return out;
 }
 
 unsigned long long Utils::hexstr_to_uint(std::string str) {

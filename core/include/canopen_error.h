@@ -31,73 +31,27 @@
  
 #pragma once
 
-#include <functional>
-#include <vector>
-
-#include "message.h"
-#include "sdo_response.h"
+#include <string>
+#include <stdexcept>
 
 namespace kaco {
-	
-	// forward declaration
-	class Core;
 
-	class SDO {
+	/// This is the base class of all types of exceptions
+	/// thrown by the KaCanOpen library. It can be used
+	/// directly like std::runtime_error if there isn't any
+	/// more specific error class.
+	class canopen_error : public std::runtime_error {
 
 	public:
 
-		//! type of a sdo message receiver function
-		struct SDOReceivedCallback {
-			typedef std::function< void(const SDOResponse&) > sdo_callback_function_type;
-			uint8_t node_id;
-			sdo_callback_function_type callback;
-		};
+		/// Constructor
+		/// \param what Error description
+		explicit canopen_error(std::string what)
+			: runtime_error(what)
+			{ }
 
-		SDO(Core& core);
-		~SDO();
-		
-		void download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& bytes);
-		
-		std::vector<uint8_t> upload(uint8_t node_id, uint16_t index, uint8_t subindex);
-
-		void process_incoming_message(const Message& message);
-
-		void send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
-			uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-			SDOResponse& response);
-
-	private:
-
-		enum Flag : uint8_t {
-
-			// client command specifiers
-			initiate_download_request = 0x20,
-			download_segment_request = 0x00,
-			initiate_upload_request = 0x40,
-			upload_segment_request = 0x60,
-
-			// server command specifiers
-			initiate_download_response = 0x60,
-			download_segment_response = 0x20,
-			initiate_upload_response = 0x40,
-			upload_segment_response = 0x00,
-
-			toggle_bit = 0x10,
-			no_more_segments = 0x01,
-			size_indicated = 0x01,
-			expedited_transfer = 0x02,
-
-			error = 0x80
-
-		};
-
-		static const bool debug = true;
-		static const uint64_t response_timeout_ms = SDO_RESPONSE_TIMEOUT_MS;
-		
-		Core& m_core;
-		std::vector<SDOReceivedCallback> m_receive_callbacks;
-
-		uint8_t size_flag(uint8_t size);
+		/// Destructor
+		virtual ~canopen_error() { }
 
 	};
 

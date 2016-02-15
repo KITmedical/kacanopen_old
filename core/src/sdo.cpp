@@ -32,9 +32,11 @@
 #include "sdo.h"
 #include "core.h"
 #include "logger.h"
+#include "sdo_error.h"
 
 #include <iostream>
 #include <chrono>
+#include <cassert>
 
 namespace kaco {
 
@@ -47,10 +49,8 @@ SDO::~SDO()
 
 void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& data) {
 
-	if (data.size()<size) {
-		ERROR("[SDO::download] Not enough data bytes provided!");
-		return;
-	}
+	assert(size>0);
+	assert(data.size()>=size);
 
 	if (size<=4) {
 		
@@ -62,18 +62,17 @@ void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t s
 							| Flag::expedited_transfer;
 
 		SDOResponse response;
-		bool success = send_sdo_and_wait(command, node_id, index, subindex,
+		send_sdo_and_wait(command, node_id, index, subindex,
 			data[0], data[1], data[2], data[3], response);
 
 		if (response.failed()) {
-			ERROR("[SDO::upload] "<<response.get_error());
+			throw sdo_error(response.get_data());
 		}
 
 	} else {
 
 		// segmented transfer
-		ERROR("[SDO::download] Segmented download not yet supported!");
-		return;
+		throw sdo_error(sdo_error::type::segmented_download);
 
 	}
 
@@ -85,12 +84,11 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 
 	uint8_t command = Flag::initiate_upload_request;
 	SDOResponse response;
-	bool success = send_sdo_and_wait(command, node_id, index, subindex,
+	send_sdo_and_wait(command, node_id, index, subindex,
 		0, 0, 0, 0, response);
 
 	if (response.failed()) {
-		ERROR("[SDO::upload] "<<response.get_error());
-		return result;
+		throw sdo_error(response.get_data());
 	}
 
 	if (response.command & Flag::expedited_transfer) {
@@ -102,8 +100,7 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 	} else {
 
 		if ((response.command & Flag::size_indicated)==0) {
-			ERROR("[SDO::upload] Cannot parse response. Command "<<(unsigned)response.command<<" is reserved for further use.");
-			return result;
+			throw sdo_error(sdo_error::type::response_command,"Command "+std::to_string(response.command)+" is reserved for further use.");
 		}
 
 		// TODO: the &0xFF is necessary (tested with sysWOORXX IO-X1) but I haven't found this restriction in CiA301...
@@ -123,20 +120,14 @@ std::vector<uint8_t> SDO::upload(uint8_t node_id, uint16_t index, uint8_t subind
 			uint8_t command = Flag::upload_segment_request
 								| toggle_bit;
 			SDOResponse response;
-			bool success = send_sdo_and_wait(command, node_id, 0, 0, 0, 0, 0, 0, response);
-
-			if (!success) {
-				ERROR("[SDO::upload] Abort segmented transfer due to timeout.");
-			}
+			send_sdo_and_wait(command, node_id, 0, 0, 0, 0, 0, 0, response);
 
 			if (response.failed()) {
-				ERROR("[SDO::upload] "<<response.get_error());
-				return result;
+				throw sdo_error(response.get_data());
 			}
 
 			if (toggle_bit != (response.command & Flag::toggle_bit)) {
-				ERROR("[SDO::upload] [Restrictive] Toggle bit is not equal to the request.");
-				return result;
+				throw sdo_error(sdo_error::type::response_toggle_bit);
 			}
 
 			unsigned i=0;
@@ -191,12 +182,11 @@ void SDO::process_incoming_message(const Message& message) {
 
 }
 
-bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
+void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 	SDOResponse& response) {
 
 	bool received_result = false;
-	bool failed = false;
 
 	SDOReceivedCallback receiver = { node_id, [&] (const SDOResponse& _response) {
 		//f (_response.node_id == node_id) { //&& _response.get_index() == index && _response.get_subindex() == subindex) {
@@ -230,29 +220,27 @@ bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	while (!received_result) {
 
 		if (std::chrono::system_clock::now() - start > timeout) {
-			ERROR("[SDO::send_sdo_and_wait] Timeout!");
-			failed = true;
-			break;
+			throw sdo_error(sdo_error::type::response_timeout, "Timeout was "+std::to_string(timeout.count())+"ms.");
 		}
 
 	}
 
 	//! not thread-safe!
 	m_receive_callbacks.pop_back();
-	return !failed;
 
 }
 
 uint8_t SDO::size_flag(uint8_t size) {
+	assert(size>0);
+	assert(size<=4);
 	switch(size) {
 		case 1: return 0x0C;
 		case 2: return 0x08;
 		case 3: return 0x04;
 		case 4: return 0x00;
-		default:
-			ERROR("[SDO::size_flag] Size for must be <= 4!");
-			return 0x0;
 	}
+	assert(false && "Dead code!");
+	return 0;
 }
 
 }

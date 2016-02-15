@@ -9,3 +9,5 @@ option(EXHAUSTIVE_DEBUGGING "Enable exhaustive debugging." OFF)
 option(NO_ROS "Exclude anything depending on ROS" OFF)
 
 option(INSTALL_EXAMPLES "Install example programs when running make install" OFF)
+
+set(SDO_RESPONSE_TIMEOUT_MS "2000" CACHE STRING "Timeout in milliseconds when waiting for an SDO response.")

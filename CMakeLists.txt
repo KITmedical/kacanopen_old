@@ -24,6 +24,13 @@ else()
 endif()
 
 
+
+### constants ###
+
+add_definitions("-DSDO_RESPONSE_TIMEOUT_MS=${SDO_RESPONSE_TIMEOUT_MS}")
+message(STATUS "SDO response timeout is set to ${SDO_RESPONSE_TIMEOUT_MS}ms")
+
+
 ### GCC ist not supported until 4.9 ###
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

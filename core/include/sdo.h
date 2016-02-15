@@ -92,6 +92,8 @@ namespace kaco {
 		};
 
 		static const bool debug = true;
+		static const uint64_t response_timeout_ms = SDO_RESPONSE_TIMEOUT_MS;
+		
 		Core& m_core;
 		std::vector<SDOReceivedCallback> m_receive_callbacks;
 		

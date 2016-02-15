@@ -225,7 +225,7 @@ bool SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	m_core.send(message);
 
 	const auto start = std::chrono::system_clock::now();
-	const auto timeout = std::chrono::seconds(2);
+	const auto timeout = std::chrono::milliseconds(response_timeout_ms);
 	
 	while (!received_result) {
 

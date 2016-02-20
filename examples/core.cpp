@@ -36,6 +36,9 @@
 #include "core.h"
 #include "logger.h"
 
+// #define BUSNAME ... // set by CMake
+// #define BAUDRATE ... // set by CMake
+
 int main(int argc, char** argv) {
 
     kaco::Core core;
@@ -45,7 +48,7 @@ int main(int argc, char** argv) {
 	};
 	core.nmt.register_new_device_callback(callback);
 
-    core.start();
+    core.start(BUSNAME, BAUDRATE);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
     
     core.nmt.reset_all_nodes();

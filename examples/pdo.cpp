@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 	PRINT("and 'Read input 8-bit/Digital Inputs 9-16' via TPDO1 and to receive 'Write output 8-bit/Digital Outputs 1-8' via RPDO1.");
 
 	kaco::Master master;
-	bool success = master.start();
+	bool success = master.start(BUSNAME, BAUDRATE);
 	if (!success) {
 		ERROR("Starting master failed.");
 		return EXIT_FAILURE;

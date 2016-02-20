@@ -33,6 +33,7 @@
 #include <thread>
 #include <chrono>
 #include <future>
+#include <string>
 
 #include "logger.h"
 #include "core.h"
@@ -59,9 +60,9 @@ Core::~Core() {
 	}
 }
 
-bool Core::start() {
+bool Core::start(const std::string busname, unsigned baudrate) {
 
-    CANBoard board = {"slcan0", "500000"} ;
+    CANBoard board = {busname.c_str(), std::to_string(baudrate).c_str()} ;
     m_handle = canOpen_driver(&board);
 
     if(!m_handle) {

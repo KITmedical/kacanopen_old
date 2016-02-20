@@ -67,9 +67,11 @@ namespace kaco {
 		Core();
 		~Core();
 		
-		//! Open device and start CanOpen receive loop.
-		//! \returns true if successful
-		bool start();
+		/// Opens CAN driver and starts CAN message receive loop.
+		///	\param busname Name of the bus which will be passed to the CAN driver, e.g. slcan0
+		///	\param baudrate Baudrate in 1/s, will be passed to the CAN driver, e.g. 500000
+		/// \returns true if successful
+		bool start(const std::string busname, unsigned baudrate);
 		
 		void stop();
 		void register_receive_callback(const MessageReceivedCallback& callback);	

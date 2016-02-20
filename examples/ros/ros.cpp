@@ -38,10 +38,13 @@
 #include <chrono>
 #include <memory>
 
+// #define BUSNAME ... // set by CMake
+// #define BAUDRATE ... // set by CMake
+
 int main(int argc, char** argv) {
 
 	kaco::Master master;
-	bool success = master.start();
+	bool success = master.start(BUSNAME, BAUDRATE);
 
 	if (!success) {
 		ERROR("Starting master failed.");

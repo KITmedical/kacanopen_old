@@ -45,8 +45,11 @@ namespace kaco {
 		Master();
 		~Master();
 
-		//! \returns true if successful
-		bool start();
+		/// Starts master, creates Core and resets all nodes.
+		///	\param busname Name of the bus which will be passed to the CAN driver, e.g. slcan0
+		///	\param baudrate Baudrate in 1/s, will be passed to the CAN driver, e.g. 500000
+		/// \returns true if successful
+		bool start(const std::string busname, unsigned baudrate);
 		
 		void stop();
 		std::vector<Device>& get_devices();

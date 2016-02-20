@@ -30,6 +30,12 @@ endif()
 add_definitions("-DSDO_RESPONSE_TIMEOUT_MS=${SDO_RESPONSE_TIMEOUT_MS}")
 message(STATUS "SDO response timeout is set to ${SDO_RESPONSE_TIMEOUT_MS}ms")
 
+add_definitions("-DBUSNAME=\"${BUSNAME}\"")
+message(STATUS "Busname is set to ${BUSNAME} (only used by examples)")
+
+add_definitions("-DBAUDRATE=${BAUDRATE}")
+message(STATUS "Baudrate is set to ${BAUDRATE} (only used by examples)")
+
 
 ### GCC ist not supported until 4.9 ###
 

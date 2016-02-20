@@ -34,6 +34,7 @@
 #include "core.h"
 
 #include <iostream>
+#include <cassert>
 
 namespace kaco {
 
@@ -62,7 +63,7 @@ void PDO::process_incoming_message(const Message& message) const {
 		if (callback.cob_id == cob_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
-			callback.callback(std::move(data);
+			callback.callback(std::move(data));
 		}
 	}
 

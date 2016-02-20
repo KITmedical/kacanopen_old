@@ -33,6 +33,7 @@
 #include "core.h"
 #include "entry.h"
 #include "logger.h"
+#include "dictionary_error.h"
 
 #include <cassert>
 
@@ -46,7 +47,9 @@ TransmitPDOMapping::TransmitPDOMapping(Core& core, const std::map<std::string, E
 		transmission_type(transmission_type_),
 		repeat_time(repeat_time_),
 		mappings(mappings_)
-	{ }
+	{
+		check_correctness();
+	}
 
 TransmitPDOMapping::~TransmitPDOMapping() {
 	if (transmitter) {
@@ -92,7 +95,7 @@ void TransmitPDOMapping::send() const {
 
 }
 
-bool TransmitPDOMapping::check_correctness() const {
+void TransmitPDOMapping::check_correctness() const {
 
 	unsigned size = 0;
 	std::vector<bool> byte_mapped(8,false);
@@ -102,29 +105,24 @@ bool TransmitPDOMapping::check_correctness() const {
 		const std::string entry_name = Utils::escape(mapping.entry_name);
 
 		if (m_dictionary.count(entry_name) == 0) {
-			ERROR("[TransmitPDOMapping::check_correctness] Dictionary entry \""<<entry_name<<"\" not available.");
-			return false;
+			throw dictionary_error(dictionary_error::type::unknown_entry, entry_name);
 		}
 
 		const Entry& entry = m_dictionary.at(entry_name);
 		const uint8_t type_size = Utils::get_type_size(entry.type);
 
 		if (mapping.offset+type_size > 8) {
-			ERROR("[TransmitPDOMapping::check_correctness] mapping.offset+type_size > 8");
-			DUMP(type_size);
-			DUMP(mapping.offset);
-			return false;
+			throw dictionary_error(dictionary_error::type::mapping_size, entry_name,
+				"mapping.offset ("+std::to_string(mapping.offset)+") + type_size ("+std::to_string(type_size)+") > 8.");
 		}
 
 		if (mapping.array_index > 0 && !entry.is_array) {
-			ERROR("[TransmitPDOMapping::check_correctness] array_index specified but entry \""<<entry_name<<"\" is no array.");
-			return false;
+			throw dictionary_error(dictionary_error::type::no_array, entry_name);
 		}
 
 		for (uint8_t i=mapping.offset; i<mapping.offset+type_size; ++i) {
 			if (byte_mapped[i]) {
-				ERROR("[TransmitPDOMapping::check_correctness] Overlapping mappings at byte index "<<i);
-				return false;
+				throw dictionary_error(dictionary_error::type::mapping_overlap, entry_name, "Byte index: "+std::to_string(i));
 			}
 			byte_mapped[i] = true;
 		}
@@ -134,11 +132,9 @@ bool TransmitPDOMapping::check_correctness() const {
 	}
 
 	if (size > 8) {
-		ERROR("[TransmitPDOMapping::check_correctness] size > 8");
-		return false;
+		throw dictionary_error(dictionary_error::type::mapping_size, "",
+				"total size ("+std::to_string(size)+") > 8.");
 	}
-
-	return true;
 
 }
 

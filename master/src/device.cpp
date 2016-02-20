@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2015-2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include "core.h"
 #include "utils.h"
 #include "logger.h"
+#include "dictionary_error.h"
 
 #include <cassert>
 #include <algorithm>
@@ -78,11 +79,14 @@ const Value& Device::get_entry(const std::string& entry_name, uint8_t array_inde
 	const std::string name = Utils::escape(entry_name);
 
 	if (m_dictionary.count(name) == 0) {
-		ERROR("[Device::get_entry] Dictionary entry \""<<name<<"\" not available.");
-		return m_dummy_value;
+		throw dictionary_error(dictionary_error::type::unknown_entry, name);
 	}
 
 	Entry& entry = m_dictionary[name];
+
+	if (array_index > 0 && !entry.is_array) {
+		throw dictionary_error(dictionary_error::type::no_array, name);
+	}
 
 	if (access_method==ReadAccessMethod::sdo || (access_method==ReadAccessMethod::use_default && entry.read_access_method==ReadAccessMethod::sdo)) {
 		
@@ -102,8 +106,7 @@ Type Device::get_entry_type(const std::string& entry_name) {
 	const std::string name = Utils::escape(entry_name);
 
 	if (m_dictionary.count(name) == 0) {
-		ERROR("[Device::get_entry_type] Dictionary entry \""<<name<<"\" not available.");
-		return Type::invalid;
+		throw dictionary_error(dictionary_error::type::unknown_entry, name);
 	}
 
 	return m_dictionary[name].get_type();
@@ -122,16 +125,18 @@ void Device::set_entry(const std::string& entry_name, const Value& value, uint8_
 	const std::string name = Utils::escape(entry_name);
 
 	if (m_dictionary.count(name) == 0) {
-		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" not available.");
-		return;
+		throw dictionary_error(dictionary_error::type::unknown_entry, name);
 	}
 
 	Entry& entry = m_dictionary[name];
 
+	if (array_index > 0 && !entry.is_array) {
+		throw dictionary_error(dictionary_error::type::no_array, name);
+	}
+
 	if (value.type != entry.type) {
-		ERROR("[Device::set_entry] You passed a value of wrong type: "<<Utils::type_to_string(value.type));
-		ERROR("[Device::set_entry] Dictionary entry \""<<name<<"\" must be of type "<<Utils::type_to_string(entry.type)<<".");
-		return;
+		throw dictionary_error(dictionary_error::type::wrong_type, name,
+			"Entry type: "+Utils::type_to_string(entry.type)+", given type: "+Utils::type_to_string(value.type));
 	}
 
 	entry.set_value(value, array_index);
@@ -154,38 +159,36 @@ void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_n
 	const std::string name = Utils::escape(entry_name);
 
 	if (m_dictionary.count(name) == 0) {
-		ERROR("[Device::add_receive_pdo_mapping] Dictionary entry \""<<name<<"\" not available.");
-		return;
+		throw dictionary_error(dictionary_error::type::unknown_entry, name);
 	}
 	
 	Entry& entry = m_dictionary[name];
+
+	if (array_index > 0 && !entry.is_array) {
+		throw dictionary_error(dictionary_error::type::no_array, name);
+	}
+	
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (offset+type_size > 8) {
-		ERROR("[Device::add_receive_pdo_mapping] offset+type_size > 8.");
-		DUMP(type_size);
-		DUMP(offset);
+		throw dictionary_error(dictionary_error::type::mapping_size, name,
+			"offset ("+std::to_string(offset)+") + type_size ("+std::to_string(type_size)+") > 8.");
 	}
 
 	m_receive_pdo_mappings.push_back({cob_id,name,offset,array_index});
 
 	// TODO: this only works while add_pdo_received_callback takes callback by value.
 	auto binding = std::bind(&Device::pdo_received_callback, this, m_receive_pdo_mappings.back(), std::placeholders::_1);
-	m_core.pdo.add_pdo_received_callback(cob_id, binding);
+	m_core.pdo.add_pdo_received_callback(cob_id, std::move(binding));
 
 }
 
 
 void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping>& mappings, TransmissionType transmission_type, std::chrono::milliseconds repeat_time) {
 
+	// Contructor can throw dictionary_error. Letting user handle this.
 	m_transmit_pdo_mappings.emplace_back(m_core, m_dictionary, cob_id, transmission_type, repeat_time, mappings);
 	TransmitPDOMapping& pdo = m_transmit_pdo_mappings.back();
-
-	if (!pdo.check_correctness()) {
-		ERROR("The given PDO mapping is not correct.");
-		m_transmit_pdo_mappings.pop_back();
-		return;
-	}
 
 	if (transmission_type==TransmissionType::ON_CHANGE) {
 
@@ -233,6 +236,7 @@ void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (data.size() < offset+type_size) {
+		// We don't throw an exception here, because this could be a network error.
 		ERROR("[Device::pdo_received_callback] PDO has wrong size!");
 		DUMP(data.size());
 		DUMP(offset);
@@ -273,7 +277,7 @@ bool Device::load_dictionary_from_library() {
 				if (success) {
 					DEBUG_LOG("[load_dictionary_from_library] Successfully loaded mandatory CiA 301 entries");
 				} else {
-					DEBUG_LOG("[load_dictionary_from_library] Could not automatically load the dictionary. Please manage dictionary by yourself.");
+					ERROR("[load_dictionary_from_library] Could not automatically load the dictionary. Please manage dictionary by yourself.");
 					return false;
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016, Thomas Keh
+ * Copyright (c) 2015, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,56 +29,58 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#pragma once
-
-#include <string>
-#include <vector>
-#include <chrono>
-#include <map>
-#include <thread>
-#include <memory>
-
-#include "mapping.h"
-#include "types.h"
+#include "dictionary_error.h"
 
 namespace kaco {
 
-	// forward declarations
-	class Core;
-	class Entry;
+	dictionary_error::dictionary_error(type error_type, const std::string& entry_name, const std::string& additional_information)
+		: canopen_error("")
+		{
 
-	class TransmitPDOMapping {
+		switch (error_type) {
 
-	public:
+			case type::unknown_entry:
+				m_message = "Dictionary entry \""+entry_name+"\" not available.";
+				break;
+			case type::read_only:
+				m_message = "Attempt to write the read-only dictionary entry \""+entry_name+"\".";
+				break;
+			case type::write_only:
+				m_message = "Attempt to read the write-only dictionary entry \""+entry_name+"\".";
+				break;
+			case type::wrong_type:
+				m_message = "Data type does not match to the dictionary entry \""+entry_name+"\".";
+				break;
+			case type::no_array:
+				m_message = "Dictionary entry \""+entry_name+"\" is no array, but you specified an array index.";
+				break;
+			case type::mapping_size:
+				m_message = "Invalid mapping size.";
+				break;
+			case type::mapping_overlap:
+				m_message = "Mappings overlap for this PDO.";
+				break;
 
-		/// \throws dictionary_error
-		TransmitPDOMapping(Core& core, const std::map<std::string, Entry>& dictionary, uint16_t cob_id_,
-			TransmissionType transmission_type_, std::chrono::milliseconds repeat_time_, const std::vector<Mapping>& mappings_);
+			// no default -> compiler should warn if a type is missing.
 
-		/// Stops the transmitter thread if there is one.
-		~TransmitPDOMapping();
+		}
 
-		uint16_t cob_id;
-		TransmissionType transmission_type;
-		std::chrono::milliseconds repeat_time;
-		std::vector<Mapping> mappings;
+		m_type = error_type;
+		m_entry_name = entry_name;
+		m_message = "Dictionary error: " + m_message + (additional_information.empty()?"":" "+additional_information);
 
-		// this is a shared pointer because threads cannot be copied,
-		// but TransmitPDOMapping is default-copy-constructed by std::vector.
-		std::shared_ptr<std::thread> transmitter;
+	}
 
-		void send() const;
+	const char* dictionary_error::what() const noexcept {
+		return m_message.c_str();
+	}
 
-	private:
+	dictionary_error::type dictionary_error::get_type() const noexcept {
+		return m_type;
+	}
 
-		/// \throws dictionary_error
-		void check_correctness() const;
+	std::string dictionary_error::get_entry_name() const noexcept {
+		return m_entry_name;
+	}
 
-		static const bool debug = false;
-
-		Core& m_core;
-		const std::map<std::string, Entry>& m_dictionary;
-
-	};
-
-} // end namespace kaco
+}

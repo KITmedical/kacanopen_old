@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2015-2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,41 +47,90 @@
 
 namespace kaco {
 
+	/// This class represents a CanOpen slave device in the network.
+	///
+	/// It provides easy access to it's object dictionary entries via
+	/// addesses or names. There is a locally cached version of the
+	/// device's object dictionary. This allows for dynamically mapping
+	/// entries to transmit and receive PDOs. This abstracts away the
+	/// underlaying communication method when manipulating the dictionary.
+	/// The device object must know the structure of the slave's dictionary
+	/// for these features, however, it can be fetched automatically from
+	/// an EDS file or from KaCanOpen's EDS library.
+	///
+	/// Call print_dictionary() if you want to know which entries are
+	/// accessible by name.
 	class Device {
 
 	public:
 
+		/// Constructor.
+		/// It will try to load mandatory dictionary entries from the EDS library.
+		/// \param core Reference of a Core instance
+		/// \param node_id ID of the represented device
 		Device(Core& core, uint8_t node_id);
+
+		/// Destructor
 		~Device();
 
+		/// Starts the node via NMT protocol.
 		void start();
+
+		/// Returns the node ID of the device.
 		uint8_t get_node_id() const;
 
 		/// Gets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value
 		/// cannot be used by Transmit PDOs.
+		/// \param index Dictionary index of the entry
+		/// \param subindex Subindex of the entry
+		/// \param type Data type of the entry
+		/// \throws sdo_error
 		Value get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type);
 
 		/// Gets the value of a dictionary entry by name internally.
 		/// If there is no cached value or the entry is configured to send an SDO on request, the new value is fetched from the device via SDO.
 		/// Otherwise it returns the cached value. This makes sense, if a Reveive PDO is configured on the corresponding entry.
+		/// \param entry_name Name of the dictionary entry
+		/// \param array_index Optional array index. Use 0 if the entry is no array.
+		/// \param access_method Method of value retrival
+		/// \throws dictionary_error if there is no entry with the given name, or array_index!=0 for a non-array entry.
+		/// \throws sdo_error
+		/// \todo check access_type from dictionary
 		const Value& get_entry(const std::string& entry_name, uint8_t array_index=0, ReadAccessMethod access_method = ReadAccessMethod::use_default);
 
 		/// Returns the type of a dictionary entry identified by name as it is defined in the local dictionary.
+		/// \param entry_name Name of the dictionary entry
+		/// \throws dictionary_error if there is no entry with the given name
+		/// \todo Missing array_index argument.
 		Type get_entry_type(const std::string& entry_name);
 
 		/// Sets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value
 		/// cannot be used by Transmit PDOs.
+		/// \param index Dictionary index of the entry
+		/// \param subindex Subindex of the entry
+		/// \param value The value to write, wrapped in a Value object. The Value class has implicit cast constructors for all supported data types.
+		/// \throws sdo_error
 		void set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& value);
 
 		/// Sets the value of a dictionary entry by name internally.
 		/// If the entry is configured to send an SDO on update, the new value is also sent to the device via SDO.
 		/// If a PDO is configured on the corresponding entry, it will from now on use the new value stored internally.
+		/// \param entry_name Name of the dictionary entry
+		/// \param value The value to write, wrapped in a Value object. The Value class has implicit cast constructors for all supported data types.
+		/// \param array_index Optional array index. Use 0 if the entry is no array.
+		/// \param access_method How, where and when to write the value.
+		/// \throws dictionary_error if there is no entry with the given name, or array_index!=0 for a non-array entry.
+		/// \throws sdo_error
+		/// \todo check access_type from dictionary
 		void set_entry(const std::string& entry_name, const Value& value, uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
 
 		/// Adds a receive PDO mapping. This means values sent by the device via PDO are saved into the dictionary cache.
+		/// \param entry_name Name of the dictionary entry
 		/// \param offset index of the first mapped byte in the PDO message
+		/// \param array_index Optional array index. Use 0 if the entry is no array.
+		/// \throws dictionary_error if there is no entry with the given name, or array_index!=0 for a non-array entry.
 		void add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_name, uint8_t offset, uint8_t array_index=0);
 
 		/// Adds a transmit PDO mapping. This means values from the dictionary cache are sent to the device.
@@ -90,27 +139,34 @@ namespace kaco {
 		/// \param mappings A vector of mappings. A mapping maps a dictionary entry (by name) to a part of a PDO (by first and last byte index)
 		/// \param transmission_type Send PDO "ON_CHANGE" or "PERIODIC"
 		/// \param repeat_time If transmission_type==TransmissionType::PERIODIC, PDO is sent periodically according to repeat_time.
+		/// \throws dictionary_error
 		///
 		/// \example 
-		/// 	The following command maps the first value of the "write_output" entry (it's an arraym see CiA 401)
-		///		to the first byte of the PDO channel with cob_id 0x208 (RPDO1 of CANOpen device 8). The PDO is
-		///		sent whenever the value is changed via set_entry("write_output", value, 0).
+		/// 	The following command maps the "Controlword" entry (2 bytes, see CiA 402)
+		///		to the first two bytes of the PDO channel with cob_id 0x206 (RPDO1 of CANOpen device 6),
+		///		and the "Target Position" entry (4 bytes, see CiA 402) to bytes 2-5 of this PDO channel.
+		///		The PDO is sent whenever one of the values is changed via set_entry("Controlword", ...)
+		///		or set_entry("Target Position", ...),
 		///
-		/// 	device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}});
+		/// 	device.add_transmit_pdo_mapping(0x206, {{"Controlword", 0, 0},{"Target Position", 2, 0}});
 		///
 		void add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping>& mappings, TransmissionType transmission_type=TransmissionType::ON_CHANGE, std::chrono::milliseconds repeat_time=std::chrono::milliseconds(0));
 
 		/// Returns the CiA profile number (determined via SDO)
+		/// \throws sdo_error
 		uint16_t get_device_profile_number();
 
 		/// Tries to load the most specific EDS file available in KaCanOpen's internal EDS library.
 		/// This is either device specific, CiA profile specific, or mandatory CiA 301.
+		/// \returns true, if successful
 		bool load_dictionary_from_library();
 
 		/// Loads the dictionary from a custom EDS file.
+		/// \param path A filesystem path where the EDS library can be found.
+		/// \returns true, if successful
 		bool load_dictionary_from_eds(std::string path);
 
-		/// Prints the dictionary together with currently cached values.
+		/// Prints the dictionary together with currently cached values to command line.
 		void print_dictionary() const;
 
 	private:

@@ -33,7 +33,7 @@
 #include "logger.h"
 #include "core.h"
 
- #include <iostream>
+#include <iostream>
 
 namespace kaco {
 
@@ -62,7 +62,7 @@ void PDO::process_incoming_message(const Message& message) const {
 		if (callback.cob_id == cob_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
-			callback.callback(data);
+			callback.callback(std::move(data);
 		}
 	}
 
@@ -80,10 +80,7 @@ void PDO::process_incoming_message(const Message& message) const {
 
 void PDO::send(uint16_t cob_id, const std::vector<uint8_t>& data) {
 	
-	if (data.size()>8) {
-		ERROR("[PDO::send] A PDO message can have 8 data bytes at most.");
-		return;
-	}
+	assert(data.size()<=8 && "[PDO::send] A PDO message can have at most 8 data bytes.");
 
 	Message message;
 	message.cob_id = cob_id;
@@ -93,8 +90,8 @@ void PDO::send(uint16_t cob_id, const std::vector<uint8_t>& data) {
 		message.data[i] = data[i];
 	}
 
-	DEBUG_LOG("Sending the following PDO:");
-	DEBUG(message.print();)
+	DEBUG_LOG_EXHAUSTIVE("Sending the following PDO:");
+	DEBUG_EXHAUSTIVE(message.print();)
 
 	m_core.send(message);
 

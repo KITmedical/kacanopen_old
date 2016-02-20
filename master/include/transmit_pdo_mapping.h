@@ -47,26 +47,44 @@ namespace kaco {
 	class Core;
 	class Entry;
 
+	/// This class represents a mapping from one or more
+	/// dictionary entries to one transmit PDO, which will
+	/// be sent by an instance of this class repeatedly.
 	class TransmitPDOMapping {
 
 	public:
 
-		/// \throws dictionary_error
+		/// Constructor.
+		/// \param core Reference to the Core instance (needed to send the PDO).
+		/// \param dictionary Reference to the object dictionary.
+		/// \param cob_id_ COB-ID of the PDO
+		/// \param transmission_type_ Transmission type
+		/// \param repeat_time_ Send repeat time , in case transmission_type_==TransmissionType::PERIODIC
+		/// \param mappings_ Mapped entries with offset (see Mapping class)
+		/// \throws dictionary_error if entry does not exist or mappings overlap (among others)
 		TransmitPDOMapping(Core& core, const std::map<std::string, Entry>& dictionary, uint16_t cob_id_,
 			TransmissionType transmission_type_, std::chrono::milliseconds repeat_time_, const std::vector<Mapping>& mappings_);
 
 		/// Stops the transmitter thread if there is one.
 		~TransmitPDOMapping();
 
+		/// COB-ID of the PDO
 		uint16_t cob_id;
+
+		/// Transmission type
 		TransmissionType transmission_type;
+
+		/// Send repeat time
 		std::chrono::milliseconds repeat_time;
+
+		/// Mapped entries with offset (see Mapping class)
 		std::vector<Mapping> mappings;
 
-		// this is a shared pointer because threads cannot be copied,
-		// but TransmitPDOMapping is default-copy-constructed by std::vector.
+		/// The transmitter thread
+		/// \note This is a shared pointer because threads cannot be copied, but TransmitPDOMapping is default-copy-constructed by std::vector.
 		std::shared_ptr<std::thread> transmitter;
 
+		/// Sends the PDO
 		void send() const;
 
 	private:

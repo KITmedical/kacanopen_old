@@ -38,11 +38,20 @@
 
 namespace kaco {
 
+	/// \class Master
+	/// 
+	/// This class represents a master node. It listens
+	/// for new slaves and provides access to them
+	/// via get_slaves().
 	class Master {
 
 	public:
 
+		/// Constructor.
+		/// Creates Core instance and adds NMT listener for new devices. 
 		Master();
+
+		/// Destructor.
 		~Master();
 
 		/// Starts master, creates Core and resets all nodes.
@@ -51,9 +60,13 @@ namespace kaco {
 		/// \returns true if successful
 		bool start(const std::string busname, unsigned baudrate);
 		
+		/// Stops master and core.
 		void stop();
+
+		/// Returns a reference to the device array.
 		std::vector<Device>& get_devices();
 
+		/// Core instance.
 		Core core;
 
 	private:

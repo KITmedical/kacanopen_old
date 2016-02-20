@@ -44,6 +44,9 @@
 
 namespace kaco {
 
+	/// \class Entry
+	///
+	/// This class represents an entry in the object dictionary of a device.
 	class Entry {
 
 	public:

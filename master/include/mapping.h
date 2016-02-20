@@ -38,15 +38,18 @@
 
 namespace kaco {
 
+	/// This struct represents one mapped entry inside a TransmitPDOMapping.
 	struct Mapping {
+
+		/// Name of the mapped dictionary entry.
 		std::string entry_name;
 
 		/// index of the first mapped byte in the PDO message
 		uint8_t offset;
 
-		// only relevant for arrays
-		// TODO: one byte correct?
+		/// Array index (only relevant for arrays)
 		uint8_t array_index;
+
 	};
 
 } // end namespace kaco

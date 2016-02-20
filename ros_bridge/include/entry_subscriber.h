@@ -49,14 +49,14 @@
 
 namespace kaco {
 
+	/// This class provides a Publisher implementation for
+	/// use with kaco::Bridge. It publishes a value from
+	/// a device's dictionary.
 	class EntrySubscriber : public Subscriber {
 
 	public:
 
-		/// This class provides a Publisher implementation for
-		/// use with kaco::Bridge. It publishes a value from
-		/// a device's dictionary.
-		///
+		/// Constructor
 		/// \param device The CanOpen device
 		/// \param entry_name The name of the entry. See device profile.
 		/// \param array_index If the entry is not an array, this should be zero, otherwise it's the array index

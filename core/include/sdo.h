@@ -42,26 +42,65 @@ namespace kaco {
 	// forward declaration
 	class Core;
 
+	/// \class SDO
+	///
+	/// This class implements the CanOpen SDO protocol
 	class SDO {
 
 	public:
 
-		//! type of a sdo message receiver function
+		/// Type of a sdo message receiver function with it's node id
 		struct SDOReceivedCallback {
+
+			/// Type of the callback
 			typedef std::function< void(const SDOResponse&) > sdo_callback_function_type;
+			
+			/// Node id
 			uint8_t node_id;
+
+			/// The callback
 			sdo_callback_function_type callback;
+			
 		};
 
+		/// Constructor
+		/// \param core Reference to the Core
 		SDO(Core& core);
+
+		/// Destructor
 		~SDO();
 		
+		/// SDO download: Write value into remote device's object dictionary.
+		/// \param node_id Node id of remote device
+		/// \param index Dictionary index
+		/// \param subindex Subindex
+		/// \param size Size of the entry/value in bytes
+		/// \param bytes Vector containing the data bytes of the value in little-endian order. Vector size must be equal to size argument.
 		void download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& bytes);
 		
+		/// SDO download: Get value from remote device's object dictionary.
+		/// \param node_id Node id of remote device
+		/// \param index Dictionary index
+		/// \param subindex Subindex
+		/// \returns Vector containing the data bytes of the value in little-endian order.
 		std::vector<uint8_t> upload(uint8_t node_id, uint16_t index, uint8_t subindex);
 
+		/// Process incoming SDO message.
+		/// \param message The received CanOpen message.
 		void process_incoming_message(const Message& message);
 
+		/// Sends an SDO message and waits for the response.
+		/// \param command SDO command specifier
+		/// \param node_id Node id of remote device
+		/// \param index Dictionary index
+		/// \param subindex Subindex
+		/// \param byte0 first data byte (little endian!)
+		/// \param byte1 second data byte
+		/// \param byte2 third data byte
+		/// \param byte3 fourth data byte
+		/// \param response Will contain the response.
+		/// \todo Make response a return value.
+		/// \todo Make byte0 - byte3 arguments an array
 		void send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 			uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 			SDOResponse& response);

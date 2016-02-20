@@ -41,13 +41,17 @@ namespace kaco {
 	// forward declaration
 	class Core;
 
+	/// \class NMT
+	///
+	/// This class implements the CanOpen NMT protocol
 	class NMT {
 
 	public:
 		
-		//! type of a message receiver function
+		/// Type of a new device callback function
 		typedef std::function< void(const uint8_t node_id) > NewDeviceCallback;
 
+		/// NMT commands
 		enum class Command : uint8_t {
 			start_node = 0x01,
 			stop_node = 0x02,
@@ -56,13 +60,30 @@ namespace kaco {
 			reset_communication = 0x82
 		};
 
+		/// Constructor.
+		/// \param core Reference to the Core
 		NMT(Core& core);
+
+		/// Destructor
 		~NMT();
 
+		/// Process incoming NMT message.
+		/// \param message The received CanOpen message.
 		void process_incoming_message(const Message& message);
+
+		/// Sends a NMT message to a given device
+		/// \param node_id Node id of the device.
+		/// \param cmd The NMT command.
 		void send_nmt_message(uint8_t node_id, Command cmd);
+
+		/// Sends a broadcast NMT message
+		/// \param cmd The NMT command.
 		void broadcast_nmt_message(Command cmd);
+
+		/// Resets all nodes in the network.
 		void reset_all_nodes();
+
+		/// Registers a callback which will be called when a new slave device is discovered.
 		void register_new_device_callback(const NewDeviceCallback& callback);	
 
 	private:

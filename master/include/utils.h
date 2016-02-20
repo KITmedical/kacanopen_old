@@ -38,6 +38,7 @@
 
 namespace kaco {
 
+/// This class provides various static utility functions.
 struct Utils {
 
 	/// Converts data types to a string.

@@ -48,23 +48,43 @@
 // TODO: Maybe encapsulate in a driver class //
 //-------------------------------------------//
 
+/// This struct contains C-strings for
+/// busname and baudrate and is passed
+/// to a CAN driver
 typedef struct {
+
+	/// Bus name
 	const char * busname;
+
+	/// Baudrate
 	const char * baudrate;
+	
 } CANBoard;
 
+/// This type is returned by the CAN driver
+/// to identify the driver instance.
 typedef void* CANHandle;
 
 namespace kaco {
 
+	/// \class Core
+	///
+	/// This class implements the Core of KaCanOpen
+	/// It communicates with the CAN driver, sends
+	/// CAN messages and listens for incoming
+	/// CAN messages. You can access CanOpen sub-
+	/// protocols using public members nmt, sdo and pdo.
 	class Core {
 
 	public:
 		
-		//! type of a message receiver function
+		/// type of a message receiver function
 		typedef std::function< void(const Message&) > MessageReceivedCallback;
 
+		/// Constructor
 		Core();
+
+		/// Destructor
 		~Core();
 		
 		/// Opens CAN driver and starts CAN message receive loop.
@@ -73,13 +93,22 @@ namespace kaco {
 		/// \returns true if successful
 		bool start(const std::string busname, unsigned baudrate);
 		
+		/// Stops the receive loop and closes the driver.
 		void stop();
-		void register_receive_callback(const MessageReceivedCallback& callback);	
+
+		/// Sends a message
 		void send(const Message& message);
 
-		// subprotocols
+		/// Registers a callback function which is called when a message has been received.
+		void register_receive_callback(const MessageReceivedCallback& callback);
+
+		/// The NMT sub-protocol
 		NMT nmt;
+
+		/// The SDO sub-protocol
 		SDO sdo;
+
+		/// The PDO sub-protocol
 		PDO pdo;
 
 

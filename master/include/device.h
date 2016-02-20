@@ -127,6 +127,7 @@ namespace kaco {
 		void set_entry(const std::string& entry_name, const Value& value, uint8_t array_index=0, WriteAccessMethod access_method = WriteAccessMethod::use_default);
 
 		/// Adds a receive PDO mapping. This means values sent by the device via PDO are saved into the dictionary cache.
+		/// \param cob_id COB-ID of the PDO
 		/// \param entry_name Name of the dictionary entry
 		/// \param offset index of the first mapped byte in the PDO message
 		/// \param array_index Optional array index. Use 0 if the entry is no array.
@@ -135,13 +136,8 @@ namespace kaco {
 
 		/// Adds a transmit PDO mapping. This means values from the dictionary cache are sent to the device.
 		///
-		/// \param cob_id The cob_id of the PDO to transmit
-		/// \param mappings A vector of mappings. A mapping maps a dictionary entry (by name) to a part of a PDO (by first and last byte index)
-		/// \param transmission_type Send PDO "ON_CHANGE" or "PERIODIC"
-		/// \param repeat_time If transmission_type==TransmissionType::PERIODIC, PDO is sent periodically according to repeat_time.
-		/// \throws dictionary_error
-		///
-		/// \example 
+		/// Example:
+		/// 
 		/// 	The following command maps the "Controlword" entry (2 bytes, see CiA 402)
 		///		to the first two bytes of the PDO channel with cob_id 0x206 (RPDO1 of CANOpen device 6),
 		///		and the "Target Position" entry (4 bytes, see CiA 402) to bytes 2-5 of this PDO channel.
@@ -150,6 +146,11 @@ namespace kaco {
 		///
 		/// 	device.add_transmit_pdo_mapping(0x206, {{"Controlword", 0, 0},{"Target Position", 2, 0}});
 		///
+		/// \param cob_id The cob_id of the PDO to transmit
+		/// \param mappings A vector of mappings. A mapping maps a dictionary entry (by name) to a part of a PDO (by first and last byte index)
+		/// \param transmission_type Send PDO "ON_CHANGE" or "PERIODIC"
+		/// \param repeat_time If transmission_type==TransmissionType::PERIODIC, PDO is sent periodically according to repeat_time.
+		/// \throws dictionary_error
 		void add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping>& mappings, TransmissionType transmission_type=TransmissionType::ON_CHANGE, std::chrono::milliseconds repeat_time=std::chrono::milliseconds(0));
 
 		/// Returns the CiA profile number (determined via SDO)

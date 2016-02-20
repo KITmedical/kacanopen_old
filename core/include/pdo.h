@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 #pragma once
 
 #include <vector>
@@ -42,25 +42,47 @@ namespace kaco {
 	// forward declaration
 	class Core;
 
+	/// \class PDO
+	///
+	/// This class implements the CanOpen PDO protocol
 	class PDO {
 
 	public:
 
-		//! type of a sdo message receiver function
+		/// A PDO message receiver function
+		/// together with it's COB-ID
 		struct PDOReceivedCallback {
-			// TODO: make data vector a reference?
+
+			/// Type of the callback
 			typedef std::function< void(std::vector<uint8_t>) > Function;
+
+			/// The COB-ID of the PDO to receive
 			uint16_t cob_id;
+
+			/// The callback
 			Function callback;
+
 		};
 
+		/// Constructor
+		/// \param core Reference to the Core
 		PDO(Core& core);
+
+		/// Destructor
 		~PDO();
 
+		/// Handler for an incoming PDO message
+		/// \param message The message from the network
 		void process_incoming_message(const Message& message) const;
 
+		/// Sends a PDO message
+		/// \param cob_id COB-ID of the message to send
+		/// \param data A vector containing the data bytes to send. PDOs can have most 8 bytes!
 		void send(uint16_t cob_id, const std::vector<uint8_t>& data);
 
+		/// Adds a callback which will be called when a PDO has been received with the given COB-ID.
+		/// \param cob_id COB-ID to listen for
+		/// \param callback Callback function, which takes a const Message reference as argument.
 		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
 
 	private:

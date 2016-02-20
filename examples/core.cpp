@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2015-2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

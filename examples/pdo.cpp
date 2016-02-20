@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2015-2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 #include <thread>
 #include <chrono>
 #include <cstdint>
@@ -39,7 +39,8 @@
 int main(int argc, char** argv) {
 
 	PRINT("This example runs a counter completely without SDO transfers.");
-	PRINT("The CiA 401 device must be configured to receive 'write_output' via RPDO1 and to send 'read_digital_input' via TPDO1.");
+	PRINT("There must be a CiA 401 device which is configured to send 'Read input 8-bit/Digital Inputs 1-8'");
+	PRINT("and 'Read input 8-bit/Digital Inputs 9-16' via TPDO1 and to receive 'Write output 8-bit/Digital Outputs 1-8' via RPDO1.");
 
 	kaco::Master master;
 	bool success = master.start();

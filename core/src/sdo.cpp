@@ -171,6 +171,7 @@ void SDO::process_incoming_message(const Message& message) {
 		if (callback.node_id == response.node_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
+			// and it cannot be async because response is taken by reference
 			callback.callback(response);
 		}
 	}

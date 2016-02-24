@@ -47,6 +47,9 @@ namespace kaco {
 	/// \class Entry
 	///
 	/// This class represents an entry in the object dictionary of a device.
+	///
+	/// \todo Add missing fields like high and low limit.
+	/// \todo Array type entries are currently not used and may be deleted in future.
 	class Entry {
 
 	public:

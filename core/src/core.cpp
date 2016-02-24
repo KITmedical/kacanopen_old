@@ -138,6 +138,7 @@ void Core::received_message(const Message& message) {
 		case 5:
 		case 7:
 		case 9: {
+			// TODO: This will be process_incoming_tpdo()
 			pdo.process_incoming_message(message);
 			break;
 		}
@@ -146,18 +147,24 @@ void Core::received_message(const Message& message) {
 		case 6:
 		case 8:
 		case 10: {
+			// TODO: Implement this for slave functionality
+			// 	-> delegate to pdo.process_incoming_rpdo()
 			DEBUG_LOG("PDO receive");
 			DEBUG(message.print();)
 			break;
 		}
 		
 		case 11: {
+			// TODO: This will be process_incoming_server_sdo()
 			sdo.process_incoming_message(message);
 			break;
 		}
 		
 		case 12: {
+			// TODO: Implement this for slave functionality
+			// 	-> delegate to sdo.process_incoming_client_sdo()
 			DEBUG_LOG("SDO (receive/client)");
+			DEBUG(message.print();)
 			break;
 		}
 		

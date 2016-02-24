@@ -73,6 +73,7 @@ namespace kaco {
 
 		/// Handler for an incoming PDO message
 		/// \param message The message from the network
+		/// \todo Rename this to process_incoming_tpdo() and add process_incoming_rpdo()
 		void process_incoming_message(const Message& message) const;
 
 		/// Sends a PDO message
@@ -83,6 +84,7 @@ namespace kaco {
 		/// Adds a callback which will be called when a PDO has been received with the given COB-ID.
 		/// \param cob_id COB-ID to listen for
 		/// \param callback Callback function, which takes a const Message reference as argument.
+		/// \todo Rename this to add_tpdo_received_callback() and add add_rpdo_received_callback()
 		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
 
 	private:

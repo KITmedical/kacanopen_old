@@ -45,6 +45,11 @@ namespace kaco {
 	/// \class SDO
 	///
 	/// This class implements the CanOpen SDO protocol
+	///
+	/// \todo Add add_client_sdo_callback(SDOReceivedCallback) (callback signature void(const SDOResponse&)) and/or
+	///		add_request_callback(node_id, SDORequestCallback) (listening only for SDOs with slave's own node_id, callback signature void(index, subindex)).
+	/// \todo Add send_response(node_id, index, subindex, vector<uint8_t> data) (chooses segmented/expedited transfer on it's own).
+	/// \todo Add abort_transfer(node_id, index, subindex, errorcode).
 	class SDO {
 
 	public:
@@ -87,6 +92,7 @@ namespace kaco {
 
 		/// Process incoming SDO message.
 		/// \param message The received CanOpen message.
+		/// \todo Rename this to process_incoming_server_sdo() and add process_incoming_client_sdo()
 		void process_incoming_message(const Message& message);
 
 		/// Sends an SDO message and waits for the response.
@@ -134,6 +140,8 @@ namespace kaco {
 		static const uint64_t response_timeout_ms = SDO_RESPONSE_TIMEOUT_MS;
 		
 		Core& m_core;
+
+		/// \todo Rename to m_server_sdo_callbacks and add m_client_sdo_callbacks.
 		std::vector<SDOReceivedCallback> m_receive_callbacks;
 
 		uint8_t size_flag(uint8_t size);

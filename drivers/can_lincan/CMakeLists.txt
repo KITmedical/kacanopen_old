@@ -11,4 +11,4 @@ file(GLOB TARGET_SRC
 add_library(${TARGET_NAME} SHARED ${TARGET_SRC})
 
 # Install
-kacanopen_install(${LIB_NAME} FALSE)
+kacanopen_install(${TARGET_NAME} FALSE)

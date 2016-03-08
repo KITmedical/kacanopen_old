@@ -50,6 +50,10 @@ source devel/setup.bash
 
 Complete build instructions can be found [here](doc/Installation.md).
 
+## Documentation
+
+Full documentation can be found at [https://thk1.github.io/kacanopen/](https://thk1.github.io/kacanopen/).
+
 ## License
 
 Core, Master and ROS Bridge are licensed under the [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause) license. Drivers from [CanFestival](http://www.canfestival.org/) are licensed under the [LGPLv2.1+](https://opensource.org/licenses/LGPL-2.1) license.

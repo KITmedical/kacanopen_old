@@ -1,4 +1,4 @@
-# KaCanOpen TODO List
+# Roadmap
 
 This is a yet incomplete list of features which are planned for the future. Feel free to contact me you have any further ideas or if you want to contribute code.
 

@@ -1,0 +1,34 @@
+a {
+	color: #32714E !important;
+	font-weight: bold;
+}
+
+.tabs, .tabs2, .tabs3, .tablist a, .tablist li.current a {
+	background-image:none;
+	background-color: #32714E;
+	text-shadow: none;
+	color:black !important;
+}
+
+.tablist li.current a {
+	color:white !important;
+}
+
+.tabs:hover, .tabs2:hover, .tabs3:hover, .tablist a:hover, .tablist li.current a:hover {
+	background-image:none;
+	background-color: #32714E;
+	text-shadow: none;
+	color:white !important;
+}
+
+.icon {
+	background-color: #32714E;
+}
+
+div.ah {
+	background-image:none;
+	background-color: #32714E;
+	border-radius:0.1em;
+	padding:0.01em;
+	border:none;
+}

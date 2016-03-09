@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include "canmsg.h"
 #include "lincan.h"
@@ -31,8 +33,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "can_driver.h"
 
 /*********functions which permit to communicate with the board****************/
-UNS8 canReceive_driver(CAN_HANDLE fd0, Message *m)
+UNS8 canReceive_driver(void* fd0_, Message *m)
 {
+  const int fd0 = *((int*)fd0_);
   int res;
   struct canmsg_t canmsg;
 
@@ -62,8 +65,9 @@ UNS8 canReceive_driver(CAN_HANDLE fd0, Message *m)
 }
 
 /***************************************************************************/
-UNS8 canSend_driver(CAN_HANDLE fd0, Message const *m)
+UNS8 canSend_driver(void* fd0_, Message const *m)
 {
+  const int fd0 = *((int*)fd0_);
   int res;
   struct canmsg_t canmsg;
 
@@ -102,8 +106,9 @@ int TranslateBaudeRate(char* optarg){
 }
 
 /***************************************************************************/
-UNS8 canChangeBaudRate_driver( CAN_HANDLE fd0, char* baud)
+UNS8 canChangeBaudRate_driver(void* fd0_, char* baud)
 {
+	const int fd0 = *((int*)fd0_);
 	struct can_baudparams_t params;
 
 	params.baudrate = TranslateBaudeRate(baud);
@@ -112,7 +117,7 @@ UNS8 canChangeBaudRate_driver( CAN_HANDLE fd0, char* baud)
 	params.flags = -1;	// use driver defaults
 	params.sjw = -1;	// use driver defaults
 	params.sample_pt = -1;	// use driver defaults
-	if(ioctl((int)fd0, CONF_BAUDPARAMS, &params) < 0)
+	if(ioctl(fd0, CONF_BAUDPARAMS, &params) < 0)
 	{
 		fprintf(stderr, "canOpen_driver (lincan): IOCTL set speed failed\n");
 		return 0;
@@ -160,17 +165,21 @@ CAN_HANDLE canOpen_driver(s_BOARD *board)
 		goto error_ret;
 	}
 
-	return (CAN_HANDLE)fd;
+	int* handle = (int*) malloc(sizeof(int));
+	*handle = fd;
+	return (void*) handle;
 
 error_ret:
 	return NULL;
 }
 
 /***************************************************************************/
-int canClose_driver(CAN_HANDLE fd0)
+int canClose_driver(void* fd0_)
 {
+  const int fd0 = *((int*)fd0_);
   if(!fd0)
     return 0;
   close(fd0);
+  free(fd0_);
   return 0;
 }

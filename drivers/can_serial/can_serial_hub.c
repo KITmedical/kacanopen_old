@@ -41,6 +41,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #define MAX_HUB_PORTS 16
 
+extern int canfd_driver(CAN_HANDLE fd0);
+
 typedef struct {
 	int fd;
 	struct termios old_termio, new_termio;

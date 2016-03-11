@@ -94,7 +94,7 @@ bool EDSReader::import_entries() {
 	    	*/
 
 	    } catch (std::regex_error& e) {
-	    	ERROR("[EDSReader::import_entries] " << parse_regex_error(e.code()));
+	    	ERROR("[EDSReader::import_entries] " << parse_regex_error(e.code(), section_name));
 	    	success = false;
 		}
 
@@ -183,7 +183,7 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 				var_name = var_name+"_1";
 			}
 		} catch (std::regex_error& e) {
-		    WARN("[EDSReader::parse_var] "<<parse_regex_error(e.code()));
+		    WARN("[EDSReader::parse_var] "<<parse_regex_error(e.code(), var_name));
 		    return false;
 		}
 
@@ -238,7 +238,7 @@ bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index
 		    	}
 
 		    } catch (std::regex_error& e) {
-		    	ERROR("[EDSReader::parse_array_or_record] "<<parse_regex_error(e.code()));
+		    	ERROR("[EDSReader::parse_array_or_record] "<<parse_regex_error(e.code(), section_name));
 		    	return false;
 			}
 
@@ -251,37 +251,40 @@ bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index
 
 }
 
-std::string EDSReader::parse_regex_error(const std::regex_constants::error_type& etype) const {
+std::string EDSReader::parse_regex_error(const std::regex_constants::error_type& etype, const std::string element_name) const {
+  std::string result;
 	switch (etype) {
 	    case std::regex_constants::error_collate:
-	        return "error_collate: invalid collating element request";
+	        result = "error_collate: invalid collating element request";
 	    case std::regex_constants::error_ctype:
-	        return "error_ctype: invalid character class";
+	        result = "error_ctype: invalid character class";
 	    case std::regex_constants::error_escape:
-	        return "error_escape: invalid escape character or trailing escape";
+	        result = "error_escape: invalid escape character or trailing escape";
 	    case std::regex_constants::error_backref:
-	        return "error_backref: invalid back reference";
+	        result = "error_backref: invalid back reference";
 	    case std::regex_constants::error_brack:
-	        return "error_brack: mismatched bracket([ or ])";
+	        result = "error_brack: mismatched bracket([ or ])";
 	    case std::regex_constants::error_paren:
-	        return "error_paren: mismatched parentheses(( or ))";
+	        result = "error_paren: mismatched parentheses(( or ))";
 	    case std::regex_constants::error_brace:
-	        return "error_brace: mismatched brace({ or })";
+	        result = "error_brace: mismatched brace({ or })";
 	    case std::regex_constants::error_badbrace:
-	        return "error_badbrace: invalid range inside a { }";
+	        result = "error_badbrace: invalid range inside a { }";
 	    case std::regex_constants::error_range:
-	        return "erro_range: invalid character range(e.g., [z-a])";
+	        result = "erro_range: invalid character range(e.g., [z-a])";
 	    case std::regex_constants::error_space:
-	        return "error_space: insufficient memory to handle this regular expression";
+	        result = "error_space: insufficient memory to handle this regular expression";
 	    case std::regex_constants::error_badrepeat:
-	        return "error_badrepeat: a repetition character (*, ?, +, or {) was not preceded by a valid regular expression";
+	        result = "error_badrepeat: a repetition character (*, ?, +, or {) was not preceded by a valid regular expression";
 	    case std::regex_constants::error_complexity:
-	        return "error_complexity: the requested match is too complex";
+	        result = "error_complexity: the requested match is too complex";
 	    case std::regex_constants::error_stack:
-	        return "error_stack: insufficient memory to evaluate a match";
+	        result = "error_stack: insufficient memory to evaluate a match";
 	    default:
-	        return "";
+	        result = "";
     }
+  result += " in " + element_name;
+  return result;
 }
 
 } // end namespace kaco

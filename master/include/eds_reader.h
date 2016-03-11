@@ -65,7 +65,7 @@ public:
 private:
 
 	/// Enable debug logging.
-	static const bool debug = false;
+	static const bool debug = true;
 
 	/// reference to the dictionary
 	std::map<std::string, Entry>& m_map;
@@ -84,7 +84,7 @@ private:
 	bool parse_array_or_record(const std::string& section, uint16_t index);
 
 	/// Parses a regex error. This is just for debugging purposes.
-	std::string parse_regex_error(const std::regex_constants::error_type& etype) const;
+	std::string parse_regex_error(const std::regex_constants::error_type& etype, const std::string element_name) const;
 
 
 };

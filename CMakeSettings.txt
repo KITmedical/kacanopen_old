@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.8)
 
 set(CAN_DRIVER_NAME "socket" CACHE STRING "The CAN driver to use. At the moment, the following drivers are available: lincan, peak_linux, serial, socket, virtual.")
 

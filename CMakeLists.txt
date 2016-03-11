@@ -53,7 +53,7 @@ message(STATUS "Baudrate is set to ${BAUDRATE} (only used by examples)")
 
 
 
-SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -Wall -Wextra") # -Werror
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra") # -Werror
 
 
 ### dependencies ###

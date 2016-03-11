@@ -96,7 +96,7 @@ bool EDSReader::import_entries() {
 	    } catch (std::regex_error& e) {
 	    	ERROR("[EDSReader::import_entries] " << parse_regex_error(e.code(), section_name));
 	    	success = false;
-		}
+		  }
 
     }
 

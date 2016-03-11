@@ -50,6 +50,7 @@ EDSReader::EDSReader(std::map<std::string, Entry>& target)
 
 bool EDSReader::load_file(std::string filename) {
 
+	DEBUG_LOG_EXHAUSTIVE("Trying to read EDS file " << filename);
 	try {
 		boost::property_tree::ini_parser::read_ini(filename, m_ini);
     	return true;

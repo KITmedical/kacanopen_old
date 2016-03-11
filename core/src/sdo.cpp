@@ -40,6 +40,9 @@
 
 namespace kaco {
 
+const uint64_t SDO::response_timeout_ms = SDO_RESPONSE_TIMEOUT_MS;
+const bool SDO::debug = true;
+
 SDO::SDO(Core& core) 
 	: m_core(core)
 	{ }

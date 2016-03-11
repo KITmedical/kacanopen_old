@@ -136,8 +136,8 @@ namespace kaco {
 
 		};
 
-		static const bool debug = true;
-		static const uint64_t response_timeout_ms = SDO_RESPONSE_TIMEOUT_MS;
+		static const bool debug;
+		static const uint64_t response_timeout_ms;
 		
 		Core& m_core;
 

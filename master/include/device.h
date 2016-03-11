@@ -79,6 +79,11 @@ namespace kaco {
 		/// Returns the node ID of the device.
 		uint8_t get_node_id() const;
 
+		/// Returns true if the entry is contained in the device dictionary.
+		/// \param entry_name Name of the dictionary entry
+		/// \return True if entry_name is contained in the device dictionary.
+		bool has_entry(const std::string& entry_name);
+
 		/// Gets the value of a dictionary entry by index via SDO
 		/// It does not change the corresponding internal value and therefore the new value
 		/// cannot be used by Transmit PDOs.

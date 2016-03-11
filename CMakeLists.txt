@@ -1,16 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 ### GCC ist not supported until 4.9 ###
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-        find_program(NEWER_GNU_CXX_COMPILER gcc-4.9)
-        message("NEWER_GNU_CXX_COMPILER=${NEWER_GNU_CXX_COMPILER}")
-        if (NOT "${NEWER_GNU_CXX_COMPILER}" STREQUAL "")
-          set(CMAKE_CXX_COMPILER ${NEWER_GNU_CXX_COMPILER})
-          message("Using ${CMAKE_CXX_COMPILER} as compiler.")
-        else()
-          message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
-        endif()
+if("${CMAKE_CXX_COMPILER}" STREQUAL "" OR "${CMAKE_CXX_COMPILER}" STREQUAL "gcc" OR "${CMAKE_CXX_COMPILER}" STREQUAL "g++")
+    find_program(NEWER_GNU_CXX_COMPILER g++-4.9)
+    if (NOT "${NEWER_GNU_CXX_COMPILER}" STREQUAL "")
+      set(CMAKE_CXX_COMPILER ${NEWER_GNU_CXX_COMPILER})
+      message("Using ${CMAKE_CXX_COMPILER} as compiler.")
     endif()
 endif()
 
@@ -52,6 +47,11 @@ add_definitions("-DBAUDRATE=${BAUDRATE}")
 message(STATUS "Baudrate is set to ${BAUDRATE} (only used by examples)")
 
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+        message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
+    endif()
+endif()
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra") # -Werror
 

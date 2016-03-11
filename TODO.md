@@ -4,6 +4,7 @@ This is a yet incomplete list of features which are planned for the future. Feel
 
 ## Short-term
 
+* __Bridge:__ Rename ros_bridge to something that is not as easily confused with _the_ rosbridge (http://www.automatisierungstreff.com/?page_id=15693), e.g. kacanopen_ros
 * __Bridge:__ Implement a ROS service for accessing any dictionary entry of a slave by name.
 * __Bridge:__ Subscribers / Publishers: Allow configuration of queue_size.
 * __Core:__ Automatically map PDOs like they are configured in slave's dictionary.

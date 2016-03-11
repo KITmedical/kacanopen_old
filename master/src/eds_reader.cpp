@@ -256,34 +256,48 @@ std::string EDSReader::parse_regex_error(const std::regex_constants::error_type&
 	switch (etype) {
 	    case std::regex_constants::error_collate:
 	        result = "error_collate: invalid collating element request";
+          break;
 	    case std::regex_constants::error_ctype:
 	        result = "error_ctype: invalid character class";
+          break;
 	    case std::regex_constants::error_escape:
 	        result = "error_escape: invalid escape character or trailing escape";
+          break;
 	    case std::regex_constants::error_backref:
 	        result = "error_backref: invalid back reference";
+          break;
 	    case std::regex_constants::error_brack:
 	        result = "error_brack: mismatched bracket([ or ])";
+          break;
 	    case std::regex_constants::error_paren:
 	        result = "error_paren: mismatched parentheses(( or ))";
+          break;
 	    case std::regex_constants::error_brace:
 	        result = "error_brace: mismatched brace({ or })";
+          break;
 	    case std::regex_constants::error_badbrace:
 	        result = "error_badbrace: invalid range inside a { }";
+          break;
 	    case std::regex_constants::error_range:
 	        result = "erro_range: invalid character range(e.g., [z-a])";
+          break;
 	    case std::regex_constants::error_space:
 	        result = "error_space: insufficient memory to handle this regular expression";
+          break;
 	    case std::regex_constants::error_badrepeat:
 	        result = "error_badrepeat: a repetition character (*, ?, +, or {) was not preceded by a valid regular expression";
+          break;
 	    case std::regex_constants::error_complexity:
 	        result = "error_complexity: the requested match is too complex";
+          break;
 	    case std::regex_constants::error_stack:
 	        result = "error_stack: insufficient memory to evaluate a match";
+          break;
 	    default:
 	        result = "";
+          break;
     }
-  result += " in " + element_name;
+  result += " in element " + element_name;
   return result;
 }
 

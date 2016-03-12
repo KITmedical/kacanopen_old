@@ -44,7 +44,8 @@ namespace kaco {
 JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degree,
 	int32_t position_360_degree, std::string topic_name)
     : m_device(device), m_position_0_degree(position_0_degree),
-    	m_position_360_degree(position_360_degree), m_topic_name(topic_name)
+    	m_position_360_degree(position_360_degree), m_topic_name(topic_name),
+        m_initialized(false)
 {
 
 	const uint16_t profile = device.get_device_profile_number();
@@ -74,12 +75,25 @@ JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degr
 }
 
 void JointStatePublisher::advertise() {
+	
+	if (!m_topic_name.size()) {
+		ROS_ERROR("Invalid topic_name. Aborting advertise().");
+		return;
+	}
+
 	DEBUG_LOG("Advertising "<<m_topic_name);
 	ros::NodeHandle nh;
 	m_publisher = nh.advertise<sensor_msgs::JointState>(m_topic_name, queue_size);
+	m_initialized = true;
+
 }
 
 void JointStatePublisher::publish() {
+	
+	if (!m_initialized) {
+		ROS_ERROR("publish() called before initialization.");
+		return;
+	}
 	
 	sensor_msgs::JointState js;
     

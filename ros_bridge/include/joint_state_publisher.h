@@ -86,6 +86,7 @@ namespace kaco {
 		int32_t m_position_0_degree;
 		int32_t m_position_360_degree;
 		std::string m_topic_name;
+		bool m_initialized;
 
 		ros::Publisher m_publisher;
 

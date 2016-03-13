@@ -80,7 +80,9 @@ int main(int argc, char** argv) {
 	// set some output (optional)
 	device.set_entry("Write output 8-bit/Digital Outputs 1-8", (uint8_t) 0xFF, 0);
 
-	// Create bridge / init a ROS node
+	ros::init(argc, argv, "canopen_bridge");
+
+	// Create bridge
 	kaco::Bridge bridge;
 	
 	// create a publisher for reading second 8-bit input and add it to the bridge

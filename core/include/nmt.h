@@ -88,7 +88,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 		Core& m_core;
 		std::vector<NewDeviceCallback> m_new_device_callbacks;
 

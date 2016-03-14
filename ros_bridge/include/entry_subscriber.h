@@ -78,7 +78,7 @@ namespace kaco {
 		void receive_boolean(const std_msgs::Bool& msg);
 		void receive_string(const std_msgs::String& msg);
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		// TODO: let the user change this?
 		static const unsigned queue_size = 10000;

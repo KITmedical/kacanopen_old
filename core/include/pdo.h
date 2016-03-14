@@ -89,7 +89,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 		Core& m_core;
 		std::vector<PDOReceivedCallback> m_receive_callbacks;
 

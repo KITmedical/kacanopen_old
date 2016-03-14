@@ -67,7 +67,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		std::vector<std::shared_ptr<Publisher>> m_publishers;
 		std::vector<std::shared_ptr<Subscriber>> m_subscribers;

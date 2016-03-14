@@ -43,8 +43,6 @@
 
 namespace kaco {
 
-const bool SDO::debug = true;
-
 SDO::SDO(Core& core) 
 	: m_core(core)
 	{ }

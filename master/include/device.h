@@ -179,7 +179,7 @@ namespace kaco {
 
 		void pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data);
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		Core& m_core;
 		uint8_t m_node_id;

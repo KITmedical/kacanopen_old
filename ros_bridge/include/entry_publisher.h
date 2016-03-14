@@ -62,7 +62,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		// TODO: let the user change this?
 		static const unsigned queue_size = 100;

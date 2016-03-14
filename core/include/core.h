@@ -114,7 +114,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		std::atomic<bool> m_running{false};
 		std::vector<MessageReceivedCallback> m_receive_callbacks;

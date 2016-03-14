@@ -75,7 +75,7 @@ namespace kaco {
 
 	private:
 
-		static const bool debug = true;
+		static const bool debug = false;
 
 		std::vector<std::unique_ptr<Device>> m_devices;
 		NMT::NewDeviceCallback m_new_device_callback_functional;

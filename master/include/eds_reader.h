@@ -65,7 +65,7 @@ public:
 private:
 
 	/// Enable debug logging.
-	static const bool debug = true;
+	static const bool debug = false;
 
 	/// reference to the dictionary
 	std::map<std::string, Entry>& m_map;

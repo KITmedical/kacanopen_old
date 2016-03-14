@@ -53,10 +53,9 @@ int main(int argc, char** argv) {
 	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-
-	if (master.get_devices().size()<1) {
-		ERROR("No devices found.");
-		return EXIT_FAILURE;
+	while (master.get_devices().size()<1) {
+		ERROR("No CiA 402 devices found. Waiting.");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 	// should be a 401 device

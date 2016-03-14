@@ -136,7 +136,7 @@ namespace kaco {
 
 		};
 
-		static const bool debug = true;
+		static const bool debug;
 		
 		Core& m_core;
 

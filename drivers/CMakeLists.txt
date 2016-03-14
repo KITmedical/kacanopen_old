@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.8)
 project(KaCanOpen_drivers C)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)

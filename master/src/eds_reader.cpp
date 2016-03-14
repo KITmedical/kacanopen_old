@@ -227,7 +227,11 @@ bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index
 					assert(matches.size()>2);
 					assert(Utils::hexstr_to_uint(matches[1])==index);
 					uint8_t subindex = Utils::hexstr_to_uint(matches[2]);
-					parse_var(section_name, index, subindex, array_name);
+					bool success = parse_var(section_name, index, subindex, array_name);
+					if (!success) {
+						ERROR("[EDSReader::parse_array_or_record] Malformed variable entry: "<<section_name);
+						return false;
+					}
 
 				} else if (section_name == section) {
 					// ignore own entry

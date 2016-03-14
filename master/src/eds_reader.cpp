@@ -67,7 +67,7 @@ bool EDSReader::import_entries() {
 
     for (const auto& section_node : m_ini) {
 		const std::string& section_name = section_node.first;
-		const boost::property_tree::ptree& section = section_node.second;
+		//const boost::property_tree::ptree& section = section_node.second;
 
     	try {
     		
@@ -212,7 +212,7 @@ bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index
 
 	for (const auto& section_node : m_ini) {
 		const std::string& section_name = section_node.first;
-		const boost::property_tree::ptree& parameters = section_node.second;
+		//const boost::property_tree::ptree& parameters = section_node.second;
 
 		if (boost::starts_with(section_name, section)) {
 	

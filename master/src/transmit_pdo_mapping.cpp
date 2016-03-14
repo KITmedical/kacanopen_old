@@ -41,12 +41,12 @@ namespace kaco {
 
 TransmitPDOMapping::TransmitPDOMapping(Core& core, const std::map<std::string, Entry>& dictionary, uint16_t cob_id_,
 			TransmissionType transmission_type_, std::chrono::milliseconds repeat_time_, const std::vector<Mapping>& mappings_)
-	: m_core(core),
-		m_dictionary(dictionary),
-		cob_id(cob_id_),
+	: cob_id(cob_id_),
 		transmission_type(transmission_type_),
 		repeat_time(repeat_time_),
-		mappings(mappings_)
+		mappings(mappings_),
+		m_core(core),
+		m_dictionary(dictionary)
 	{
 		check_correctness();
 	}

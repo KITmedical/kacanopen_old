@@ -42,7 +42,7 @@
 // #define BUSNAME ... // set by CMake
 // #define BAUDRATE ... // set by CMake
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 
 	kaco::Master master;
 	bool success = master.start(BUSNAME, BAUDRATE);

@@ -146,6 +146,7 @@ int TranslateBaudRate(char *optarg)
 
 UNS8 canChangeBaudRate_driver(CAN_HANDLE fd0, char *baud)
 {
+	(void) fd0;
 	printf("Faked changing to baud rate %s[%d]\n", 
 			baud, TranslateBaudRate(baud));
 	return 0;
@@ -154,7 +155,7 @@ UNS8 canChangeBaudRate_driver(CAN_HANDLE fd0, char *baud)
 /***************************************************************************/
 CAN_HANDLE canOpen_driver(s_BOARD * board)
 {
-	int rv;
+	//int rv;
 
 	CANPort *p;
 

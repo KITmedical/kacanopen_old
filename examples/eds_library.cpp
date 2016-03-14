@@ -54,7 +54,7 @@ void print_dictionary(const std::map<std::string, kaco::Entry>& map) {
 
 }
 
-int main(int argc, char** argv) {
+int main() {
 
 	PRINT("This example loads dictionaries from the EDS library.");
 

@@ -248,7 +248,7 @@ int main(int argc, char **argv)
 	int i, rv, max_fd = 0, ret = 0;
 	fd_set rfds, rfds_copy;
 	CAN_HANDLE can_h = NULL;
-        LIB_HANDLE lib_h = NULL;
+    //LIB_HANDLE lib_h = NULL;
 
 	int c;
 	extern char *optarg;

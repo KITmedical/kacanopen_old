@@ -36,7 +36,7 @@
 #include "master.h"
 #include "logger.h"
 
-int main(int argc, char** argv) {
+int main() {
 
 	PRINT("This example runs a counter completely without SDO transfers.");
 	PRINT("There must be a CiA 401 device which is configured to send 'Read input 8-bit/Digital Inputs 1-8'");
@@ -75,11 +75,11 @@ int main(int argc, char** argv) {
 
 	DUMP(device.get_entry("Manufacturer device name"));
 
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offset 0,
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0, 0); // offset 0,
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1, 0); // offset 1
 	
 	// transmit PDO on change
-	device.add_transmit_pdo_mapping(0x208, {{"Write output 8-bit/Digital Outputs 1-8", 0}}); // offset 0
+	device.add_transmit_pdo_mapping(0x208, {{"Write output 8-bit/Digital Outputs 1-8", 0, 0}}); // offset 0
 
 	// transmit PDO every 500ms
 	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));

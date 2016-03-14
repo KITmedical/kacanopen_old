@@ -66,7 +66,7 @@ void NMT::process_incoming_message(const Message& message) {
 		<<(unsigned)message.get_node_id()<<".");
 	
 	uint8_t data = message.data[0];
-	bool toggle_bit = data>>7;
+	//bool toggle_bit = data>>7;
 	uint8_t state = data&0x3F;
 
 	//DEBUG_DUMP(toggle_bit);

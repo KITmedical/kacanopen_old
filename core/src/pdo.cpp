@@ -51,7 +51,7 @@ void PDO::process_incoming_message(const Message& message) const {
 	uint8_t node_id = message.get_node_id();
 	std::vector<uint8_t> data;
 
-	DEBUG_LOG("Received transmit PDO with cob_id 0x"<<std::hex<<cob_id<<" (usually from node 0x"<<node_id<<")");
+	DEBUG_LOG("Received transmit PDO with cob_id 0x"<<std::hex<<cob_id<<" (usually from node 0x"<<node_id<<") length = "<<message.len);
 
 	for (unsigned i=0; i<message.len; ++i) {
 		data.push_back(message.data[i]);
@@ -63,7 +63,8 @@ void PDO::process_incoming_message(const Message& message) const {
 		if (callback.cob_id == cob_id) {
 			found_callback = true;
 			// This is not async because callbacks are only registered internally.
-			callback.callback(std::move(data));
+			// Copy data vector because there can be multiple callbacks for this PDO.
+			callback.callback(data); 
 		}
 	}
 

@@ -106,6 +106,7 @@ namespace kaco {
 			return false;
 		}
 
+		DEBUG_LOG("[EDSLibrary::load_default_eds] Found EDS file: "<<path);
 		success = reader.import_entries();
 
 		if (!success) {
@@ -130,6 +131,8 @@ namespace kaco {
 				return false;
 			}
 		}
+		
+		DEBUG_LOG("[EDSLibrary::load_manufacturer_eds] Found manufacturer EDS: "<<path);
 
 		m_map.clear();
 		EDSReader reader(m_map);

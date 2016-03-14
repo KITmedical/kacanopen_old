@@ -42,13 +42,13 @@ namespace kaco {
 
 JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_degree,
 	int32_t position_360_degree, std::string topic_name)
-    : m_device(device), m_position_0_degree(position_0_degree),
-    	m_position_360_degree(position_360_degree), m_topic_name(topic_name),
-    	m_initialized(false)
+	: m_device(device), m_position_0_degree(position_0_degree),
+		m_position_360_degree(position_360_degree), m_topic_name(topic_name),
+		m_initialized(false)
 {
 
 	const uint16_t profile = device.get_device_profile_number();
-	
+
 	// TODO: Error handling in constructor is bad.
 
 	if (profile != 402) {
@@ -66,15 +66,15 @@ JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_de
 		return;
 	}
 
-    if (m_topic_name.empty()) {
+	if (m_topic_name.empty()) {
 		uint8_t node_id = device.get_node_id();
 		m_topic_name = "device" + std::to_string(node_id) + "/set_joint_state";
-    }
+	}
 
 }
 
 void JointStateSubscriber::advertise() {
-	
+
 	if (!m_topic_name.size()) {
 		ROS_ERROR("Invalid topic_name. Aborting advertise().");
 		return;
@@ -90,11 +90,11 @@ void JointStateSubscriber::advertise() {
 void JointStateSubscriber::receive(const sensor_msgs::JointState& msg) {
 
 	assert(msg.position.size()>0);
-    const int32_t pos = rad_to_pos(msg.position[0]);
+	const int32_t pos = rad_to_pos(msg.position[0]);
 
-    DEBUG_LOG("Received JointState message");
-    DEBUG_DUMP(pos);
-    DEBUG_DUMP(msg.position[0]);
+	DEBUG_LOG("Received JointState message");
+	DEBUG_DUMP(pos);
+	DEBUG_DUMP(msg.position[0]);
 
 	m_device.set_entry("Target position", pos); // auto cast to Value!
 	m_device.set_entry("Controlword", (uint16_t) 0x001F); // notify update

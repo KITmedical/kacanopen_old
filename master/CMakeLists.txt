@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 message(STATUS "Configuring master")
 
 file(GLOB TARGET_SRC
-    "src/*.cpp"
+	"src/*.cpp"
 )
 
 # Create library

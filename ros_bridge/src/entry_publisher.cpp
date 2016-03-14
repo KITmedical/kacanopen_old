@@ -49,7 +49,7 @@ namespace kaco {
 
 EntryPublisher::EntryPublisher(Device& device, std::string entry_name,
 			uint8_t array_index, ReadAccessMethod access_method)
-    : m_device(device), m_entry_name(entry_name), m_array_index(array_index), m_access_method(access_method)
+	: m_device(device), m_entry_name(entry_name), m_array_index(array_index), m_access_method(access_method)
 {
 
 	uint8_t node_id = device.get_node_id();

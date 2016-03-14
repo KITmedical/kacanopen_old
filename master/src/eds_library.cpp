@@ -42,7 +42,7 @@
 //#define SHARE_INSTALLED_PATH ...
 
 namespace kaco {
-	
+
 	namespace fs = boost::filesystem;
 
 	EDSLibrary::EDSLibrary(std::map<std::string, Entry>& target)
@@ -118,7 +118,7 @@ namespace kaco {
 
 	bool EDSLibrary::load_manufacturer_eds(uint32_t vendor_id, uint32_t product_code, uint32_t revision_number) {
 		assert(m_ready);
-		
+
 		// check if there is an EDS file for this revision
 		std::string path = m_library_path + "/"+std::to_string(vendor_id)+"/"+std::to_string(product_code)+"."+std::to_string(revision_number)+".eds";
 		if (!fs::exists(path)) {

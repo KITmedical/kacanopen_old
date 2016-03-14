@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 ### GCC ist not supported until 4.9 ###
 if("${CMAKE_CXX_COMPILER}" STREQUAL "" OR "${CMAKE_CXX_COMPILER}" STREQUAL "gcc" OR "${CMAKE_CXX_COMPILER}" STREQUAL "g++")
-    find_program(NEWER_GNU_CXX_COMPILER g++-4.9)
-    if (NOT "${NEWER_GNU_CXX_COMPILER}" STREQUAL "")
-      set(CMAKE_CXX_COMPILER ${NEWER_GNU_CXX_COMPILER})
-      message("Using ${CMAKE_CXX_COMPILER} as compiler.")
-    endif()
+	find_program(NEWER_GNU_CXX_COMPILER g++-4.9)
+	if (NOT "${NEWER_GNU_CXX_COMPILER}" STREQUAL "")
+		set(CMAKE_CXX_COMPILER ${NEWER_GNU_CXX_COMPILER})
+		message("Using ${CMAKE_CXX_COMPILER} as compiler.")
+	endif()
 endif()
 
 project(kacanopen C CXX)
@@ -19,18 +19,18 @@ set(CAN_DRIVER can_${CAN_DRIVER_NAME})
 message(STATUS "Using CAN driver ${CAN_DRIVER}")
 
 if(${BUILD_ALL_DRIVERS})
-    message(STATUS "Building all available drivers.")
+	message(STATUS "Building all available drivers.")
 endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
-    message(STATUS "You are in release mode.")
+	message(STATUS "You are in release mode.")
 else()
-    if(${EXHAUSTIVE_DEBUGGING})
-        message(STATUS "Enabled exhaustive debugging.")
-        add_definitions("-DEXHAUSTIVE_DEBUGGING")
-    else()
-        message(STATUS "Enabled debugging.")
-    endif()
+	if(${EXHAUSTIVE_DEBUGGING})
+		message(STATUS "Enabled exhaustive debugging.")
+		add_definitions("-DEXHAUSTIVE_DEBUGGING")
+	else()
+		message(STATUS "Enabled debugging.")
+	endif()
 endif()
 
 
@@ -48,15 +48,15 @@ message(STATUS "Baudrate is set to ${BAUDRATE} (only used by examples)")
 
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-        message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
-    endif()
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+		message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
+	endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
-        message(FATAL_ERROR "Clang version must be at least 3.6! Earlier versions don't support debug information for auto.")
-    endif()
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
+		message(FATAL_ERROR "Clang version must be at least 3.6! Earlier versions don't support debug information for auto.")
+	endif()
 else()
-    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+	message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
 endif()
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra") # -Werror
@@ -69,7 +69,7 @@ find_package(Boost 1.46.1 COMPONENTS system filesystem REQUIRED)
 
 # Boost required for property_tree / ini_parser
 if(NOT(Boost_FOUND))
-    message(FATAL_ERROR "Boost > 1.46.1 not found. Boost is required for ini_parser class. This is a header-only library. You can simply download the latest boost package from http://www.boost.org/, extract it into any directory and include it using the following catkin/CMake argument: -DBOOST_ROOT=\"/path/to/boost/\"")
+	message(FATAL_ERROR "Boost > 1.46.1 not found. Boost is required for ini_parser class. This is a header-only library. You can simply download the latest boost package from http://www.boost.org/, extract it into any directory and include it using the following catkin/CMake argument: -DBOOST_ROOT=\"/path/to/boost/\"")
 endif()
 
 message(STATUS "Found Boost headers in ${Boost_INCLUDE_DIRS}")
@@ -88,13 +88,13 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/master/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/ros_bridge/include)
 
 if (NOT(${NO_ROS}))
-    find_package(catkin REQUIRED)
+	find_package(catkin REQUIRED)
 
-    catkin_package(
-       INCLUDE_DIRS core/include master/include ros_bridge/include
-       LIBRARIES ${CAN_DRIVER} kacanopen_core kacanopen_master kacanopen_ros_bridge
-       CATKIN_DEPENDS message_runtime
-    )
+	catkin_package(
+		INCLUDE_DIRS core/include master/include ros_bridge/include
+		LIBRARIES ${CAN_DRIVER} kacanopen_core kacanopen_master kacanopen_ros_bridge
+		CATKIN_DEPENDS message_runtime
+	)
 
 endif()
 
@@ -105,28 +105,28 @@ endif()
 # argument 2: if true, install ${CMAKE_CURRENT_LIST_DIR}/include/
 # call this from subproject's CMake files
 macro(kacanopen_install)
-    message(STATUS "Configuring installation for target(s) ${ARGV0}")
-    if (${NO_ROS})
-        install(TARGETS ${ARGV0}
-            LIBRARY DESTINATION lib
-            RUNTIME DESTINATION bin
-        )
-        if (${ARGV1})
-            install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
-                DESTINATION include/kacanopen
-            )
-        endif()
-    else()
-        install(TARGETS ${ARGV0}
-            LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-            RUNTIME DESTINATION bin
-        )
-        if (${ARGV1})
-            install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include
-                DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-            )
-        endif()
-    endif()
+	message(STATUS "Configuring installation for target(s) ${ARGV0}")
+	if (${NO_ROS})
+		install(TARGETS ${ARGV0}
+			LIBRARY DESTINATION lib
+			RUNTIME DESTINATION bin
+		)
+		if (${ARGV1})
+			install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+				DESTINATION include/kacanopen
+			)
+		endif()
+	else()
+		install(TARGETS ${ARGV0}
+			LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+			RUNTIME DESTINATION bin
+		)
+		if (${ARGV1})
+			install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include
+				DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+			)
+			endif()
+	endif()
 endmacro()
 
 
@@ -137,13 +137,13 @@ add_definitions("-DSHARE_INSTALLED_PATH=\"${CMAKE_INSTALL_PREFIX}/share/kacanope
 message(STATUS "SHARE_SOURCE_PATH set to ${CMAKE_CURRENT_LIST_DIR}/share.")
 message(STATUS "SHARE_INSTALLED_PATH set to ${CMAKE_INSTALL_PREFIX}/share/kacanopen.")
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/master/share/
-    DESTINATION share/kacanopen
+	DESTINATION share/kacanopen
 )
 
 ### Source code ###
 
 if (NOT(${NO_ROS}))
-    add_subdirectory(ros_bridge)
+	add_subdirectory(ros_bridge)
 endif()
 
 add_subdirectory(drivers)

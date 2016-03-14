@@ -36,7 +36,7 @@
 namespace kaco {
 
 Master::Master() {
-	
+
 	m_new_device_callback_functional = std::bind(&Master::new_device_callback, this, std::placeholders::_1);
 	core.nmt.register_new_device_callback(m_new_device_callback_functional);
 
@@ -54,8 +54,8 @@ bool Master::start(const std::string busname, unsigned baudrate) {
 		return false;
 	}
 	m_running = true;
-    core.nmt.reset_all_nodes();
-    return true;
+	core.nmt.reset_all_nodes();
+	return true;
 }
 
 void Master::stop() {

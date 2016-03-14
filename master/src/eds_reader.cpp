@@ -53,10 +53,10 @@ bool EDSReader::load_file(std::string filename) {
 	DEBUG_LOG_EXHAUSTIVE("Trying to read EDS file " << filename);
 	try {
 		boost::property_tree::ini_parser::read_ini(filename, m_ini);
-    	return true;
+		return true;
 	} catch (const std::exception& e) {
 		ERROR("[EDSReader::load_file] Could not open file: "<<e.what());
-    	return false;
+		return false;
 	}
 
 }
@@ -65,40 +65,40 @@ bool EDSReader::import_entries() {
 
 	bool success = true;
 
-    for (const auto& section_node : m_ini) {
+	for (const auto& section_node : m_ini) {
 		const std::string& section_name = section_node.first;
 		//const boost::property_tree::ptree& section = section_node.second;
 
-    	try {
-    		
-    		std::smatch matches;
+		try {
 
-	    	if (std::regex_match(section_name, std::regex("[[:xdigit:]]{1,4}"))) {
-	    		
-	    		uint16_t index = (uint16_t) Utils::hexstr_to_uint(section_name);
-	    		DEBUG_LOG_EXHAUSTIVE("Section "<<section_name<<" corresponds to index "<<index<<".");
-	    		success = parse_index(section_name, index) && success; // mind order!
+			std::smatch matches;
 
-	    	}
-	    	/*
-	    	else if (std::regex_match(section_name, matches, std::regex("([[:xdigit:]]{1,4})sub([[:xdigit:]]{1,2})"))) {
+			if (std::regex_match(section_name, std::regex("[[:xdigit:]]{1,4}"))) {
 
-	    		// Ignoring subindex entries here!
+				uint16_t index = (uint16_t) Utils::hexstr_to_uint(section_name);
+				DEBUG_LOG_EXHAUSTIVE("Section "<<section_name<<" corresponds to index "<<index<<".");
+				success = parse_index(section_name, index) && success; // mind order!
 
-	    	} else {
+			}
+			/*
+			else if (std::regex_match(section_name, matches, std::regex("([[:xdigit:]]{1,4})sub([[:xdigit:]]{1,2})"))) {
 
-	    		// Ignoring metadata entries here!
-	    		DEBUG_LOG_EXHAUSTIVE("Section "<<section_name<<" contains meta data. Doing nothing.");
+				// Ignoring subindex entries here!
 
-	    	}
-	    	*/
+			} else {
 
-	    } catch (std::regex_error& e) {
-	    	ERROR("[EDSReader::import_entries] " << parse_regex_error(e.code(), section_name));
-	    	success = false;
-		  }
+				// Ignoring metadata entries here!
+				DEBUG_LOG_EXHAUSTIVE("Section "<<section_name<<" contains meta data. Doing nothing.");
 
-    }
+			}
+			*/
+
+		} catch (std::regex_error& e) {
+			ERROR("[EDSReader::import_entries] " << parse_regex_error(e.code(), section_name));
+			success = false;
+		}
+
+	}
 
 	return success;
 
@@ -169,22 +169,22 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 	// --- insert entry --- //
 
 	while (m_map.count(var_name)>0) {
-		
+
 		WARN("[EDSReader::parse_var] Entry "<<var_name<<" already exists. Adding or increasing counter.");
-		
+
 		try {
 			std::smatch matches;
 			if (std::regex_match(var_name, matches, std::regex("^(.+)_([[:xdigit:]]{1,3})$"))) {
-		    	assert(matches.size()>2);
-		    	uint8_t count = Utils::decstr_to_uint(matches[2]);
-		    	++count;
-		    	var_name = std::string(matches[1])+"_"+std::to_string(count);
+				assert(matches.size()>2);
+				uint8_t count = Utils::decstr_to_uint(matches[2]);
+				++count;
+				var_name = std::string(matches[1])+"_"+std::to_string(count);
 			} else {
 				var_name = var_name+"_1";
 			}
 		} catch (std::regex_error& e) {
-		    WARN("[EDSReader::parse_var] "<<parse_regex_error(e.code(), var_name));
-		    return false;
+			WARN("[EDSReader::parse_var] "<<parse_regex_error(e.code(), var_name));
+			return false;
 		}
 
 		DEBUG_LOG("[EDSReader::parse_var] New entry name: "<<var_name);
@@ -200,7 +200,7 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 }
 
 bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index) {
-	
+
 	std::string array_name = Utils::escape(m_ini.get(section+".ParameterName", ""));
 
 	if (array_name.empty()) {
@@ -215,90 +215,90 @@ bool EDSReader::parse_array_or_record(const std::string& section, uint16_t index
 		//const boost::property_tree::ptree& parameters = section_node.second;
 
 		if (boost::starts_with(section_name, section)) {
-	
+
 			DEBUG_LOG_EXHAUSTIVE("[EDSReader::parse_array_or_record] Found record/array entry: "<<section_name);
-    	
-    		try {
-    			
-    			std::smatch matches;
+
+			try {
+
+				std::smatch matches;
 
 				if (std::regex_match(section_name, matches, std::regex("([[:xdigit:]]{1,4})sub([[:xdigit:]]{1,2})"))) {
 
-		    		assert(matches.size()>2);
-		    		assert(Utils::hexstr_to_uint(matches[1])==index);
-		    		uint8_t subindex = Utils::hexstr_to_uint(matches[2]);
-		    		parse_var(section_name, index, subindex, array_name);
+					assert(matches.size()>2);
+					assert(Utils::hexstr_to_uint(matches[1])==index);
+					uint8_t subindex = Utils::hexstr_to_uint(matches[2]);
+					parse_var(section_name, index, subindex, array_name);
 
-		    	} else if (section_name == section) {
-		    		// ignore own entry
-		    		continue;
-		    	} else {
-		    		ERROR("[EDSReader::parse_array_or_record] Malformed array entry: "<<section_name);
-		    		return false;
-		    	}
+				} else if (section_name == section) {
+					// ignore own entry
+					continue;
+				} else {
+					ERROR("[EDSReader::parse_array_or_record] Malformed array entry: "<<section_name);
+					return false;
+				}
 
-		    } catch (std::regex_error& e) {
-		    	ERROR("[EDSReader::parse_array_or_record] "<<parse_regex_error(e.code(), section_name));
-		    	return false;
+			} catch (std::regex_error& e) {
+				ERROR("[EDSReader::parse_array_or_record] "<<parse_regex_error(e.code(), section_name));
+				return false;
 			}
 
 
 		}
 
-    }
+	}
 
 	return true;
 
 }
 
 std::string EDSReader::parse_regex_error(const std::regex_constants::error_type& etype, const std::string element_name) const {
-  std::string result;
+	std::string result;
 	switch (etype) {
-	    case std::regex_constants::error_collate:
-	        result = "error_collate: invalid collating element request";
-          break;
-	    case std::regex_constants::error_ctype:
-	        result = "error_ctype: invalid character class";
-          break;
-	    case std::regex_constants::error_escape:
-	        result = "error_escape: invalid escape character or trailing escape";
-          break;
-	    case std::regex_constants::error_backref:
-	        result = "error_backref: invalid back reference";
-          break;
-	    case std::regex_constants::error_brack:
-	        result = "error_brack: mismatched bracket([ or ])";
-          break;
-	    case std::regex_constants::error_paren:
-	        result = "error_paren: mismatched parentheses(( or ))";
-          break;
-	    case std::regex_constants::error_brace:
-	        result = "error_brace: mismatched brace({ or })";
-          break;
-	    case std::regex_constants::error_badbrace:
-	        result = "error_badbrace: invalid range inside a { }";
-          break;
-	    case std::regex_constants::error_range:
-	        result = "erro_range: invalid character range(e.g., [z-a])";
-          break;
-	    case std::regex_constants::error_space:
-	        result = "error_space: insufficient memory to handle this regular expression";
-          break;
-	    case std::regex_constants::error_badrepeat:
-	        result = "error_badrepeat: a repetition character (*, ?, +, or {) was not preceded by a valid regular expression";
-          break;
-	    case std::regex_constants::error_complexity:
-	        result = "error_complexity: the requested match is too complex";
-          break;
-	    case std::regex_constants::error_stack:
-	        result = "error_stack: insufficient memory to evaluate a match";
-          break;
-	    default:
-	        result = "";
-          break;
-    }
-  result += " in element " + element_name;
-  return result;
+		case std::regex_constants::error_collate:
+			result = "error_collate: invalid collating element request";
+			break;
+		case std::regex_constants::error_ctype:
+			result = "error_ctype: invalid character class";
+			break;
+		case std::regex_constants::error_escape:
+			result = "error_escape: invalid escape character or trailing escape";
+			break;
+		case std::regex_constants::error_backref:
+			result = "error_backref: invalid back reference";
+			break;
+		case std::regex_constants::error_brack:
+			result = "error_brack: mismatched bracket([ or ])";
+			break;
+		case std::regex_constants::error_paren:
+			result = "error_paren: mismatched parentheses(( or ))";
+			break;
+		case std::regex_constants::error_brace:
+			result = "error_brace: mismatched brace({ or })";
+			break;
+		case std::regex_constants::error_badbrace:
+			result = "error_badbrace: invalid range inside a { }";
+			break;
+		case std::regex_constants::error_range:
+			result = "erro_range: invalid character range(e.g., [z-a])";
+			break;
+		case std::regex_constants::error_space:
+			result = "error_space: insufficient memory to handle this regular expression";
+			break;
+		case std::regex_constants::error_badrepeat:
+			result = "error_badrepeat: a repetition character (*, ?, +, or {) was not preceded by a valid regular expression";
+			break;
+		case std::regex_constants::error_complexity:
+			result = "error_complexity: the requested match is too complex";
+			break;
+		case std::regex_constants::error_stack:
+			result = "error_stack: insufficient memory to evaluate a match";
+			break;
+		default:
+			result = "";
+			break;
+	}
+	result += " in element " + element_name;
+	return result;
 }
 
 } // end namespace kaco

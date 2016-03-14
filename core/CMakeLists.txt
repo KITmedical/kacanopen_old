@@ -5,7 +5,7 @@ message(STATUS "Configuring core")
 find_package(Threads)
 
 file(GLOB TARGET_SRC
-    "src/*.cpp"
+	"src/*.cpp"
 )
 
 # Create library

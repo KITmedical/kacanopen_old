@@ -4,10 +4,10 @@ message(STATUS "Configuring ros_bridge")
 
 ### catkin ###
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
-  sensor_msgs
-  # message_generation
+	roscpp
+	std_msgs
+	sensor_msgs
+	# message_generation
 )
 
 include_directories(
@@ -17,7 +17,7 @@ include_directories(
 find_package(Threads)
 
 file(GLOB TARGET_SRC
-    "src/*.cpp"
+	"src/*.cpp"
 )
 
 # Create library

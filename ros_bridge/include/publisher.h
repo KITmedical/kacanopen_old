@@ -37,17 +37,17 @@ namespace kaco {
 	class Publisher {
 
 	public:
-		
+
 		/// Advertise the publisher to the network. This is called by
 		/// Bridge _after_ ros::init(). You should not call this
 		/// method by yourself.
 		virtual void advertise() = 0;
-		
+
 		/// This will be called repeatedly by kaco::Bridge::run()
 		virtual void publish() = 0;
 
 		// Virtual destructor must be defined!
-    	virtual ~Publisher() { }
+		virtual ~Publisher() { }
 
 	};
 

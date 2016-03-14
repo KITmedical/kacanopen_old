@@ -65,7 +65,7 @@ void TransmitPDOMapping::send() const {
 
 	std::vector<uint8_t> data(8,0);
 	size_t max_byte=0;
-	
+
 	DEBUG_LOG("[TransmitPDOMapping::send] Sending transmit PDO with cob_id 0x"<<std::hex<<cob_id);
 
 	for (const Mapping& mapping : mappings) {

@@ -41,42 +41,42 @@
 
 int main() {
 
-    kaco::Core core;
+	kaco::Core core;
 
 	auto callback = [] (const uint8_t node_id) {
 		PRINT("New device! ID = "<<(unsigned)node_id);
 	};
 	core.nmt.register_new_device_callback(callback);
 
-    core.start(BUSNAME, BAUDRATE);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-    
-    core.nmt.reset_all_nodes();
-	
+	core.start(BUSNAME, BAUDRATE);
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    core.nmt.send_nmt_message(8,kaco::NMT::Command::start_node);
-	
+	core.nmt.reset_all_nodes();
+
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	core.nmt.send_nmt_message(8,kaco::NMT::Command::start_node);
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	// set digital output
-    core.sdo.download(8, 0x6200, 0x1, 1, {0x7F});
-	
+	core.sdo.download(8, 0x6200, 0x1, 1, {0x7F});
+
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	// get device type (usually expedited transfer)
 	std::vector<uint8_t> device_type = core.sdo.upload(8,0x1000,0x0);
-    for (uint8_t device_type_byte : device_type) {
-    	DUMP_HEX(device_type_byte);
-    }
+	for (uint8_t device_type_byte : device_type) {
+		DUMP_HEX(device_type_byte);
+	}
 	
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	// get device name (usually segmented transfer)
 	// TODO: check correct encoding
-    std::vector<uint8_t> device_name = core.sdo.upload(8,0x1008,0x0);
-    std::string result(reinterpret_cast<char const*>(device_name.data()), device_name.size());
-    PRINT("Device name: "<<result);
+	std::vector<uint8_t> device_name = core.sdo.upload(8,0x1008,0x0);
+	std::string result(reinterpret_cast<char const*>(device_name.data()), device_name.size());
+	PRINT("Device name: "<<result);
 
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 	core.stop();

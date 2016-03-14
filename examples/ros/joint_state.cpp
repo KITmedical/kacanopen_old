@@ -55,13 +55,13 @@ int main(int argc, char* argv[]) {
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	while (master.get_devices().size()<1) {
 		ERROR("No CiA 402 devices found. Waiting.");
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 	// should be a 401 device
 	kaco::Device& device = master.get_devices()[0];
 	device.start();
-	
+
 	if (!device.load_dictionary_from_library()) {
 		ERROR("No suitable EDS file found for this device.");
 		return EXIT_FAILURE;
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 	device.print_dictionary();
 
 	DUMP(device.get_entry("manufacturer_device_name"));
-	
+
 	PRINT("Enable operation");
 	device.set_entry("controlword", (uint16_t) 0x0006); // shutdown
 	device.set_entry("controlword", (uint16_t) 0x0007); // switch on
@@ -85,15 +85,15 @@ int main(int argc, char* argv[]) {
 
 	PRINT("Set position mode");
 	device.set_entry("modes_of_operation", (int8_t) kaco::cia_402::ModeOfOperation::PROFILE_POSITION_MODE);
-	
+
 	ros::init(argc, argv, "canopen_bridge");
-	
+
 	// Create bridge
 	kaco::Bridge bridge;
-	
+
 	auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
 	bridge.add_publisher(jspub);
-	
+
 	auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
 	bridge.add_subscriber(jssub);
 

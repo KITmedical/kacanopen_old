@@ -38,7 +38,7 @@
 #include "message.h"
 
 namespace kaco {
-	
+
 	// forward declaration
 	class Core;
 

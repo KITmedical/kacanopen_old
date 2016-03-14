@@ -45,24 +45,24 @@
 #define DUMP_HEX(x) PRINT(#x << " = 0x" << std::hex << x);
 
 #ifdef NDEBUG
- 	#define DEBUG(x)
+	#define DEBUG(x)
 	#define DEBUG_LOG(x)
 	#define DEBUG_DUMP(x)
 	#define DEBUG_DUMP_HEX(x)
 
- 	#define DEBUG_EXHAUSTIVE(x)
+	#define DEBUG_EXHAUSTIVE(x)
 	#define DEBUG_LOG_EXHAUSTIVE(x)
 #else
- 	#define DEBUG(x) if (debug) { x }
+	#define DEBUG(x) if (debug) { x }
 	#define DEBUG_LOG(x) if (debug) { PRINT("DEBUG: " << x); }
 	#define DEBUG_DUMP(x) if (debug) { PRINT("DEBUG: " << #x << " = " << std::dec << x); }
 	#define DEBUG_DUMP_HEX(x) if (debug) { PRINT("DEBUG: " << #x << " = 0x" << std::hex << x); }
 
 	#ifdef EXHAUSTIVE_DEBUGGING
- 		#define DEBUG_EXHAUSTIVE(x) if (debug) { x }
+		#define DEBUG_EXHAUSTIVE(x) if (debug) { x }
 		#define DEBUG_LOG_EXHAUSTIVE(x) if (debug) { PRINT("DEBUG_EXHAUSTIVE: " << x); }
 	#else
- 		#define DEBUG_EXHAUSTIVE(x)
+		#define DEBUG_EXHAUSTIVE(x)
 		#define DEBUG_LOG_EXHAUSTIVE(x)
 	#endif
 
@@ -73,16 +73,16 @@ namespace kaco {
 	namespace int8_printers {
 
 		inline std::ostream &operator<<(std::ostream &os, char c) {
-		    return os << (std::is_signed<char>::value ? static_cast<int>(c)
-		                                              : static_cast<unsigned int>(c));
+			return os << (std::is_signed<char>::value ? static_cast<int>(c)
+				: static_cast<unsigned int>(c));
 		}
 
 		inline std::ostream &operator<<(std::ostream &os, signed char c) {
-		    return os << static_cast<int>(c);
+			return os << static_cast<int>(c);
 		}
 
 		inline std::ostream &operator<<(std::ostream &os, unsigned char c) {
-		    return os << static_cast<unsigned int>(c);
+			return os << static_cast<unsigned int>(c);
 		}
 	}
 }

@@ -48,9 +48,9 @@ int main(int argc, char** argv) {
 
 	bool success = false;
 	std::string path;
-	
+
 	if (argc>1 && argv[1]) {
-		
+
 		path = std::string(argv[1]);
 		PRINT("Loading EDS file from "<<path);
 		success = reader.load_file(path);

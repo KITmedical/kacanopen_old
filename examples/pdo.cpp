@@ -83,9 +83,9 @@ int main() {
 
 	// transmit PDO every 500ms
 	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));
-	
+
 	for (uint8_t i=0; i<10; ++i) {
-		
+
 		PRINT("Set output to 0x"<<std::hex<<i<<" (via cache!) and wait 1 second");
 		device.set_entry("Write output 8-bit/Digital Outputs 1-8", i, 0, kaco::WriteAccessMethod::cache);
 		std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -37,14 +37,14 @@ namespace kaco {
 	class Subscriber {
 
 	public:
-		
+
 		/// Advertise the subscriber to the network. This is called by
 		/// Bridge _after_ ros::init(). You should not call this
 		/// method by yourself.
 		virtual void advertise() = 0;
 
 		// Virtual destructor must be defined!
-    	virtual ~Subscriber() { }
+		virtual ~Subscriber() { }
 
 	};
 

@@ -121,28 +121,28 @@ namespace kaco {
 
 		/// Casts uint16 to C++ type.
 		operator uint16_t() const;
-		
+
 		/// Casts uint32 to C++ type.
 		operator uint32_t() const;
-		
+
 		/// Casts int8 to C++ type.
 		operator int8_t() const;
-		
+
 		/// Casts int16 to C++ type.
 		operator int16_t() const;
-		
+
 		/// Casts int32 to C++ type.
 		operator int32_t() const;
-		
+
 		/// Casts real32 to C++ type.
 		operator float() const;
-		
+
 		/// Casts real64 to C++ type.
 		operator double() const;
-		
+
 		/// Casts boolean to C++ type.
 		operator bool() const;
-		
+
 		/// Casts string to C++ type.
 		operator std::string() const;
 

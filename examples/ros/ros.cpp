@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 	device.start();
 	device.load_dictionary_from_library();
 	uint16_t profile = device.get_device_profile_number();
-	
+
 	if (profile != 401) {
 		ERROR("This example is intended for use with a CiA 401 device. You plugged a device with profile number "<<std::dec<<profile);
 		return EXIT_FAILURE;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 	// map PDOs (optional)
 	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offest 0
 	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
-	
+
 	// set some output (optional)
 	device.set_entry("Write output 8-bit/Digital Outputs 1-8", (uint8_t) 0xFF, 0);
 
@@ -84,12 +84,12 @@ int main(int argc, char* argv[]) {
 
 	// Create bridge
 	kaco::Bridge bridge;
-	
+
 	// create a publisher for reading second 8-bit input and add it to the bridge
 	// communication via POD
 	auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit/Digital Inputs 9-16");
 	bridge.add_publisher(iopub);
-	
+
 	// create a subscriber for editing IO output and add it to the bridge
 	// communication via SOD
 	auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit/Digital Outputs 1-8");

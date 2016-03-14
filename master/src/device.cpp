@@ -68,21 +68,21 @@ uint8_t Device::get_node_id() const {
 }
 
 bool Device::has_entry(const std::string& entry_name) {
-	
+
 	const std::string name = Utils::escape(entry_name);
 	return m_dictionary.count(name) != 0;
 
 }
 
 Value Device::get_entry_via_sdo(uint32_t index, uint8_t subindex, Type type) {
-	
+
 	std::vector<uint8_t> data = m_core.sdo.upload(m_node_id, index, subindex);
 	return Value(type, data);
 
 }
 
 const Value& Device::get_entry(const std::string& entry_name, uint8_t array_index, ReadAccessMethod access_method) {
-	
+
 	const std::string name = Utils::escape(entry_name);
 
 	if (!has_entry(name)) {
@@ -109,7 +109,7 @@ const Value& Device::get_entry(const std::string& entry_name, uint8_t array_inde
 }
 
 Type Device::get_entry_type(const std::string& entry_name) {
-	
+
 	const std::string name = Utils::escape(entry_name);
 
 	if (!has_entry(name)) {
@@ -128,7 +128,7 @@ void Device::set_entry_via_sdo(uint32_t index, uint8_t subindex, const Value& va
 }
 
 void Device::set_entry(const std::string& entry_name, const Value& value, uint8_t array_index, WriteAccessMethod access_method) {
-	
+
 	const std::string name = Utils::escape(entry_name);
 
 	if (!has_entry(name)) {
@@ -149,7 +149,7 @@ void Device::set_entry(const std::string& entry_name, const Value& value, uint8_
 	entry.set_value(value, array_index);
 
 	if (access_method==WriteAccessMethod::sdo || (access_method==WriteAccessMethod::use_default && entry.write_access_method==WriteAccessMethod::sdo)) {
-		
+
 		DEBUG_LOG("[Device::set_entry] update_on_write.");
 
 		const uint8_t subindex = (entry.is_array) ? 0x1+array_index : entry.subindex;
@@ -160,7 +160,7 @@ void Device::set_entry(const std::string& entry_name, const Value& value, uint8_
 }
 
 void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_name, uint8_t offset, uint8_t array_index) {
-	
+
 	// TODO: update entry's default access method
 
 	const std::string name = Utils::escape(entry_name);
@@ -168,13 +168,13 @@ void Device::add_receive_pdo_mapping(uint16_t cob_id, const std::string& entry_n
 	if (!has_entry(name)) {
 		throw dictionary_error(dictionary_error::type::unknown_entry, name);
 	}
-	
+
 	Entry& entry = m_dictionary[name];
 
 	if (array_index > 0 && !entry.is_array) {
 		throw dictionary_error(dictionary_error::type::no_array, name);
 	}
-	
+
 	const uint8_t type_size = Utils::get_type_size(entry.type);
 
 	if (offset+type_size > 8) {
@@ -200,9 +200,9 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 	if (transmission_type==TransmissionType::ON_CHANGE) {
 
 		for (const Mapping& mapping : pdo.mappings) {
-	
+
 			const std::string entry_name = Utils::escape(mapping.entry_name);
-			
+
 			// entry exists because check_correctness() == true.
 			Entry& entry = m_dictionary.at(entry_name);
 
@@ -215,13 +215,13 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 	} else {
 
 		// transmission_type==TransmissionType::PERIODIC
-		
+
 		if (repeat_time == std::chrono::milliseconds(0)) {
 			WARN("[Device::add_transmit_pdo_mapping] Repeat time is 0. This could overload the bus.");
 		}
 
 		pdo.transmitter = std::move(std::shared_ptr<std::thread>(new std::thread([&pdo, repeat_time](){
-			
+
 			while (true) {
 				DEBUG_LOG("[Timer thread] Sending periodic PDO.");
 				pdo.send();
@@ -235,7 +235,7 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 }
 
 void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data) {
-	
+
 	const std::string entry_name = Utils::escape(mapping.entry_name);
 	Entry& entry = m_dictionary[entry_name];
 	const uint8_t array_index = mapping.array_index;
@@ -264,7 +264,7 @@ uint16_t Device::get_device_profile_number() {
 bool Device::load_dictionary_from_library() {
 
 	if (m_eds_library.ready()) {
-		
+
 		uint16_t profile = get_device_profile_number();
 		uint32_t vendor_id = get_entry("Identity object/Vendor-ID");
 		uint32_t product_code = get_entry("Identity object/Product Code");

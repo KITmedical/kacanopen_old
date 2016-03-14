@@ -43,9 +43,9 @@ namespace kaco {
 
 JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degree,
 	int32_t position_360_degree, std::string topic_name)
-    : m_device(device), m_position_0_degree(position_0_degree),
-    	m_position_360_degree(position_360_degree), m_topic_name(topic_name),
-        m_initialized(false)
+	: m_device(device), m_position_0_degree(position_0_degree),
+		m_position_360_degree(position_360_degree), m_topic_name(topic_name),
+		m_initialized(false)
 {
 
 	const uint16_t profile = device.get_device_profile_number();
@@ -67,15 +67,15 @@ JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degr
 		return;
 	}
 
-    if (m_topic_name.empty()) {
+	if (m_topic_name.empty()) {
 		uint8_t node_id = device.get_node_id();
 		m_topic_name = "device" + std::to_string(node_id) + "/get_joint_state";
-    }
+	}
 
 }
 
 void JointStatePublisher::advertise() {
-	
+
 	if (!m_topic_name.size()) {
 		ROS_ERROR("Invalid topic_name. Aborting advertise().");
 		return;
@@ -96,24 +96,24 @@ void JointStatePublisher::publish() {
 	}
 	
 	sensor_msgs::JointState js;
-    
-    js.name.resize(1);
-    js.position.resize(1);
 
-    // only position supported yet.
-    js.velocity.resize(0);
-    js.effort.resize(0);
-    
-    js.name[0] = m_topic_name;
+	js.name.resize(1);
+	js.position.resize(1);
 
-    const int32_t pos = m_device.get_entry("Position actual value");
-    js.position[0] = pos_to_rad(pos);
+	// only position supported yet.
+	js.velocity.resize(0);
+	js.effort.resize(0);
 
-    DEBUG_LOG("Sending JointState message");
-    DEBUG_DUMP(pos);
-    DEBUG_DUMP(js.position[0]);
+	js.name[0] = m_topic_name;
 
-    m_publisher.publish(js);
+	const int32_t pos = m_device.get_entry("Position actual value");
+	js.position[0] = pos_to_rad(pos);
+
+	DEBUG_LOG("Sending JointState message");
+	DEBUG_DUMP(pos);
+	DEBUG_DUMP(js.position[0]);
+
+	m_publisher.publish(js);
 
 }
 

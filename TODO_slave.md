@@ -40,4 +40,3 @@
 
 * EDSReader class:
 	- handle default values but only if used by Slave class, otherwise dictionary could contain outdated values.
-	

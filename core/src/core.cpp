@@ -62,13 +62,13 @@ Core::~Core() {
 
 bool Core::start(const std::string busname, unsigned baudrate) {
 
-    CANBoard board = {busname.c_str(), std::to_string(baudrate).c_str()} ;
-    m_handle = canOpen_driver(&board);
+	CANBoard board = {busname.c_str(), std::to_string(baudrate).c_str()} ;
+	m_handle = canOpen_driver(&board);
 
-    if(!m_handle) {
-        ERROR("Cannot open the CANOpen device.");
-        return false;
-    }
+	if(!m_handle) {
+		ERROR("Cannot open the CANOpen device.");
+		return false;
+	}
 
 	m_running = true;
 	m_loop_thread = std::thread(&Core::receive_loop, this, std::ref(m_running));
@@ -187,7 +187,7 @@ void Core::received_message(const Message& message) {
 }
 
 void Core::send(const Message& message) {
-	
+
 	DEBUG_LOG_EXHAUSTIVE("Sending message:");
 	DEBUG_EXHAUSTIVE(message.print();)
 	canSend_driver(m_handle, &message);

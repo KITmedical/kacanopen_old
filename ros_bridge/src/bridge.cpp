@@ -36,38 +36,38 @@
 namespace kaco {
 
 Bridge::Bridge() {
-    //int argc = 0;
-    //char *argv[] {};
-    //ros::init(argc, argv, "canopen_bridge");
+	//int argc = 0;
+	//char *argv[] {};
+	//ros::init(argc, argv, "canopen_bridge");
 }
 
 Bridge::~Bridge() 
 	{ }
 
 void Bridge::add_publisher(std::shared_ptr<Publisher> publisher) {
-    m_publishers.push_back(publisher);
-    publisher->advertise();
+	m_publishers.push_back(publisher);
+	publisher->advertise();
 }
 
 void Bridge::add_subscriber(std::shared_ptr<Subscriber> subscriber) {
-    m_subscribers.push_back(subscriber);
-    subscriber->advertise();
+	m_subscribers.push_back(subscriber);
+	subscriber->advertise();
 }
 
 void Bridge::run(double loop_rate) {
 
-    ros::Rate rate(loop_rate);
-    
-    while(ros::ok()) {
+	ros::Rate rate(loop_rate);
 
-        for (std::shared_ptr<Publisher> publisher : m_publishers) {
-            publisher->publish();
-        }
+	while(ros::ok()) {
 
-        ros::spinOnce();
-        rate.sleep();
+		for (std::shared_ptr<Publisher> publisher : m_publishers) {
+			publisher->publish();
+		}
 
-    }
+		ros::spinOnce();
+		rate.sleep();
+
+	}
 
 }
 

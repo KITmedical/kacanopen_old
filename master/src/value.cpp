@@ -163,7 +163,7 @@ Value::Value(Type type_, const std::vector<uint8_t>& data) {
 			string = std::string(reinterpret_cast<char const*>(data.data()), data.size());
 			break;
 		}
-			
+
 		case Type::boolean: {
 			boolean = (data[0]>0);
 			break;
@@ -202,7 +202,7 @@ std::vector<uint8_t> Value::get_bytes() const {
 			result.push_back((uint32>>24) & 0xFF);
 			break;
 		}
-			
+
 		case Type::int8: {
 			result.push_back(int8);
 			break;

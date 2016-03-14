@@ -40,7 +40,7 @@ namespace kaco {
 
 EntrySubscriber::EntrySubscriber(Device& device, std::string entry_name,
 			uint8_t array_index, WriteAccessMethod access_method)
-    : m_device(device), m_entry_name(entry_name), m_array_index(array_index), m_access_method(access_method)
+	: m_device(device), m_entry_name(entry_name), m_array_index(array_index), m_access_method(access_method)
 {
 
 	uint8_t node_id = device.get_node_id();
@@ -57,7 +57,7 @@ void EntrySubscriber::advertise() {
 	DEBUG_LOG("Advertising "<<topic);
 	ros::NodeHandle nh;
 
-    switch(m_type) {
+	switch(m_type) {
 		case Type::uint8:
 			m_subscriber = nh.subscribe(topic, queue_size, &EntrySubscriber::receive_uint8, this);
 			break;

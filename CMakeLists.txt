@@ -43,6 +43,12 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
         message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
     endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
+        message(FATAL_ERROR "Clang version must be at least 3.6! Earlier versions don't support debug information for auto.")
+    endif()
+else()
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
 endif()
 
 

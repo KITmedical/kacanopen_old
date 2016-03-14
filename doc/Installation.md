@@ -4,8 +4,8 @@
 
 - a recent C++ compiler with C++14 support:
 	- [GCC](https://gcc.gnu.org/) >= 4.9
-	- [Clang](http://clang.llvm.org/) >= 3.5
-	- others may work, but are not tested
+	- [Clang](http://clang.llvm.org/) >= 3.6
+	- others may work though not tested
 
 - [CMake](https://cmake.org/) >= 3.2
 

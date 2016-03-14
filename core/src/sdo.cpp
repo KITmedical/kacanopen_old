@@ -38,6 +38,9 @@
 #include <chrono>
 #include <cassert>
 
+// Set by CMake:
+// #define SDO_RESPONSE_TIMEOUT_MS ...
+
 namespace kaco {
 
 SDO::SDO(Core& core) 
@@ -216,7 +219,7 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	m_core.send(message);
 
 	const auto start = std::chrono::system_clock::now();
-	const auto timeout = std::chrono::milliseconds(response_timeout_ms);
+	const auto timeout = std::chrono::milliseconds(SDO_RESPONSE_TIMEOUT_MS);
 	
 	while (!received_result) {
 

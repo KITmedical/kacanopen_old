@@ -35,11 +35,12 @@
 #include <cassert>
 #include <future>
 #include <iomanip>
+#include <memory>
 
 namespace kaco {
 
 Entry::Entry()
-	: read_write_mutex(new std::mutex)
+	: type(Type::invalid), read_write_mutex(new std::mutex)
 	{ }
 
 // standard constructor
@@ -62,6 +63,45 @@ Entry::Entry(Entry::ArrayTag, uint16_t _index, std::string _name, Type _type, Ac
 		is_array(true),
 		read_write_mutex(new std::mutex)
 	{ }
+
+Entry::Entry(const Entry& other) {
+	// ignore default constructed entries
+	if (other.type != Type::invalid) {
+		index = other.index;
+		subindex = other.subindex;
+		name = other.name;
+		type = other.type;
+		access_type = other.access_type;
+		is_array = other.is_array;
+		read_access_method = other.read_access_method;
+		write_access_method = other.write_access_method;
+		m_value = other.m_value;
+		m_valid = other.m_valid;
+		m_value_changed_callbacks = other.m_value_changed_callbacks;
+		// m_dummy_value default constructed
+		read_write_mutex = std::unique_ptr<std::mutex>(new std::mutex);
+	}
+}
+
+Entry& Entry::operator=(const Entry& other) {
+	// ignore default constructed entries
+	if (other.type != Type::invalid) {
+		index = other.index;
+		subindex = other.subindex;
+		name = other.name;
+		type = other.type;
+		access_type = other.access_type;
+		is_array = other.is_array;
+		read_access_method = other.read_access_method;
+		write_access_method = other.write_access_method;
+		m_value = other.m_value;
+		m_valid = other.m_valid;
+		m_value_changed_callbacks = other.m_value_changed_callbacks;
+		// m_dummy_value default constructed
+		read_write_mutex = std::unique_ptr<std::mutex>(new std::mutex);
+	}
+	return *this;
+}
 
 void Entry::set_value(const Value& value, uint8_t array_index) {
 

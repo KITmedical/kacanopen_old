@@ -78,6 +78,18 @@ namespace kaco {
 		/// array constructor
 		Entry(ArrayTag tag, uint16_t _index, std::string _name, Type _type, AccessType _access);
 
+		/// copy constructor
+		Entry(const Entry& other);
+
+		/// move constructor
+		Entry(Entry&& other) = default;
+
+		/// copy assignment
+		Entry& operator=(const Entry& other);
+
+		/// move assignment
+		Entry& operator=(Entry&& other) = default;
+
 		/// Sets the value. If the entry is an array, array_index can be specified.
 		void set_value(const Value& value, uint8_t array_index=0);
 
@@ -147,7 +159,7 @@ namespace kaco {
 		/// read_write_mutex locks get_value() and set_value() because a PDO
 		/// transmitter thread could read a value reference while it is
 		/// set by the main thread.
-		std::shared_ptr<std::mutex> read_write_mutex;
+		std::unique_ptr<std::mutex> read_write_mutex;
 
 
 	};

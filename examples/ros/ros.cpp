@@ -53,13 +53,13 @@ int main(int argc, char* argv[]) {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	if (master.get_devices().size()<1) {
+	if (master.num_devices()<1) {
 		ERROR("No devices found.");
 		return EXIT_FAILURE;
 	}
 
 	// should be a 401 device
-	kaco::Device& device = master.get_devices()[0];
+	kaco::Device& device = master.get_device(0);
 	device.start();
 	device.load_dictionary_from_library();
 	uint16_t profile = device.get_device_profile_number();

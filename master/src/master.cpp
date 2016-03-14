@@ -33,6 +33,8 @@
 #include "core.h"
 #include "logger.h"
 
+#include <memory>
+
 namespace kaco {
 
 Master::Master() {
@@ -63,12 +65,17 @@ void Master::stop() {
 	core.stop();
 }
 
-std::vector<Device>& Master::get_devices() {
-	return m_devices;
+size_t Master::num_devices() const {
+	return m_devices.size();
+}
+
+Device& Master::get_device(size_t index) const {
+	assert(m_devices.size()>index);
+	return *(m_devices.at(index).get());
 }
 
 void Master::new_device_callback(uint8_t node_id) {
-	m_devices.emplace_back(core, node_id);
+	m_devices.emplace_back(new Device(core, node_id));
 }
 
 

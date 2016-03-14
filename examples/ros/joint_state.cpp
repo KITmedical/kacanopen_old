@@ -53,13 +53,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	while (master.get_devices().size()<1) {
+	while (master.num_devices()<1) {
 		ERROR("No CiA 402 devices found. Waiting.");
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 	// should be a 401 device
-	kaco::Device& device = master.get_devices()[0];
+	kaco::Device& device = master.get_device(0);
 	device.start();
 
 	if (!device.load_dictionary_from_library()) {

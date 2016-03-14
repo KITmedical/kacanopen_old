@@ -63,8 +63,12 @@ namespace kaco {
 		/// Stops master and core.
 		void stop();
 
-		/// Returns a reference to the device array.
-		std::vector<Device>& get_devices();
+		/// Returns the number of slave devices in the network.
+		size_t num_devices() const;
+
+		/// Returns a reference to a slave device object.
+		/// \param index Index of the device. Must be smaller than num_devices().
+		Device& get_device(size_t index) const;
 
 		/// Core instance.
 		Core core;
@@ -73,7 +77,7 @@ namespace kaco {
 
 		static const bool debug = true;
 
-		std::vector<Device> m_devices;
+		std::vector<std::unique_ptr<Device>> m_devices;
 		NMT::NewDeviceCallback m_new_device_callback_functional;
 		bool m_running{false};
 

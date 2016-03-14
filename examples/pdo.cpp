@@ -51,12 +51,12 @@ int main() {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	if (master.get_devices().size()<1) {
+	if (master.num_devices()<1) {
 		ERROR("No devices found.");
 		return EXIT_FAILURE;
 	}
 
-	kaco::Device& device = master.get_devices()[0];
+	kaco::Device& device = master.get_device(0);
 	device.start();
 	success = device.load_dictionary_from_library();
 	if (!success) {

@@ -112,8 +112,10 @@ int TranslateBaudeRate(char* optarg){
 
 UNS8 canChangeBaudRate_driver( CAN_HANDLE fd, char* baud)
 {
-	printf("canChangeBaudRate not yet supported by this driver\n");
-	return 0;
+  (void) fd;
+  (void) baud;
+  printf("canChangeBaudRate not yet supported by this driver\n");
+  return 0;
 }
 
 /***************************************************************************/

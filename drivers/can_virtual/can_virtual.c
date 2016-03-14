@@ -101,6 +101,7 @@ UNS8 canChangeBaudRate_driver( CAN_HANDLE fd0, char* baud)
 /***************************************************************************/
 CAN_HANDLE canOpen_driver(s_BOARD *board)
 {
+  (void) board;
   int i;  
   for(i=0; i < MAX_NB_CAN_PIPES; i++)
   {

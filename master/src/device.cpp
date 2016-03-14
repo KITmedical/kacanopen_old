@@ -235,6 +235,8 @@ void Device::add_transmit_pdo_mapping(uint16_t cob_id, const std::vector<Mapping
 }
 
 void Device::pdo_received_callback(const ReceivePDOMapping& mapping, std::vector<uint8_t> data) {
+	
+	DEBUG_LOG("[Device::pdo_received_callback] Received a PDO for mapping '"<<mapping.entry_name<<"'!");
 
 	const std::string entry_name = Utils::escape(mapping.entry_name);
 	Entry& entry = m_dictionary[entry_name];
@@ -270,7 +272,6 @@ bool Device::load_dictionary_from_library() {
 		uint32_t product_code = get_entry("Identity object/Product Code");
 		uint32_t revision_number = get_entry("Identity object/Revision number");
 
-		m_dictionary.clear();
 		bool success = m_eds_library.load_manufacturer_eds(vendor_id, product_code, revision_number);
 
 		if (success) {

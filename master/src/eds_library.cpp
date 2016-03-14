@@ -97,6 +97,7 @@ namespace kaco {
 			return false;
 		}
 
+		m_map.clear();
 		EDSReader reader(m_map);
 		bool success = reader.load_file(path);
 
@@ -130,6 +131,7 @@ namespace kaco {
 			}
 		}
 
+		m_map.clear();
 		EDSReader reader(m_map);
 		bool success = reader.load_file(path);
 

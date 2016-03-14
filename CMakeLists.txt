@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-### GCC ist not supported until 4.9 ###
+### Compiler config ###
+
+# Use g++-4.9 if there is also an older g++ version on the system
 if("${CMAKE_CXX_COMPILER}" STREQUAL "" OR "${CMAKE_CXX_COMPILER}" STREQUAL "gcc" OR "${CMAKE_CXX_COMPILER}" STREQUAL "g++")
 	find_program(NEWER_GNU_CXX_COMPILER g++-4.9)
 	if (NOT "${NEWER_GNU_CXX_COMPILER}" STREQUAL "")
@@ -8,6 +10,26 @@ if("${CMAKE_CXX_COMPILER}" STREQUAL "" OR "${CMAKE_CXX_COMPILER}" STREQUAL "gcc"
 		message("Using ${CMAKE_CXX_COMPILER} as compiler.")
 	endif()
 endif()
+
+# GCC ist not supported until 4.9
+# Clang ist not supported until 3.6
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+		message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
+	endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
+		message(FATAL_ERROR "Clang version must be at least 3.6! Earlier versions don't support debug information for auto.")
+	endif()
+else()
+	message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
+
+# Compiler flags
+# TOD0: -std=c++14 will be obsolete when reverting to minimum CMake version 3.2 and
+#       using set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 14) again.
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra") # -Werror
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra") # -Werror
 
 project(kacanopen C CXX)
 
@@ -47,21 +69,6 @@ add_definitions("-DBAUDRATE=${BAUDRATE}")
 message(STATUS "Baudrate is set to ${BAUDRATE} (only used by examples)")
 
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-		message(FATAL_ERROR "GCC version must be at least 4.9. Earlier versions miss std::regex support.")
-	endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.6)
-		message(FATAL_ERROR "Clang version must be at least 3.6! Earlier versions don't support debug information for auto.")
-	endif()
-else()
-	message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
-endif()
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra") # -Werror
-
-
 ### dependencies ###
 
 find_package(Threads)
@@ -73,22 +80,21 @@ if(NOT(Boost_FOUND))
 endif()
 
 message(STATUS "Found Boost headers in ${Boost_INCLUDE_DIRS}")
-include_directories(${Boost_INCLUDE_DIRS})
-
 message(STATUS "Found Boost system library: ${Boost_SYSTEM_LIBRARY}")
 message(STATUS "Found Boost filesystem library: ${Boost_FILESYSTEM_LIBRARY}")
 message(STATUS "Found Threads library: ${CMAKE_THREAD_LIBS_INIT}")
 
 
-
-### includes ###
-
-include_directories(${CMAKE_CURRENT_LIST_DIR}/core/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/master/include)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/ros_bridge/include)
+### ROS ###
 
 if (NOT(${NO_ROS}))
-	find_package(catkin REQUIRED)
+
+	find_package(catkin REQUIRED COMPONENTS
+		roscpp
+		std_msgs
+		sensor_msgs
+		# message_generation
+	)
 
 	catkin_package(
 		INCLUDE_DIRS core/include master/include ros_bridge/include
@@ -97,6 +103,19 @@ if (NOT(${NO_ROS}))
 	)
 
 endif()
+
+
+### includes ###
+
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
+if (NOT(${NO_ROS}))
+	include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+endif()
+
+include_directories(${CMAKE_CURRENT_LIST_DIR}/core/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/master/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/ros_bridge/include)
 
 
 ### Installation ###

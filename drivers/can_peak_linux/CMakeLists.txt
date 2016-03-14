@@ -37,7 +37,7 @@ file(GLOB TARGET_SRC
     "*.c"
 )
 
-include_directories(${LIBPCAN_INCLUDE_DIR} ${PCAN_INCLUDE_DIR})
+include_directories(SYSTEM ${LIBPCAN_INCLUDE_DIR} ${PCAN_INCLUDE_DIR})
 
 add_library(${TARGET_NAME} SHARED ${TARGET_SRC})
 target_link_libraries(${TARGET_NAME} ${PCAN_LIBRARY})

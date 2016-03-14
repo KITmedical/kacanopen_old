@@ -2,20 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 message(STATUS "Configuring ros_bridge")
 
-### catkin ###
-find_package(catkin REQUIRED COMPONENTS
-	roscpp
-	std_msgs
-	sensor_msgs
-	# message_generation
-)
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
-
-find_package(Threads)
-
 file(GLOB TARGET_SRC
 	"src/*.cpp"
 )

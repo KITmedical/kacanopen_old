@@ -32,7 +32,7 @@
 #include "joint_state_subscriber.h"
 #include "utils.h"
 #include "logger.h"
-#include "cia_402.h"
+#include "profiles.h"
 
 #include "ros/ros.h"
 
@@ -56,13 +56,13 @@ JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_de
 		return;
 	}
 
-	const int8_t operation_mode = device.get_entry("Modes of operation display");
+	const Value operation_mode = device.get_entry("Modes of operation display");
 
 	// TODO: look into INTERPOLATED_POSITION_MODE
-	if (operation_mode != cia_402::ModeOfOperation::PROFILE_POSITION_MODE
-		&& operation_mode != cia_402::ModeOfOperation::INTERPOLATED_POSITION_MODE) {
+	if (operation_mode != Profiles::constants.at(402).at("profile_position_mode")
+		&& operation_mode != Profiles::constants.at(402).at("interpolated_position_mode")) {
 		ERROR("[JointStateSubscriber] Only position mode supported yet.");
-		PRINT("Try set_entry(\"Modes of operation\", cia_402::ModeOfOperation::PROFILE_POSITION_MODE).");
+		PRINT("Try set_entry(\"Modes of operation\", Profiles::constants.at(402).at(profile_position_mode).");
 		return;
 	}
 

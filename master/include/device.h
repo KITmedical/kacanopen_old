@@ -44,6 +44,7 @@
 #include <map>
 #include <string>
 #include <chrono>
+#include <functional>
 
 namespace kaco {
 
@@ -63,6 +64,8 @@ namespace kaco {
 	class Device {
 
 	public:
+
+		typedef std::function<Value(Device&)> Operation;
 
 		/// Constructor.
 		/// It will try to load mandatory dictionary entries from the EDS library.
@@ -172,6 +175,31 @@ namespace kaco {
 		/// \returns true, if successful
 		bool load_dictionary_from_eds(std::string path);
 
+		/// Loads convenience operations associated with the device profile.
+		/// \returns true, if successful
+		bool load_operations();
+
+		/// Adds a convenience operation.
+		void add_operation(const std::string& coperation_name, const Operation& operation);
+
+		/// Executes a convenience operation. It must exist due to a previous
+		/// load_operations() or add_operation() call.
+		/// \returns The result value of the operation. Invalid value in case there is no result.
+		/// \throws dictionary_error if operation is not available
+		Value execute(const std::string& operation_name);
+
+		/// Loads constants associated with the device profile.
+		/// \returns true, if successful
+		bool load_constants();
+
+		/// Adds a constant.
+		void add_constant(const std::string& constant_name, const Value& constant);
+
+		/// Returns a constant. It must exist due to a previous
+		/// load_constants() or add_constant() call.
+		/// \throws dictionary_error if constant is not available
+		const Value& get_constant(const std::string& constant_name) const;
+
 		/// Prints the dictionary together with currently cached values to command line.
 		void print_dictionary() const;
 
@@ -185,6 +213,8 @@ namespace kaco {
 		uint8_t m_node_id;
 
 		std::map<std::string, Entry> m_dictionary;
+		std::map<std::string, Operation> m_operations;
+		std::map<std::string, Value> m_constants;
 		std::vector<ReceivePDOMapping> m_receive_pdo_mappings;
 		std::vector<TransmitPDOMapping> m_transmit_pdo_mappings;
 		const Value m_dummy_value;

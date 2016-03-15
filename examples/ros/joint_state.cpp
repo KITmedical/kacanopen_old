@@ -33,7 +33,6 @@
 #include "logger.h"
 #include "joint_state_publisher.h"
 #include "joint_state_subscriber.h"
-#include "cia_402.h"
  
 #include <thread>
 #include <chrono>
@@ -67,6 +66,9 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
+	device.load_operations();
+	device.load_constants();
+
 	const uint16_t profile = device.get_device_profile_number();
 	
 	if (profile != 402) {
@@ -79,12 +81,10 @@ int main(int argc, char* argv[]) {
 	DUMP(device.get_entry("manufacturer_device_name"));
 
 	PRINT("Enable operation");
-	device.set_entry("controlword", (uint16_t) 0x0006); // shutdown
-	device.set_entry("controlword", (uint16_t) 0x0007); // switch on
-	device.set_entry("controlword", (uint16_t) 0x000F); // enable operation
+	device.execute("enable_operation");
 
 	PRINT("Set position mode");
-	device.set_entry("modes_of_operation", (int8_t) kaco::cia_402::ModeOfOperation::PROFILE_POSITION_MODE);
+	device.set_entry("modes_of_operation", device.get_constant("profile_position_mode"));
 
 	ros::init(argc, argv, "canopen_bridge");
 

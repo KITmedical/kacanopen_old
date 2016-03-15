@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016, Thomas Keh
+ * Copyright (c) 2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,64 +28,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
-#include <stdexcept>
+#include <functional>
 
-#include "canopen_error.h"
+#include "value.h"
+#include "device.h"
 
 namespace kaco {
 
-	/// This type of exception is thrown if there are
-	/// problems accessing the object dictionary
-	/// or arguments don't match the type of a
-	/// dictionary entry.
-	/// You can get the type of the error via get_type()
-	/// and the name of the causing entry via
-	/// get_entry_name(). 
-	class dictionary_error : public canopen_error {
+	/// This class profides static data related to CiA profiles.
+	/// This includes profile-specific convenience operations and constants.
+	/// Names must be escaped using Utils::escape().
+	struct Profiles {
 
-	public:
+		/// Type of a convenience operation.
+		typedef std::function<Value(Device&)> Operation;
 
-		/// Exact type of the error
-		enum class type {
-			unknown_entry,
-			read_only,
-			write_only,
-			wrong_type,
-			no_array,
-			mapping_size,
-			mapping_overlap,
-			unknown_operation,
-			unknown_constant
-		};
+		/// Convenience operations for CiA profiles.
+		/// Type: map < profile number , map < operation name , operation function object > >
+		static const std::map<uint16_t,std::map<std::string,const Operation>> operations;
 
-		/// Constructor
-		/// \param error_type Type of the error
-		/// \param entry_name Name of the dictionary entry
-		/// \param additional_information Additional information, appended to the error type string in what()
-		explicit dictionary_error(type error_type, const std::string& entry_name, const std::string& additional_information = "");
-
-		/// Destructor
-		virtual ~dictionary_error() { }
-
-		/// Returns error description
-		virtual const char* what() const noexcept override;
-
-		/// Returns type of the error
-		type get_type() const noexcept;
-
-		/// Returns the name of the dictionary entry.
-		std::string get_entry_name() const noexcept;
-
-	private:
-
-		std::string m_message;
-		std::string m_entry_name;
-		type m_type;
+		/// Constants for CiA profiles.
+		/// Type: map < profile number , map < operation name , constant value > >
+		static const std::map<uint16_t,std::map<std::string,const Value>> constants;
 
 	};
 

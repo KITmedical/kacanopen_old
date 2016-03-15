@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,22 +28,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-#pragma once
+
+#include "profiles.h"
+#include "logger.h"
 
 namespace kaco {
 
-	namespace cia_402 {
-		
-		enum ModeOfOperation : int8_t {
-			PROFILE_POSITION_MODE = 1,
-			VELOCITY_MODE = 2,
-			PROFILE_VELOCITY_MODE = 3,
-			TORQUE_PROFILE_MODE = 4,
-			HOMING_MODE = 6,
-			INTERPOLATED_POSITION_MODE = 7
-		};
+	const std::map<uint16_t,std::map<std::string, const Profiles::Operation>> Profiles::operations {
+		{
+			(uint16_t) 402,
+			{
+				{
+					"enable_operation",
+					[](Device& device) -> Value {
+						device.set_entry("controlword", (uint16_t) 0x0006); // shutdown
+						device.set_entry("controlword", (uint16_t) 0x0007); // switch on
+						device.set_entry("controlword", (uint16_t) 0x000F); // enable operation
+						return Value(); // invalid value (return value not needed)
+					}
+				}
+			}
+		}
+	};
 
+	const std::map<uint16_t,std::map<std::string, const Value>> Profiles::constants {
+		{
+			(uint16_t) 402,
+			{
+				{ "profile_position_mode",		(int8_t) 1 },
+				{ "velocity_mode",				(int8_t) 2 },
+				{ "profile_velocity_mode",		(int8_t) 3 },
+				{ "torque_profile_mode",		(int8_t) 4 },
+				{ "homing_mode",				(int8_t) 6 },
+				{ "interpolated_position_mode",	(int8_t) 7 }
+			}
+		}
 	};
 
 } // end namespace kaco

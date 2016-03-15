@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Thomas Keh
+ * Copyright (c) 2015-2016, Thomas Keh
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,12 @@ namespace kaco {
 				break;
 			case type::mapping_overlap:
 				m_message = "Mappings overlap for this PDO.";
+				break;
+			case type::unknown_operation:
+				m_message = "Operation \""+entry_name+"\" not available.";
+				break;
+			case type::unknown_constant:
+				m_message = "Constant \""+entry_name+"\" not available.";
 				break;
 
 			// no default -> compiler should warn if a type is missing.

@@ -34,6 +34,7 @@
 #include "utils.h"
 #include "logger.h"
 #include "dictionary_error.h"
+#include "profiles.h"
 
 #include <cassert>
 #include <algorithm>
@@ -327,6 +328,56 @@ bool Device::load_dictionary_from_eds(std::string path) {
 
 	return true;
 
+}
+
+bool Device::load_operations() {
+	const uint16_t profile = get_device_profile_number();
+	if (Profiles::operations.count(profile)>0) {
+		m_operations.insert(Profiles::operations.at(profile).cbegin(),Profiles::operations.at(profile).cend());
+		return true;
+	}
+	return false;
+}
+
+void Device::add_operation(const std::string& operation_name, const Operation& operation) {
+	const std::string name = Utils::escape(operation_name);
+	if (m_operations.count(name)>0) {
+		WARN("[Device::add_operation] Overwriting operation \""<<name<<"\".");
+	}
+	m_operations[name] = operation;
+}
+
+Value Device::execute(const std::string& operation_name) {
+	const std::string name = Utils::escape(operation_name);
+	if (m_operations.count(name) == 0) {
+		throw dictionary_error(dictionary_error::type::unknown_operation, name);
+	}
+	return m_operations[name](*this);
+}
+
+bool Device::load_constants() {
+	const uint16_t profile = get_device_profile_number();
+	if (Profiles::constants.count(profile)>0) {
+		m_constants.insert(Profiles::constants.at(profile).cbegin(),Profiles::constants.at(profile).cend());
+		return true;
+	}
+	return false;
+}
+
+void Device::add_constant(const std::string& constant_name, const Value& constant) {
+	const std::string name = Utils::escape(constant_name);
+	if (m_constants.count(name)>0) {
+		WARN("[Device::add_constant] Overwriting constant \""<<name<<"\".");
+	}
+	m_constants[name] = constant;
+}
+
+const Value& Device::get_constant(const std::string& constant_name) const {
+	const std::string name = Utils::escape(constant_name);
+	if (m_constants.count(name) == 0) {
+		throw dictionary_error(dictionary_error::type::unknown_constant, name);
+	}
+	return m_constants.at(name);
 }
 
 void Device::print_dictionary() const {

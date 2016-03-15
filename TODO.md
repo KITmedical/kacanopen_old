@@ -10,7 +10,7 @@ This is a yet incomplete list of features which are planned for the future. Feel
 * __Core:__ Automatically map PDOs like they are configured in slave's dictionary.
 * __Core:__ Add methods for manipulating PDO mapping configuration in slave's dictionary.
 * __Core:__ Add ability to remove/change existing PDO transmitters / receivers / mappings.
-* __Master:__ Add profile specific convenience methods (using Lambda expressions). For example, CiA 402 control word manipulation methods are indicated.
+* __Master:__ Device: Add methods print_operations(), print_constants() and read_complete_dictionary().
 
 ## Long-term
 

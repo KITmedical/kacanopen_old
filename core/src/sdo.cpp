@@ -37,6 +37,7 @@
 #include <iostream>
 #include <chrono>
 #include <cassert>
+#include <future>
 
 // Set by CMake:
 // #define SDO_RESPONSE_TIMEOUT_MS ...
@@ -190,14 +191,15 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 	SDOResponse& response) {
 
-	bool received_result = false;
+	std::promise<void> received_promise;
+	std::future<void> received_future = received_promise.get_future();
 
 	SDOReceivedCallback receiver = { node_id, [&] (const SDOResponse& _response) {
 		//f (_response.node_id == node_id) { //&& _response.get_index() == index && _response.get_subindex() == subindex) {
 			// We should not check for index/subindex because this fails for segmented transfer.
 			// TODO: check for correct server command specifier?
 			response = _response;
-			received_result = true;
+			received_promise.set_value();
 		//}
 	} };
 
@@ -218,15 +220,11 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	message.data[7] = byte3;
 	m_core.send(message);
 
-	const auto start = std::chrono::system_clock::now();
 	const auto timeout = std::chrono::milliseconds(SDO_RESPONSE_TIMEOUT_MS);
+	const auto status = received_future.wait_for(timeout);
 	
-	while (!received_result) {
-
-		if (std::chrono::system_clock::now() - start > timeout) {
-			throw sdo_error(sdo_error::type::response_timeout, "Timeout was "+std::to_string(timeout.count())+"ms.");
-		}
-
+	if (status == std::future_status::timeout) {
+		throw sdo_error(sdo_error::type::response_timeout, "Timeout was "+std::to_string(timeout.count())+"ms.");
 	}
 
 	//! not thread-safe!

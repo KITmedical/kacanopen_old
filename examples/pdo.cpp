@@ -56,33 +56,45 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	kaco::Device& device = master.get_device(0);
-	device.start();
+	size_t index;
+	bool found = false;
+	for (size_t i=0; i<master.num_devices(); ++i) {
+		kaco::Device& device = master.get_device(i);
+		device.start();
+		if (device.get_device_profile_number()==401) {
+			index = i;
+			found = true;
+			PRINT("Found CiA 401 device with node ID "<<device.get_node_id());
+		}
+	}
+
+	if (!found) {
+		ERROR("This example is intended for use with a CiA 401 device but I can't find one.");
+		return EXIT_FAILURE;
+	}
+
+	kaco::Device& device = master.get_device(index);
+	const auto node_id = device.get_node_id();
+	// device.start(); // already started
+
 	success = device.load_dictionary_from_library();
 	if (!success) {
 		ERROR("Specializing device failed.");
 		return EXIT_FAILURE;
 	}
 
-	uint16_t profile = device.get_device_profile_number();
-	
-	if (profile != 401) {
-		ERROR("This example is intended for use with a CiA 401 device. You plugged a device with profile number "<<std::dec<<profile);
-		return EXIT_FAILURE;
-	}
-
-	//device.print_dictionary();
-
 	DUMP(device.get_entry("Manufacturer device name"));
 
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0, 0); // offset 0,
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1, 0); // offset 1
+	// TODO: first configure PDO on device side?
+
+	device.add_receive_pdo_mapping(0x180+node_id, "Read input 8-bit/Digital Inputs 1-8", 0, 0); // offset 0,
+	device.add_receive_pdo_mapping(0x180+node_id, "Read input 8-bit/Digital Inputs 9-16", 1, 0); // offset 1
 	
 	// transmit PDO on change
-	device.add_transmit_pdo_mapping(0x208, {{"Write output 8-bit/Digital Outputs 1-8", 0, 0}}); // offset 0
+	device.add_transmit_pdo_mapping(0x200+node_id, {{"Write output 8-bit/Digital Outputs 1-8", 0, 0}}); // offset 0
 
 	// transmit PDO every 500ms
-	//device.add_transmit_pdo_mapping(0x208, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));
+	//device.add_transmit_pdo_mapping(0x20A, {{"write_output", 0, 0, 0}}, kaco::TransmissionType::PERIODIC, std::chrono::milliseconds(500));
 
 	for (uint8_t i=0; i<10; ++i) {
 

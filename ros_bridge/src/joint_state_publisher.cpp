@@ -107,6 +107,7 @@ void JointStatePublisher::publish() {
 	js.name[0] = m_topic_name;
 
 	const int32_t pos = m_device.get_entry("Position actual value");
+  js.header.stamp = ros::Time::now();
 	js.position[0] = pos_to_rad(pos);
 
 	DEBUG_LOG("Sending JointState message");

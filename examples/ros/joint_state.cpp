@@ -43,6 +43,8 @@
 
 int main(int argc, char* argv[]) {
 
+	PRINT("This example publishes and subscribes JointState messages for each connected CiA 402 device.");
+
 	kaco::Master master;
 	bool success = master.start(BUSNAME, BAUDRATE);
 
@@ -53,53 +55,59 @@ int main(int argc, char* argv[]) {
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	while (master.num_devices()<1) {
-		ERROR("No CiA 402 devices found. Waiting.");
+		ERROR("No devices found. Waiting.");
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
-	// should be a 401 device
-	kaco::Device& device = master.get_device(0);
-	device.start();
-
-	if (!device.load_dictionary_from_library()) {
-		ERROR("No suitable EDS file found for this device.");
-		return EXIT_FAILURE;
-	}
-
-	device.load_operations();
-	device.load_constants();
-
-	const uint16_t profile = device.get_device_profile_number();
-	
-	if (profile != 402) {
-		ERROR("This example is intended for use with a CiA 402 device. You plugged a device with profile number "<<std::dec<<profile);
-		return EXIT_FAILURE;
-	}
-
-	device.print_dictionary();
-
-	DUMP(device.get_entry("manufacturer_device_name"));
-
-	PRINT("Enable operation");
-	device.execute("enable_operation");
-
-	PRINT("Set position mode");
-	device.set_entry("modes_of_operation", device.get_constant("profile_position_mode"));
-
-	ros::init(argc, argv, "canopen_bridge");
-
 	// Create bridge
+	ros::init(argc, argv, "canopen_bridge");
 	kaco::Bridge bridge;
 
-	auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
-	bridge.add_publisher(jspub);
+	bool found = false;
+	for (size_t i=0; i<master.num_devices(); ++i) {
+		
+		kaco::Device& device = master.get_device(i);
+		device.start();
 
-	auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
-	bridge.add_subscriber(jssub);
+		if (device.get_device_profile_number()==402) {
 
-	// run ROS loop and publish everything repeatedly with 1 Hz
-	bridge.run(1);
+			found = true;
+			PRINT("Found CiA 402 device with node ID "<<device.get_node_id());
 
-	master.stop();
+			if (!device.load_dictionary_from_library()) {
+				ERROR("No suitable EDS file found for this device.");
+				return EXIT_FAILURE;
+			}
+
+			device.load_operations();
+			device.load_constants();
+
+			DUMP(device.get_entry("manufacturer_device_name"));
+
+			PRINT("Enable operation");
+			device.execute("enable_operation");
+
+			PRINT("Set position mode");
+			device.set_entry("modes_of_operation", device.get_constant("profile_position_mode"));
+
+			// TODO: target_position should be mapped to a PDO
+
+			auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
+			bridge.add_publisher(jspub);
+
+			auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
+			bridge.add_subscriber(jssub);
+
+		}
+
+	}
+
+	if (!found) {
+		ERROR("This example is intended for use with a CiA 402 device but I can't find one.");
+		return EXIT_FAILURE;
+	}
+
+	// run ROS loop and publish everything repeatedly with 100 Hz
+	bridge.run(100);
 
 }

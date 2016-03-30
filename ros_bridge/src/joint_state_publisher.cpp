@@ -42,10 +42,9 @@
 namespace kaco {
 
 JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degree,
-	int32_t position_360_degree, std::string topic_name)
+	int32_t position_360_degree, const std::string& position_actual_field, const std::string& topic_name)
 	: m_device(device), m_position_0_degree(position_0_degree),
-		m_position_360_degree(position_360_degree), m_topic_name(topic_name),
-		m_initialized(false)
+		m_position_360_degree(position_360_degree), m_position_actual_field(position_actual_field), m_topic_name(topic_name), m_initialized(false)
 {
 
 	const uint16_t profile = device.get_device_profile_number();
@@ -106,7 +105,7 @@ void JointStatePublisher::publish() {
 
 	js.name[0] = m_topic_name;
 
-	const int32_t pos = m_device.get_entry("Position actual value");
+	const int32_t pos = m_device.get_entry(m_position_actual_field);
   js.header.stamp = ros::Time::now();
 	js.position[0] = pos_to_rad(pos);
 

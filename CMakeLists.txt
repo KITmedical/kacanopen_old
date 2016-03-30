@@ -30,6 +30,7 @@ endif()
 #       using set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 14) again.
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra") # -Werror
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra") # -Werror
+message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 
 project(kacanopen C CXX)
 

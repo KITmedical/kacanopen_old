@@ -58,15 +58,18 @@ void Bridge::run(double loop_rate) {
 
 	ros::Rate rate(loop_rate);
 
+  // TODO after making core fully thread-safe
+  //ros::AsyncSpinner spinner(1);
+  //spinner.start();
+
 	while(ros::ok()) {
 
 		for (std::shared_ptr<Publisher> publisher : m_publishers) {
 			publisher->publish();
 		}
 
-		ros::spinOnce();
+		ros::spinOnce();  // TODO see above
 		rate.sleep();
-
 	}
 
 }

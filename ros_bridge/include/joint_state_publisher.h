@@ -61,7 +61,7 @@ namespace kaco {
 		/// 360 degree state.
 		/// \param topic_name Custom topic name. Leave out for default.
 		JointStatePublisher(Device& device, int32_t position_0_degree,
-			int32_t position_360_degree, std::string topic_name = "");
+			int32_t position_360_degree, const std::string& position_actual_field = "Position actual value", const std::string& topic_name = "");
 
 		/// \see interface Publisher
 		void advertise() override;
@@ -85,6 +85,7 @@ namespace kaco {
 		Device& m_device;
 		int32_t m_position_0_degree;
 		int32_t m_position_360_degree;
+		std::string m_position_actual_field;
 		std::string m_topic_name;
 		bool m_initialized;
 

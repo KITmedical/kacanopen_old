@@ -47,7 +47,7 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(3));
 
 	const size_t num_devices = master.num_devices();
 
@@ -55,6 +55,8 @@ int main() {
 
 	for (size_t i=0; i<num_devices; ++i) {
 		kaco::Device& device = master.get_device(i);
+
+    PRINT("Found device: " << device.get_node_id());
 
 		PRINT("Starting");
 		device.start();
@@ -66,8 +68,8 @@ int main() {
 			return EXIT_FAILURE;
 		}
 
-		PRINT("Dictionary:");
-		device.print_dictionary();
+		//PRINT("Dictionary:");
+		//device.print_dictionary();
 
 		DUMP(device.get_entry("Manufacturer device name"));
 

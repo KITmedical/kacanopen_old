@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 	DUMP(device.get_entry("Manufacturer device name"));
 
 	// map PDOs (optional)
-	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offest 0
+	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offset 0
 	device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
 
 	// set some output (optional)

@@ -57,7 +57,10 @@ void NMT::broadcast_nmt_message(Command cmd) {
 }
 
 void NMT::reset_all_nodes() {
-	broadcast_nmt_message(Command::reset_node);
+  for (size_t cobid = 1; cobid < 239; ++cobid) {
+    send_nmt_message(cobid, Command::reset_node);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
 }
 
 void NMT::process_incoming_message(const Message& message) {

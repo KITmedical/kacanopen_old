@@ -56,7 +56,7 @@ int main() {
 	for (size_t i=0; i<num_devices; ++i) {
 		kaco::Device& device = master.get_device(i);
 
-    PRINT("Found device: " << device.get_node_id());
+	PRINT("Found device: " << device.get_node_id());
 
 		PRINT("Starting");
 		device.start();

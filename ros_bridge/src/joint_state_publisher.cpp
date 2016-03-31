@@ -88,7 +88,7 @@ void JointStatePublisher::advertise() {
 }
 
 void JointStatePublisher::publish() {
-	
+
 	if (!m_initialized) {
 		ROS_ERROR("publish() called before initialization.");
 		return;
@@ -106,7 +106,7 @@ void JointStatePublisher::publish() {
 	js.name[0] = m_topic_name;
 
 	const int32_t pos = m_device.get_entry(m_position_actual_field);
-  js.header.stamp = ros::Time::now();
+	js.header.stamp = ros::Time::now();
 	js.position[0] = pos_to_rad(pos);
 
 	DEBUG_LOG("Sending JointState message");
@@ -118,7 +118,6 @@ void JointStatePublisher::publish() {
 }
 
 double JointStatePublisher::pos_to_rad(int32_t pos) const {
-
 	const double p = pos;
 	const double min = m_position_0_degree;
 	const double max = m_position_360_degree;

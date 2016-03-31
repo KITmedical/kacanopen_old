@@ -45,7 +45,8 @@
 
 int main(int argc, char* argv[]) {
 
-	PRINT("This example publishes and subscribes JointState messages for each connected CiA 402 device.");
+	PRINT("This example publishes and subscribes JointState messages for each connected CiA 402 device as well as"
+		<<"uint8 messages for each connected digital IO device (CiA 401).");
 
 	kaco::Master master;
 	bool success = master.start(BUSNAME, BAUDRATE);
@@ -68,50 +69,46 @@ int main(int argc, char* argv[]) {
 
 	bool found = false;
 	for (size_t i=0; i<master.num_devices(); ++i) {
-		
+
 		kaco::Device& device = master.get_device(i);
 		device.start();
+		device.load_operations();
+		device.load_constants();
 
-		if (device.get_device_profile_number()==401) {
+		if (!device.load_dictionary_from_library()) {
+			ERROR("No suitable EDS file found for this device.");
+			return EXIT_FAILURE;
+		}
+
+		const auto profile = device.get_device_profile_number();
+		PRINT("Found CiA 401 device with node ID "<<device.get_node_id()<<": "<<device.get_entry("manufacturer_device_name"));
+
+		if (profile==401) {
+
 			found = true;
-			PRINT("Found CiA 401 device with node ID "<<device.get_node_id());
 
-			if (!device.load_dictionary_from_library()) {
-				ERROR("No suitable EDS file found for this device.");
-				return EXIT_FAILURE;
-			}
+			// TODO: we should determine the number of input / output bytes fiŕst.
 
-		DUMP(device.get_entry("Manufacturer device name"));
+			// map PDOs (optional)
+			device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offest 0
+			device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
 
-		// map PDOs (optional)
-		device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 1-8", 0); // offest 0
-		device.add_receive_pdo_mapping(0x188, "Read input 8-bit/Digital Inputs 9-16", 1); // offset 1
+			// set some output (optional)
+			device.set_entry("Write output 8-bit/Digital Outputs 1-8", (uint8_t) 0xFF, 0);
 
-		// set some output (optional)
-		device.set_entry("Write output 8-bit/Digital Outputs 1-8", (uint8_t) 0xFF, 0);
+			// create a publisher for reading second 8-bit input and add it to the bridge
+			// communication via POD
+			auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit/Digital Inputs 9-16");
+			bridge.add_publisher(iopub);
 
-		// create a publisher for reading second 8-bit input and add it to the bridge
-		// communication via POD
-		auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit/Digital Inputs 9-16");
-		bridge.add_publisher(iopub);
+			// create a subscriber for editing IO output and add it to the bridge
+			// communication via SOD
+			auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit/Digital Outputs 1-8");
+			bridge.add_subscriber(iosub);
 
-		// create a subscriber for editing IO output and add it to the bridge
-		// communication via SOD
-		auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit/Digital Outputs 1-8");
-		bridge.add_subscriber(iosub);
-	} else if (device.get_device_profile_number()==402) {
+		} else if (profile==402) {
+
 			found = true;
-			PRINT("Found CiA 402 device with node ID "<<device.get_node_id());
-
-			if (!device.load_dictionary_from_library()) {
-				ERROR("No suitable EDS file found for this device.");
-				return EXIT_FAILURE;
-			}
-
-			device.load_operations();
-			device.load_constants();
-
-			DUMP(device.get_entry("manufacturer_device_name"));
 
 			PRINT("Set position mode");
 			device.set_entry("modes_of_operation", device.get_constant("profile_position_mode"));
@@ -121,15 +118,15 @@ int main(int argc, char* argv[]) {
 
 			// TODO: target_position should be mapped to a PDO
 
-		// HACK
-		if (static_cast<std::string>(device.get_entry("manufacturer_device_name")).substr(0, 11) == "SCHUNK ERBo") {
-		PRINT("Creating special Schunk JointStatePublisher");
-		auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000, "Position actual value in user unit");
-		bridge.add_publisher(jspub);
-		} else {
-		auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
-		bridge.add_publisher(jspub);
-		} 
+			// HACK
+			if (static_cast<std::string>(device.get_entry("manufacturer_device_name")).substr(0, 11) == "SCHUNK ERBo") {
+				PRINT("Creating special Schunk JointStatePublisher");
+				auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000, "Position actual value in user unit");
+				bridge.add_publisher(jspub);
+			} else {
+				auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
+				bridge.add_publisher(jspub);
+			}
 
 			auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
 			bridge.add_subscriber(jssub);

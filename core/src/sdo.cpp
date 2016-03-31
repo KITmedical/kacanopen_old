@@ -46,10 +46,16 @@ namespace kaco {
 
 SDO::SDO(Core& core) 
 	: m_core(core)
-	{ }
+	{
+		m_send_receive_durations.reserve(10000);
+	}
 
 SDO::~SDO() 
-	{ }
+	{
+		for (const auto duration : m_send_receive_durations) {
+			PRINT(duration.count());
+		}
+	}
 
 void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& data) {
 
@@ -191,6 +197,8 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 	SDOResponse& response) {
 
+	const auto start = std::chrono::steady_clock::now();
+
 	std::promise<void> received_promise;
 	std::future<void> received_future = received_promise.get_future();
 
@@ -229,6 +237,9 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 
 	//! not thread-safe!
 	m_receive_callbacks.pop_back();
+
+	const auto end = std::chrono::steady_clock::now();
+	m_send_receive_durations.push_back(end-start);
 
 }
 

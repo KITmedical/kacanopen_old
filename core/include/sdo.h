@@ -34,6 +34,9 @@
 #include <functional>
 #include <vector>
 
+// for benchmark
+#include <chrono>
+
 #include "message.h"
 #include "sdo_response.h"
 
@@ -144,6 +147,8 @@ namespace kaco {
 		std::vector<SDOReceivedCallback> m_receive_callbacks;
 
 		uint8_t size_flag(uint8_t size);
+
+		std::vector<std::chrono::nanoseconds> m_send_receive_durations;
 
 	};
 

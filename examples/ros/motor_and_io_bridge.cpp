@@ -61,6 +61,8 @@ int main(int argc, char* argv[]) {
 	size_t num_devices_required = 8;
 	while (master.num_devices()<num_devices_required) {
 		ERROR("Number of devices found: " << master.num_devices() << ". Waiting for " << num_devices_required << ".");
+		PRINT("Trying to discover more nodes via NMT Node Guarding...");
+		master.core.nmt.discover_nodes();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 

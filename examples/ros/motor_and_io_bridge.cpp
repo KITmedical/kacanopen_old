@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
 
 	kaco::Master master;
 	bool success = master.start(BUSNAME, BAUDRATE);
+	//master.core.nmt.reset_all_nodes();
 
 	if (!success) {
 		ERROR("Starting master failed.");

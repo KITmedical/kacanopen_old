@@ -48,7 +48,7 @@ NMT::~NMT()
 
 void NMT::send_nmt_message(uint8_t node_id, Command cmd) {
 	DEBUG_LOG("Set NMT state of "<<(unsigned)node_id<<" to "<<static_cast<uint32_t>(cmd));
-	Message message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };
+	const Message message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };
 	m_core.send(message);
 }
 
@@ -57,8 +57,20 @@ void NMT::broadcast_nmt_message(Command cmd) {
 }
 
 void NMT::reset_all_nodes() {
-	for (size_t cobid = 1; cobid < 239; ++cobid) {
-		send_nmt_message(cobid, Command::reset_node);
+	// TODO check node_id range
+	for (size_t node_id = 1; node_id < 239; ++node_id) {
+		send_nmt_message(node_id, Command::reset_node);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
+void NMT::discover_nodes() {
+	// TODO check node_id range
+	for (size_t node_id = 1; node_id < 239; ++node_id) {
+		// Protocol node guarding. See CiA 301. All devices will answer with their state via NMT.
+		uint16_t cob_id = 0x700+node_id;
+		const Message message = { cob_id, true, 0, {0,0,0,0,0,0,0,0} };
+		m_core.send(message);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
@@ -71,19 +83,41 @@ void NMT::process_incoming_message(const Message& message) {
 	uint8_t data = message.data[0];
 	uint8_t state = data&0x7F;
 
+	if (message.rtr) {
+		DEBUG_LOG("NMT: Ignoring remote transmission request.");
+		DEBUG_DUMP(message.cob_id);
+		return;
+	}
+
 	//bool toggle_bit = data>>7;
 	//DEBUG_DUMP(toggle_bit);
 
 	switch (state) {
 		
-		case 0: {
-			DEBUG_LOG("New state is Initialising");
-
+		case 0:
+		case 2:
+		case 3:
+		case 5:
+		case 127: {
+			// device is alive
+			// TODO: this should be device_alive callback
 			for (const auto& callback : m_new_device_callbacks) {
 				DEBUG_LOG("Calling new device callback (async)");
 				std::async(std::launch::async, callback, message.get_node_id());
 			}
+			break;
+		}
 
+		default: {
+			// TODO disconnect device
+		}
+
+	}
+
+	switch (state) {
+		
+		case 0: {
+			DEBUG_LOG("New state is Initialising");
 			break;
 		}
 		

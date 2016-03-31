@@ -83,13 +83,19 @@ namespace kaco {
 		/// Resets all nodes in the network.
 		void reset_all_nodes();
 
+		/// Discovers nodes in the network via node guard protocol.
+		void discover_nodes();
+
 		/// Registers a callback which will be called when a new slave device is discovered.
+		/// \todo rename to device_alive_callback
 		void register_new_device_callback(const NewDeviceCallback& callback);	
 
 	private:
 
 		static const bool debug = false;
 		Core& m_core;
+
+		/// \todo rename to device_alive_callback
 		std::vector<NewDeviceCallback> m_new_device_callbacks;
 
 	};

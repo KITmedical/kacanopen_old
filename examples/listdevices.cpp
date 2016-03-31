@@ -47,7 +47,7 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	std::this_thread::sleep_for(std::chrono::seconds(3));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	const size_t num_devices = master.num_devices();
 

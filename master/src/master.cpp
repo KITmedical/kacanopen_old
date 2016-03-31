@@ -56,7 +56,9 @@ bool Master::start(const std::string busname, unsigned baudrate) {
 		return false;
 	}
 	m_running = true;
-	core.nmt.reset_all_nodes();
+	//core.nmt.reset_all_nodes();
+	// TODO: let user do this explicitly?
+	core.nmt.discover_nodes();
 	return true;
 }
 
@@ -75,7 +77,13 @@ Device& Master::get_device(size_t index) const {
 }
 
 void Master::new_device_callback(uint8_t node_id) {
-	m_devices.emplace_back(new Device(core, node_id));
+	if (!m_device_alive.test(node_id)) {
+		m_device_alive.set(node_id);
+		m_devices.emplace_back(new Device(core, node_id));
+	} else {
+		WARN("Device with node ID "<<node_id<<" already exists. Ignoring...");
+	}
+	
 }
 
 

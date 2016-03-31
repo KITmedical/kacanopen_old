@@ -35,6 +35,7 @@
 #include "device.h"
 
 #include <vector>
+#include <bitset>
 
 namespace kaco {
 
@@ -78,6 +79,8 @@ namespace kaco {
 		static const bool debug = false;
 
 		std::vector<std::unique_ptr<Device>> m_devices;
+		std::bitset<265> m_device_alive;
+
 		NMT::NewDeviceCallback m_new_device_callback_functional;
 		bool m_running{false};
 

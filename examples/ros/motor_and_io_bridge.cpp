@@ -75,8 +75,6 @@ int main(int argc, char* argv[]) {
 
 		kaco::Device& device = master.get_device(i);
 		device.start();
-		device.load_operations();
-		device.load_constants();
 
 		if (!device.load_dictionary_from_library()) {
 			ERROR("No suitable EDS file found for this device.");

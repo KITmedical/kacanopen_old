@@ -62,6 +62,8 @@ Device::~Device()
 
 void Device::start() {
 	m_core.nmt.send_nmt_message(m_node_id,NMT::Command::start_node);
+	load_operations();
+	load_constants();
 }
 
 uint8_t Device::get_node_id() const {

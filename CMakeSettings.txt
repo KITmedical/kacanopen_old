@@ -15,3 +15,5 @@ set(SDO_RESPONSE_TIMEOUT_MS "2000" CACHE STRING "Timeout in milliseconds when wa
 set(BUSNAME "slcan0" CACHE STRING "CAN driver busname used by the examples.")
 
 set(BAUDRATE "500000" CACHE STRING "CAN driver baudrate used by the examples.")
+
+set(CONSECUTIVE_SEND_PAUSE_MS "2" CACHE STRING "Pause between two consecutively sent CAN frames in milliseconds.")

@@ -57,21 +57,24 @@ void NMT::broadcast_nmt_message(Command cmd) {
 }
 
 void NMT::reset_all_nodes() {
+	//broadcast_nmt_message(Command::reset_node);
 	// TODO check node_id range
+	const auto pause = std::chrono::milliseconds(CONSECUTIVE_SEND_PAUSE_MS);
 	for (size_t node_id = 1; node_id < 239; ++node_id) {
 		send_nmt_message(node_id, Command::reset_node);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(pause);
 	}
 }
 
 void NMT::discover_nodes() {
 	// TODO check node_id range
+	const auto pause = std::chrono::milliseconds(CONSECUTIVE_SEND_PAUSE_MS);
 	for (size_t node_id = 1; node_id < 239; ++node_id) {
 		// Protocol node guarding. See CiA 301. All devices will answer with their state via NMT.
 		uint16_t cob_id = 0x700+node_id;
 		const Message message = { cob_id, true, 0, {0,0,0,0,0,0,0,0} };
 		m_core.send(message);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(pause);
 	}
 }
 

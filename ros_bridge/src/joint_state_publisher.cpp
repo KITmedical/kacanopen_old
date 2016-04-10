@@ -38,6 +38,7 @@
 #include "sensor_msgs/JointState.h"
 
 #include <string>
+#include <stdexcept>
 
 namespace kaco {
 
@@ -48,12 +49,10 @@ JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degr
 {
 
 	const uint16_t profile = device.get_device_profile_number();
-	
-	// TODO: Error handling in constructor is bad.
 
 	if (profile != 402) {
-		ERROR("JointStatePublisher can only be used with a CiA 402 device. You passed a device with profile number "<<profile);
-		return;
+		throw std::runtime_error("JointStatePublisher can only be used with a CiA 402 device."
+			" You passed a device with profile number "+std::to_string(profile));
 	}
 
 	const Value operation_mode = device.get_entry("Modes of operation display");
@@ -61,8 +60,8 @@ JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degr
 	// TODO: look into INTERPOLATED_POSITION_MODE
 	if (operation_mode != Profiles::constants.at(402).at("profile_position_mode")
 		&& operation_mode != Profiles::constants.at(402).at("interpolated_position_mode")) {
-		ERROR("[JointStatePublisher] Only position mode supported yet.");
-		PRINT("Try set_entry(\"Modes of operation\", Profiles::constants.at(402).at(profile_position_mode).");
+		throw std::runtime_error("[JointStatePublisher] Only position mode supported yet."
+			" Try device.set_entry(\"modes_of_operation\", device.get_constant(\"profile_position_mode\"));");
 		return;
 	}
 
@@ -75,11 +74,7 @@ JointStatePublisher::JointStatePublisher(Device& device, int32_t position_0_degr
 
 void JointStatePublisher::advertise() {
 
-	if (!m_topic_name.size()) {
-		ROS_ERROR("Invalid topic_name. Aborting advertise().");
-		return;
-	}
-
+	assert(!m_topic_name.empty());
 	DEBUG_LOG("Advertising "<<m_topic_name);
 	ros::NodeHandle nh;
 	m_publisher = nh.advertise<sensor_msgs::JointState>(m_topic_name, queue_size);
@@ -90,8 +85,7 @@ void JointStatePublisher::advertise() {
 void JointStatePublisher::publish() {
 
 	if (!m_initialized) {
-		ROS_ERROR("publish() called before initialization.");
-		return;
+		throw std::runtime_error("[JointStatePublisher] publish() called before advertise().");
 	}
 	
 	sensor_msgs::JointState js;

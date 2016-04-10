@@ -60,6 +60,7 @@ namespace kaco {
 		/// \param position_360_degree Like position_0_degree for
 		/// 360 degree state.
 		/// \param topic_name Custom topic name. Leave out for default.
+		/// \throws std::runtime_error if device is not CiA 402 compliant and in position_mode.
 		JointStatePublisher(Device& device, int32_t position_0_degree,
 			int32_t position_360_degree, const std::string& position_actual_field = "Position actual value", const std::string& topic_name = "");
 

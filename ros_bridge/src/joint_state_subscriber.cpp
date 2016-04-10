@@ -49,11 +49,9 @@ JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_de
 
 	const uint16_t profile = device.get_device_profile_number();
 
-	// TODO: Error handling in constructor is bad.
-
 	if (profile != 402) {
-		ERROR("JointStateSubscriber can only be used with a CiA 402 device. You passed a device with profile number "<<profile);
-		return;
+		throw std::runtime_error("JointStatePublisher can only be used with a CiA 402 device."
+			" You passed a device with profile number "+std::to_string(profile));
 	}
 
 	const Value operation_mode = device.get_entry("Modes of operation display");
@@ -61,9 +59,8 @@ JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_de
 	// TODO: look into INTERPOLATED_POSITION_MODE
 	if (operation_mode != Profiles::constants.at(402).at("profile_position_mode")
 		&& operation_mode != Profiles::constants.at(402).at("interpolated_position_mode")) {
-		ERROR("[JointStateSubscriber] Only position mode supported yet.");
-		PRINT("Try set_entry(\"Modes of operation\", Profiles::constants.at(402).at(profile_position_mode).");
-		return;
+		throw std::runtime_error("[JointStatePublisher] Only position mode supported yet."
+			" Try device.set_entry(\"modes_of_operation\", device.get_constant(\"profile_position_mode\"));");
 	}
 
 	if (m_topic_name.empty()) {
@@ -75,11 +72,7 @@ JointStateSubscriber::JointStateSubscriber(Device& device, int32_t position_0_de
 
 void JointStateSubscriber::advertise() {
 
-	if (!m_topic_name.size()) {
-		ROS_ERROR("Invalid topic_name. Aborting advertise().");
-		return;
-	}
-
+	assert(!m_topic_name.empty());
 	DEBUG_LOG("Advertising "<<m_topic_name);
 	ros::NodeHandle nh;
 	m_subscriber = nh.subscribe(m_topic_name, queue_size, &JointStateSubscriber::receive, this);

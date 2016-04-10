@@ -106,20 +106,25 @@ void NMT::process_incoming_message(const Message& message) {
 			// device is alive
 			// cleaning up old futures
 			if (m_cleanup_futures) {
+				std::lock_guard<std::mutex> scoped_lock(m_callback_futures_mutex);
 				m_callback_futures.remove_if([](const std::future<void>& f) {
 					// return true if callback has finished it's computation.
 					return (f.wait_for(std::chrono::steady_clock::duration::zero())==std::future_status::ready);
 				});
 			}
 			// TODO: this should be device_alive callback
-			for (const auto& callback : m_new_device_callbacks) {
-				DEBUG_LOG("Calling new device callback (async)");
-				// The future returned by std::async has to be stored,
-				// otherwise the immediately called future destructor
-				// blocks until callback has finished.
-				m_callback_futures.push_front(
-					std::async(std::launch::async, callback, message.get_node_id())
-				);
+			{
+				std::lock_guard<std::mutex> scoped_lock(m_new_device_callbacks_mutex);
+				for (const auto& callback : m_new_device_callbacks) {
+					DEBUG_LOG("Calling new device callback (async)");
+					// The future returned by std::async has to be stored,
+					// otherwise the immediately called future destructor
+					// blocks until callback has finished.
+					std::lock_guard<std::mutex> scoped_lock(m_callback_futures_mutex);
+					m_callback_futures.push_front(
+						std::async(std::launch::async, callback, message.get_node_id())
+					);
+				}
 			}
 			break;
 		}
@@ -177,6 +182,7 @@ void NMT::process_incoming_message(const Message& message) {
 }
 
 void NMT::register_new_device_callback(const NewDeviceCallback& callback) {
+	std::lock_guard<std::mutex> scoped_lock(m_new_device_callbacks_mutex);
 	m_new_device_callbacks.push_back(callback);
 }
 

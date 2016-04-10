@@ -34,6 +34,7 @@
 #include <vector>
 #include <cstdint>
 #include <functional>
+#include <mutex>
 
 #include "message.h"
 
@@ -45,12 +46,16 @@ namespace kaco {
 	/// \class PDO
 	///
 	/// This class implements the CanOpen PDO protocol
+	///
+	/// All methods are thread-safe.
 	class PDO {
 
 	public:
 
 		/// A PDO message receiver function
 		/// together with it's COB-ID
+		/// Important: Never call add_pdo_received_callback or
+		///   process_incoming_message from within (-> deadlock)!
 		struct PDOReceivedCallback {
 
 			/// Type of the callback
@@ -91,7 +96,9 @@ namespace kaco {
 
 		static const bool debug = false;
 		Core& m_core;
+
 		std::vector<PDOReceivedCallback> m_receive_callbacks;
+		mutable std::mutex m_receive_callbacks_mutex;
 
 	};
 

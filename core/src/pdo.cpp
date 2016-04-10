@@ -59,12 +59,15 @@ void PDO::process_incoming_message(const Message& message) const {
 
 	// call registered callbacks
 	bool found_callback = false;
-	for (const PDOReceivedCallback& callback : m_receive_callbacks) {
-		if (callback.cob_id == cob_id) {
-			found_callback = true;
-			// This is not async because callbacks are only registered internally.
-			// Copy data vector because there can be multiple callbacks for this PDO.
-			callback.callback(data); 
+	{
+		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
+		for (const PDOReceivedCallback& callback : m_receive_callbacks) {
+			if (callback.cob_id == cob_id) {
+				found_callback = true;
+				// This is not async because callbacks are only registered internally.
+				// Copy data vector because there can be multiple callbacks for this PDO.
+				callback.callback(data); 
+			}
 		}
 	}
 
@@ -100,6 +103,7 @@ void PDO::send(uint16_t cob_id, const std::vector<uint8_t>& data) {
 }
 
 void PDO::add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Callback callback) {
+	std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
 	m_receive_callbacks.push_back({cob_id,callback});
 }
 

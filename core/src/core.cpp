@@ -120,6 +120,7 @@ void Core::receive_loop(std::atomic<bool>& running) {
 }
 
 void Core::register_receive_callback(const MessageReceivedCallback& callback) {
+	std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
 	m_receive_callbacks.push_back(callback);
 }
 
@@ -130,6 +131,7 @@ void Core::received_message(const Message& message) {
 
 	// cleaning up old futures
 	if (m_cleanup_futures) {
+		std::lock_guard<std::mutex> scoped_lock(m_callback_futures_mutex);
 		m_callback_futures.remove_if([](const std::future<void>& f) {
 			// return true if callback has finished it's computation.
 			return (f.wait_for(std::chrono::steady_clock::duration::zero())==std::future_status::ready);
@@ -137,13 +139,17 @@ void Core::received_message(const Message& message) {
 	}
 
 	// first call registered callbacks
-	for (const MessageReceivedCallback& callback : m_receive_callbacks) {
-		// The future returned by std::async has to be stored,
-		// otherwise the immediately called future destructor
-		// blocks until callback has finished.
-		m_callback_futures.push_front(
-			std::async(std::launch::async, callback, message)
-		);
+	{
+		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
+		for (const MessageReceivedCallback& callback : m_receive_callbacks) {
+			// The future returned by std::async has to be stored,
+			// otherwise the immediately called future destructor
+			// blocks until callback has finished.
+			std::lock_guard<std::mutex> scoped_lock(m_callback_futures_mutex);
+			m_callback_futures.push_front(
+				std::async(std::launch::async, callback, message)
+			);
+		}
 	}
 
 	// sencondly process known message types
@@ -220,10 +226,18 @@ void Core::received_message(const Message& message) {
 }
 
 void Core::send(const Message& message) {
-
+	
+	if (m_lock_send) {
+		m_send_mutex.lock();
+	}
+	
 	DEBUG_LOG_EXHAUSTIVE("Sending message:");
 	DEBUG_EXHAUSTIVE(message.print();)
 	canSend_driver(m_handle, &message);
+	
+	if (m_lock_send) {
+		m_send_mutex.unlock();
+	}
 
 }
 

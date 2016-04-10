@@ -171,12 +171,16 @@ void SDO::process_incoming_message(const Message& message) {
 
 	// call registered callbacks
 	bool found_callback = false;
-	for (const SDOReceivedCallback& callback : m_receive_callbacks) {
-		if (callback.node_id == response.node_id) {
-			found_callback = true;
-			// This is not async because callbacks are only registered internally.
-			// and it cannot be async because response is taken by reference
-			callback.callback(response);
+
+	{
+		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
+		for (const SDOReceivedCallback& callback : m_receive_callbacks) {
+			if (callback.node_id == response.node_id) {
+				found_callback = true;
+				// This is not async because callbacks are only registered internally.
+				// and it cannot be async because response is taken by reference
+				callback.callback(response);
+			}
 		}
 	}
 
@@ -190,6 +194,8 @@ void SDO::process_incoming_message(const Message& message) {
 void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 	SDOResponse& response) {
+	
+	std::lock_guard<std::mutex> scoped_lock(m_send_and_wait_mutex);
 
 	std::promise<void> received_promise;
 	std::future<void> received_future = received_promise.get_future();
@@ -202,8 +208,11 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 			received_promise.set_value();
 		//}
 	} };
-
-	m_receive_callbacks.push_back(receiver);
+	
+	{
+		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
+		m_receive_callbacks.push_back(receiver);
+	}
 
 	// send message
 	Message message;
@@ -227,8 +236,10 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 		throw sdo_error(sdo_error::type::response_timeout, "Timeout was "+std::to_string(timeout.count())+"ms.");
 	}
 
-	//! not thread-safe!
-	m_receive_callbacks.pop_back();
+	{
+		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
+		m_receive_callbacks.pop_back();
+	}
 
 }
 

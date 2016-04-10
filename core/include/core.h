@@ -38,6 +38,7 @@
 #include <atomic>
 #include <forward_list>
 #include <future>
+#include <mutex>
 
 #include "nmt.h"
 #include "sdo.h"
@@ -53,11 +54,14 @@ namespace kaco {
 	/// CAN messages and listens for incoming
 	/// CAN messages. You can access CanOpen sub-
 	/// protocols using public members nmt, sdo and pdo.
+	///
+	/// All methods except start() and stop() are thread-safe.
 	class Core {
 
 	public:
 		
-		/// type of a message receiver function
+		/// Type of a message receiver function
+		/// You can safely call any Core method from within.
 		using MessageReceivedCallback = std::function< void(const Message&) >;
 
 		/// Constructor
@@ -93,18 +97,24 @@ namespace kaco {
 
 	private:
 
+		void receive_loop(std::atomic<bool>& running);
+		void received_message(const Message& m);
+
 		static const bool debug = false;
 
 		std::atomic<bool> m_running{false};
-		std::vector<MessageReceivedCallback> m_receive_callbacks;
 		std::thread m_loop_thread;
 		void* m_handle;
 
+		std::vector<MessageReceivedCallback> m_receive_callbacks;
+		mutable std::mutex m_receive_callbacks_mutex;
+
 		static const bool m_cleanup_futures = true;
 		std::forward_list<std::future<void>> m_callback_futures;
+		mutable std::mutex m_callback_futures_mutex;
 
-		void receive_loop(std::atomic<bool>& running);
-		void received_message(const Message& m);
+		static const bool m_lock_send = true;
+		mutable std::mutex m_send_mutex;
 
 	};
 

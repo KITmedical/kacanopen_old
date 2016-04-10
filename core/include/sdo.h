@@ -33,6 +33,7 @@
 
 #include <functional>
 #include <vector>
+#include <mutex>
 
 #include "message.h"
 #include "sdo_response.h"
@@ -50,11 +51,15 @@ namespace kaco {
 	///		add_request_callback(node_id, SDORequestCallback) (listening only for SDOs with slave's own node_id, callback signature void(index, subindex)).
 	/// \todo Add send_response(node_id, index, subindex, vector<uint8_t> data) (chooses segmented/expedited transfer on it's own).
 	/// \todo Add abort_transfer(node_id, index, subindex, errorcode).
+	///
+	/// All methods are thread-safe.
 	class SDO {
 
 	public:
 
 		/// Type of a sdo message receiver function with it's node id
+		/// Important: Never call send_sdo_and_wait or process_incoming_message
+		///   from within (-> deadlock)!
 		struct SDOReceivedCallback {
 
 			/// Type of the callback
@@ -142,6 +147,10 @@ namespace kaco {
 
 		/// \todo Rename to m_server_sdo_callbacks and add m_client_sdo_callbacks.
 		std::vector<SDOReceivedCallback> m_receive_callbacks;
+		mutable std::mutex m_receive_callbacks_mutex;
+
+		// We lock send_sdo_and_wait() because concurrent responses could be confused.
+		mutable std::mutex m_send_and_wait_mutex;
 
 		uint8_t size_flag(uint8_t size);
 

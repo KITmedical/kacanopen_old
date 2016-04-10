@@ -37,6 +37,7 @@
 #include <functional>
 #include <future>
 #include <forward_list>
+#include <mutex>
 
 namespace kaco {
 	
@@ -51,6 +52,7 @@ namespace kaco {
 	public:
 		
 		/// Type of a new device callback function
+		/// You can safely call any NMT method from within.
 		using NewDeviceCallback = std::function< void(const uint8_t node_id) >;
 
 		/// NMT commands
@@ -99,9 +101,11 @@ namespace kaco {
 
 		/// \todo rename to device_alive_callback
 		std::vector<NewDeviceCallback> m_new_device_callbacks;
+		mutable std::mutex m_new_device_callbacks_mutex;
 
 		static const bool m_cleanup_futures = true;
 		std::forward_list<std::future<void>> m_callback_futures;
+		mutable std::mutex m_callback_futures_mutex;
 
 	};
 

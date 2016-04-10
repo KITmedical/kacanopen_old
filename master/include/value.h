@@ -110,6 +110,9 @@ namespace kaco {
 		/// Constructs a string value.
 		Value(const std::string& value);
 
+		/// Constructs a string value from a string literal.
+		Value(const char* value);
+
 		/// Creates a value given a type and the byte representation (little-endian) in a vector.
 		Value(Type type_, const std::vector<uint8_t>& data);
 

@@ -98,6 +98,11 @@ Value::Value(const std::string& value) : string(value) {
 	type = Type::string;
 }
 
+Value::Value(const char* value) : string(value) {
+	DEBUG_LOG("Creating string value");
+	type = Type::string;
+}
+
 Value::Value(Type type_, const std::vector<uint8_t>& data) {
 
 	type = type_;

@@ -36,6 +36,8 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <forward_list>
+#include <future>
 
 #include "nmt.h"
 #include "sdo.h"
@@ -97,6 +99,9 @@ namespace kaco {
 		std::vector<MessageReceivedCallback> m_receive_callbacks;
 		std::thread m_loop_thread;
 		void* m_handle;
+
+		static const bool m_cleanup_futures = true;
+		std::forward_list<std::future<void>> m_callback_futures;
 
 		void receive_loop(std::atomic<bool>& running);
 		void received_message(const Message& m);

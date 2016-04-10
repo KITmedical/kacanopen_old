@@ -35,6 +35,8 @@
 
 #include <vector>
 #include <functional>
+#include <future>
+#include <forward_list>
 
 namespace kaco {
 	
@@ -97,6 +99,9 @@ namespace kaco {
 
 		/// \todo rename to device_alive_callback
 		std::vector<NewDeviceCallback> m_new_device_callbacks;
+
+		static const bool m_cleanup_futures = true;
+		std::forward_list<std::future<void>> m_callback_futures;
 
 	};
 

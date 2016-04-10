@@ -36,6 +36,7 @@
 #include <iostream>
 #include <cstdint>
 #include <future>
+#include <chrono>
 
 namespace kaco {
 
@@ -103,10 +104,22 @@ void NMT::process_incoming_message(const Message& message) {
 		case 5:
 		case 127: {
 			// device is alive
+			// cleaning up old futures
+			if (m_cleanup_futures) {
+				m_callback_futures.remove_if([](const std::future<void>& f) {
+					// return true if callback has finished it's computation.
+					return (f.wait_for(std::chrono::steady_clock::duration::zero())==std::future_status::ready);
+				});
+			}
 			// TODO: this should be device_alive callback
 			for (const auto& callback : m_new_device_callbacks) {
 				DEBUG_LOG("Calling new device callback (async)");
-				std::async(std::launch::async, callback, message.get_node_id());
+				// The future returned by std::async has to be stored,
+				// otherwise the immediately called future destructor
+				// blocks until callback has finished.
+				m_callback_futures.push_front(
+					std::async(std::launch::async, callback, message.get_node_id())
+				);
 			}
 			break;
 		}

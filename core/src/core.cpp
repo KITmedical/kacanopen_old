@@ -30,7 +30,6 @@
  */
  
 #include <iostream>
-#include <thread>
 #include <chrono>
 #include <future>
 #include <string>
@@ -129,9 +128,22 @@ void Core::received_message(const Message& message) {
 	DEBUG_LOG(" ");
 	DEBUG_LOG("Received message:");
 
+	// cleaning up old futures
+	if (m_cleanup_futures) {
+		m_callback_futures.remove_if([](const std::future<void>& f) {
+			// return true if callback has finished it's computation.
+			return (f.wait_for(std::chrono::steady_clock::duration::zero())==std::future_status::ready);
+		});
+	}
+
 	// first call registered callbacks
 	for (const MessageReceivedCallback& callback : m_receive_callbacks) {
-		std::async(std::launch::async, callback, message);
+		// The future returned by std::async has to be stored,
+		// otherwise the immediately called future destructor
+		// blocks until callback has finished.
+		m_callback_futures.push_front(
+			std::async(std::launch::async, callback, message)
+		);
 	}
 
 	// sencondly process known message types

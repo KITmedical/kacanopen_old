@@ -49,7 +49,7 @@ namespace kaco {
 		/// Type of a convenience operation.
 		/// Takes reference to device and a Value typed argument. Ignore, if you don't need it.
 		/// Returns Value. Just return Value() if you don't need it.
-		typedef std::function<Value(Device&,const Value&)> Operation;
+		using Operation = std::function<Value(Device&,const Value&)>;
 
 		/// Convenience operations for CiA profiles.
 		/// Type: map < profile number , map < operation name , operation function object > >

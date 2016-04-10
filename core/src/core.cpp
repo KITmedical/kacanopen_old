@@ -40,7 +40,28 @@
 
 namespace kaco {
 
-// linkage to driver
+//-------------------------------------------//
+// Linkage to the CAN driver.                //
+// Needs to be in lobal scope!               //
+// TODO: Maybe encapsulate in a driver class //
+//-------------------------------------------//
+
+/// This struct contains C-strings for
+/// busname and baudrate and is passed
+/// to a CAN driver
+struct CANBoard {
+
+	/// Bus name
+	const char * busname;
+
+	/// Baudrate
+	const char * baudrate;
+	
+};
+
+/// This type is returned by the CAN driver
+/// to identify the driver instance.
+typedef void* CANHandle;
 
 extern "C" uint8_t canReceive_driver(CANHandle, Message *);
 extern "C" uint8_t canSend_driver(CANHandle, Message const *);

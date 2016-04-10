@@ -54,13 +54,13 @@ namespace kaco {
 		struct PDOReceivedCallback {
 
 			/// Type of the callback
-			typedef std::function< void(std::vector<uint8_t>) > Function;
+			using Callback = std::function< void(std::vector<uint8_t>) >;
 
 			/// The COB-ID of the PDO to receive
 			uint16_t cob_id;
 
 			/// The callback
-			Function callback;
+			Callback callback;
 
 		};
 
@@ -85,7 +85,7 @@ namespace kaco {
 		/// \param cob_id COB-ID to listen for
 		/// \param callback Callback function, which takes a const Message reference as argument.
 		/// \todo Rename this to add_tpdo_received_callback() and add add_rpdo_received_callback()
-		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback);
+		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Callback callback);
 
 	private:
 

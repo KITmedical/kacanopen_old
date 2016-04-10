@@ -99,7 +99,7 @@ void PDO::send(uint16_t cob_id, const std::vector<uint8_t>& data) {
 
 }
 
-void PDO::add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Function callback) {
+void PDO::add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Callback callback) {
 	m_receive_callbacks.push_back({cob_id,callback});
 }
 

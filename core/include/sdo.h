@@ -58,13 +58,13 @@ namespace kaco {
 		struct SDOReceivedCallback {
 
 			/// Type of the callback
-			typedef std::function< void(const SDOResponse&) > sdo_callback_function_type;
+			using Callback = std::function< void(const SDOResponse&) >;
 			
 			/// Node id
 			uint8_t node_id;
 
 			/// The callback
-			sdo_callback_function_type callback;
+			Callback callback;
 			
 		};
 

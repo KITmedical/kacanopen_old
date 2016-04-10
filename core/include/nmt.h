@@ -49,7 +49,7 @@ namespace kaco {
 	public:
 		
 		/// Type of a new device callback function
-		typedef std::function< void(const uint8_t node_id) > NewDeviceCallback;
+		using NewDeviceCallback = std::function< void(const uint8_t node_id) >;
 
 		/// NMT commands
 		enum class Command : uint8_t {

@@ -67,7 +67,7 @@ namespace kaco {
 		static const ArrayTag array_tag;
 
 		/// type of a callback for a value changed event
-		typedef std::function< void(const Value& value) > ValueChangedCallback;
+		using ValueChangedCallback = std::function< void(const Value& value) >;
 
 		/// Constructs an empty entry.
 		Entry();

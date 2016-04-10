@@ -42,29 +42,6 @@
 #include "pdo.h"
 #include "message.h"
 
-//-------------------------------------------//
-// Types used by the CAN driver.             //
-// Global scope for linking!                 //
-// TODO: Maybe encapsulate in a driver class //
-//-------------------------------------------//
-
-/// This struct contains C-strings for
-/// busname and baudrate and is passed
-/// to a CAN driver
-typedef struct {
-
-	/// Bus name
-	const char * busname;
-
-	/// Baudrate
-	const char * baudrate;
-	
-} CANBoard;
-
-/// This type is returned by the CAN driver
-/// to identify the driver instance.
-typedef void* CANHandle;
-
 namespace kaco {
 
 	/// \class Core
@@ -79,7 +56,7 @@ namespace kaco {
 	public:
 		
 		/// type of a message receiver function
-		typedef std::function< void(const Message&) > MessageReceivedCallback;
+		using MessageReceivedCallback = std::function< void(const Message&) >;
 
 		/// Constructor
 		Core();
@@ -119,7 +96,7 @@ namespace kaco {
 		std::atomic<bool> m_running{false};
 		std::vector<MessageReceivedCallback> m_receive_callbacks;
 		std::thread m_loop_thread;
-		CANHandle m_handle;
+		void* m_handle;
 
 		void receive_loop(std::atomic<bool>& running);
 		void received_message(const Message& m);

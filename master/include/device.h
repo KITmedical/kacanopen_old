@@ -66,7 +66,7 @@ namespace kaco {
 	public:
 
 		/// Type of a operation. See Profiles::Operation in profiles.h.
-		typedef std::function<Value(Device&,const Value&)> Operation;
+		using Operation = std::function<Value(Device&,const Value&)>;
 
 		/// Constructor.
 		/// It will try to load mandatory dictionary entries from the EDS library.

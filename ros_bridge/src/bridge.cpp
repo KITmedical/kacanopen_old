@@ -33,20 +33,22 @@
 #include "logger.h"
 #include "ros/ros.h"
 
+#include <future>
+
 namespace kaco {
 
-Bridge::Bridge() {
-	//int argc = 0;
-	//char *argv[] {};
-	//ros::init(argc, argv, "canopen_bridge");
-}
-
-Bridge::~Bridge() 
-	{ }
-
-void Bridge::add_publisher(std::shared_ptr<Publisher> publisher) {
+void Bridge::add_publisher(std::shared_ptr<Publisher> publisher, double loop_rate) {
 	m_publishers.push_back(publisher);
 	publisher->advertise();
+	m_futures.push_front(
+		std::async(std::launch::async, [publisher,loop_rate,this](){
+			ros::Rate rate(loop_rate);
+			while(ros::ok()) {
+				publisher->publish();
+				rate.sleep();
+			}
+		})
+	);
 }
 
 void Bridge::add_subscriber(std::shared_ptr<Subscriber> subscriber) {
@@ -54,24 +56,10 @@ void Bridge::add_subscriber(std::shared_ptr<Subscriber> subscriber) {
 	subscriber->advertise();
 }
 
-void Bridge::run(double loop_rate) {
-
-	ros::Rate rate(loop_rate);
-
-	// TODO after making core fully thread-safe
-	//ros::AsyncSpinner spinner(1);
-	//spinner.start();
-
-	while(ros::ok()) {
-
-		for (std::shared_ptr<Publisher> publisher : m_publishers) {
-			publisher->publish();
-		}
-
-		ros::spinOnce();  // TODO see above
-		rate.sleep();
-	}
-
+void Bridge::run() {
+	ros::AsyncSpinner spinner(0);
+	spinner.start();
+	ros::waitForShutdown();
 }
 
 } // end namespace kaco

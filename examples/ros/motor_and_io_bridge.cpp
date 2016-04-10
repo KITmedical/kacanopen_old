@@ -48,6 +48,8 @@ int main(int argc, char* argv[]) {
 	PRINT("This example publishes and subscribes JointState messages for each connected CiA 402 device as well as"
 		<<"uint8 messages for each connected digital IO device (CiA 401).");
 
+	const double loop_rate = 10; // [Hz]
+
 	kaco::Master master;
 	bool success = master.start(BUSNAME, BAUDRATE);
 	//master.core.nmt.reset_all_nodes();
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		const auto profile = device.get_device_profile_number();
-		PRINT("Found CiA 401 device with node ID "<<device.get_node_id()<<": "<<device.get_entry("manufacturer_device_name"));
+		PRINT("Found CiA "<<std::dec<<(unsigned)profile<<" device with node ID "<<device.get_node_id()<<": "<<device.get_entry("manufacturer_device_name"));
 
 		if (profile==401) {
 
@@ -123,10 +125,10 @@ int main(int argc, char* argv[]) {
 			if (static_cast<std::string>(device.get_entry("manufacturer_device_name")).substr(0, 11) == "SCHUNK ERBo") {
 				PRINT("Creating special Schunk JointStatePublisher");
 				auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000, "Position actual value in user unit");
-				bridge.add_publisher(jspub);
+				bridge.add_publisher(jspub, loop_rate);
 			} else {
 				auto jspub = std::make_shared<kaco::JointStatePublisher>(device, 0, 350000);
-				bridge.add_publisher(jspub);
+				bridge.add_publisher(jspub, loop_rate);
 			}
 
 			auto jssub = std::make_shared<kaco::JointStateSubscriber>(device, 0, 350000);
@@ -141,7 +143,6 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	// run ROS loop and publish everything repeatedly with 100 Hz
-	bridge.run(100);
+	bridge.run();
 
 }

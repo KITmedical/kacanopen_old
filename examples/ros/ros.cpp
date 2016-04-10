@@ -87,16 +87,17 @@ int main(int argc, char* argv[]) {
 
 	// create a publisher for reading second 8-bit input and add it to the bridge
 	// communication via POD
+	// publishing rate = 10 Hz
 	auto iopub = std::make_shared<kaco::EntryPublisher>(device, "Read input 8-bit/Digital Inputs 9-16");
-	bridge.add_publisher(iopub);
+	bridge.add_publisher(iopub,1);
 
 	// create a subscriber for editing IO output and add it to the bridge
 	// communication via SOD
 	auto iosub = std::make_shared<kaco::EntrySubscriber>(device, "Write output 8-bit/Digital Outputs 1-8");
 	bridge.add_subscriber(iosub);
 
-	// run ROS loop and publish everything repeatedly with 1 Hz
-	bridge.run(1);
+	// run ROS loop
+	bridge.run();
 
 	master.stop();
 

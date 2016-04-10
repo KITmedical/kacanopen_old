@@ -65,7 +65,8 @@ namespace kaco {
 
 	public:
 
-		typedef std::function<Value(Device&)> Operation;
+		/// Type of a operation. See Profiles::Operation in profiles.h.
+		typedef std::function<Value(Device&,const Value&)> Operation;
 
 		/// Constructor.
 		/// It will try to load mandatory dictionary entries from the EDS library.
@@ -184,9 +185,11 @@ namespace kaco {
 
 		/// Executes a convenience operation. It must exist due to a previous
 		/// load_operations() or add_operation() call.
+		/// \param operation_name Name of the operation.
+		/// \param argument Optional argument to be passed to the operation.
 		/// \returns The result value of the operation. Invalid value in case there is no result.
 		/// \throws dictionary_error if operation is not available
-		Value execute(const std::string& operation_name);
+		Value execute(const std::string& operation_name, const Value& argument = m_dummy_value);
 
 		/// Loads constants associated with the device profile.
 		/// \returns true, if successful
@@ -217,7 +220,7 @@ namespace kaco {
 		std::map<std::string, Value> m_constants;
 		std::vector<ReceivePDOMapping> m_receive_pdo_mappings;
 		std::vector<TransmitPDOMapping> m_transmit_pdo_mappings;
-		const Value m_dummy_value;
+		static const Value m_dummy_value;
 		EDSLibrary m_eds_library;
 
 	};

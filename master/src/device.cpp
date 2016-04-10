@@ -349,12 +349,12 @@ void Device::add_operation(const std::string& operation_name, const Operation& o
 	m_operations[name] = operation;
 }
 
-Value Device::execute(const std::string& operation_name) {
+Value Device::execute(const std::string& operation_name, const Value& argument) {
 	const std::string name = Utils::escape(operation_name);
 	if (m_operations.count(name) == 0) {
 		throw dictionary_error(dictionary_error::type::unknown_operation, name);
 	}
-	return m_operations[name](*this);
+	return m_operations[name](*this,argument);
 }
 
 bool Device::load_constants() {
@@ -398,5 +398,7 @@ void Device::print_dictionary() const {
 	}
 
 }
+
+const Value Device::m_dummy_value = Value();
 
 } // end namespace kaco

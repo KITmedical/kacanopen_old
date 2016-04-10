@@ -89,9 +89,7 @@ void JointStateSubscriber::receive(const sensor_msgs::JointState& msg) {
 	DEBUG_DUMP(pos);
 	DEBUG_DUMP(msg.position[0]);
 
-	m_device.set_entry("Target position", pos); // auto cast to Value!
-	m_device.set_entry("Controlword", static_cast<uint16_t>(static_cast<uint16_t>(m_device.get_entry("Controlword")) | (1<<4))); // notify update
-	m_device.set_entry("Controlword", static_cast<uint16_t>(static_cast<uint16_t>(m_device.get_entry("Controlword")) & ~(1<<4))); // notify update
+	m_device.execute("set_target_position",pos);
 
 }
 

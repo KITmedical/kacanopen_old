@@ -47,7 +47,9 @@ namespace kaco {
 	struct Profiles {
 
 		/// Type of a convenience operation.
-		typedef std::function<Value(Device&)> Operation;
+		/// Takes reference to device and a Value typed argument. Ignore, if you don't need it.
+		/// Returns Value. Just return Value() if you don't need it.
+		typedef std::function<Value(Device&,const Value&)> Operation;
 
 		/// Convenience operations for CiA profiles.
 		/// Type: map < profile number , map < operation name , operation function object > >
@@ -56,6 +58,10 @@ namespace kaco {
 		/// Constants for CiA profiles.
 		/// Type: map < profile number , map < operation name , constant value > >
 		static const std::map<uint16_t,std::map<std::string,const Value>> constants;
+
+	private:
+
+		static const bool debug = false;
 
 	};
 

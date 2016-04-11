@@ -39,17 +39,19 @@ void print_dictionary(const std::map<std::string, kaco::Entry>& map) {
 
 	PRINT("\nHere is the dictionary:");
 
-	std::vector< kaco::Entry > entries;
+	using EntryRef = std::reference_wrapper<const kaco::Entry>;
+	std::vector<EntryRef> entries;
 
 	for (const auto& pair : map) {
-		entries.push_back(pair.second);
+		entries.push_back(std::ref(pair.second));
 	}
 
 	// sort by index and subindex
-	std::sort(entries.begin(), entries.end());
+	std::sort(entries.begin(), entries.end(),
+		[](const EntryRef& l, const EntryRef& r) { return l.get()<r.get(); });
 
 	for (const auto& entry : entries) {
-		entry.print();
+		entry.get().print();
 	}
 
 }

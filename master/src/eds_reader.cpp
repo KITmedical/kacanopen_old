@@ -37,6 +37,7 @@
 #include <regex>
 #include <string>
 #include <cassert>
+#include <utility>
 
 #include <boost/property_tree/ptree.hpp> // property_tree
 #include <boost/property_tree/ini_parser.hpp>
@@ -193,7 +194,10 @@ bool EDSReader::parse_var(const std::string& section, uint16_t index, uint8_t su
 	}
 
 	DEBUG_LOG("[EDSReader::parse_var] Inserting entry "<<var_name<<".");
-	m_map[var_name] = std::move(entry);
+	
+	// This isn't possible because STL would require copy constructor:
+	// m_map[var_name] = std::move(entry);
+	m_map.insert(std::make_pair(var_name, std::move(entry)));
 
 	return true;
 

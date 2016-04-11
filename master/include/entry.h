@@ -79,13 +79,13 @@ namespace kaco {
 		Entry(ArrayTag tag, uint16_t _index, std::string _name, Type _type, AccessType _access);
 
 		/// copy constructor
-		Entry(const Entry& other);
+		Entry(const Entry& other) = delete;
 
 		/// move constructor
 		Entry(Entry&& other) = default;
 
 		/// copy assignment
-		Entry& operator=(const Entry& other);
+		Entry& operator=(const Entry& other) = delete;
 
 		/// move assignment
 		Entry& operator=(Entry&& other) = default;

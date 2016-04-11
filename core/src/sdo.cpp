@@ -209,9 +209,11 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 		//}
 	} };
 	
+	std::list<SDOReceivedCallback>::const_iterator receiver_handle;
 	{
 		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
-		m_receive_callbacks.push_back(receiver);
+		m_receive_callbacks.push_front(std::move(receiver));
+		receiver_handle = m_receive_callbacks.cbegin();
 	}
 
 	// send message
@@ -238,7 +240,8 @@ void SDO::send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, ui
 
 	{
 		std::lock_guard<std::mutex> scoped_lock(m_receive_callbacks_mutex);
-		m_receive_callbacks.pop_back();
+		// std::list iterators to existing elements are never invalidated
+		m_receive_callbacks.erase(receiver_handle);
 	}
 
 }

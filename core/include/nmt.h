@@ -104,7 +104,7 @@ namespace kaco {
 		mutable std::mutex m_new_device_callbacks_mutex;
 
 		static const bool m_cleanup_futures = true;
-		std::forward_list<std::future<void>> m_callback_futures;
+		std::forward_list<std::future<void>> m_callback_futures; // forward_list because of remove_if
 		mutable std::mutex m_callback_futures_mutex;
 
 	};

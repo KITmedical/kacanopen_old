@@ -34,6 +34,7 @@
 #include <functional>
 #include <vector>
 #include <mutex>
+#include <list>
 
 #include "message.h"
 #include "sdo_response.h"
@@ -146,7 +147,7 @@ namespace kaco {
 		Core& m_core;
 
 		/// \todo Rename to m_server_sdo_callbacks and add m_client_sdo_callbacks.
-		std::vector<SDOReceivedCallback> m_receive_callbacks;
+		std::list<SDOReceivedCallback> m_receive_callbacks; // list because of erase() and persistent iterators
 		mutable std::mutex m_receive_callbacks_mutex;
 
 		// We lock send_sdo_and_wait() because concurrent responses could be confused.

@@ -40,7 +40,9 @@
 namespace kaco {
 
 Entry::Entry()
-	: type(Type::invalid), read_write_mutex(new std::mutex)
+	: type(Type::invalid),
+		m_value_changed_callbacks_mutex(new std::mutex),
+		m_read_write_mutex(new std::recursive_mutex)
 	{ }
 
 // standard constructor
@@ -50,7 +52,8 @@ Entry::Entry(Entry::VariableTag, uint16_t _index, uint8_t _subindex, std::string
 		name(_name),
 		type(_type),
 		access_type(_access_type),
-		read_write_mutex(new std::mutex)
+		m_value_changed_callbacks_mutex(new std::mutex),
+		m_read_write_mutex(new std::recursive_mutex)
 	{ }
 
 // array constructor
@@ -61,7 +64,8 @@ Entry::Entry(Entry::ArrayTag, uint16_t _index, std::string _name, Type _type, Ac
 		type(_type),
 		access_type(_access_type),
 		is_array(true),
-		read_write_mutex(new std::mutex)
+		m_value_changed_callbacks_mutex(new std::mutex),
+		m_read_write_mutex(new std::recursive_mutex)
 	{ }
 
 void Entry::set_value(const Value& value, uint8_t array_index) {
@@ -79,7 +83,7 @@ void Entry::set_value(const Value& value, uint8_t array_index) {
 	bool value_changed = false;
 
 	{
-		std::lock_guard<std::mutex> lock(*read_write_mutex);
+		std::lock_guard<std::recursive_mutex> lock(*m_read_write_mutex);
 
 		if (m_value.size()<=array_index) { 
 			m_value.resize(array_index+1);
@@ -100,6 +104,7 @@ void Entry::set_value(const Value& value, uint8_t array_index) {
 	}
 
 	if (value_changed) {
+		std::lock_guard<std::mutex> lock(*m_value_changed_callbacks_mutex);
 		for (auto& callback : m_value_changed_callbacks) {
 			// TODO: currently callbacks are only internal and it's ok to call them synchonously.
 			//std::async(std::launch::async, callback, value);
@@ -111,7 +116,7 @@ void Entry::set_value(const Value& value, uint8_t array_index) {
 
 const Value& Entry::get_value(uint8_t array_index) const {
 
-	std::lock_guard<std::mutex> lock(*read_write_mutex);
+	std::lock_guard<std::recursive_mutex> lock(*m_read_write_mutex);
 
 	if (valid(array_index)) {
 		return m_value[array_index];
@@ -129,6 +134,8 @@ bool Entry::valid(uint8_t array_index) const {
 		return false;
 	}
 
+	std::lock_guard<std::recursive_mutex> lock(*m_read_write_mutex);
+
 	if ( array_index>=m_value.size()
 		|| array_index>=m_valid.size()
 		|| !m_valid[array_index] ) {
@@ -144,6 +151,7 @@ Type Entry::get_type() const {
 }
 
 void Entry::add_value_changed_callback(ValueChangedCallback callback) {
+	std::lock_guard<std::mutex> lock(*m_value_changed_callbacks_mutex);
 	m_value_changed_callbacks.push_back(std::move(callback));
 }
 

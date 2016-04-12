@@ -67,6 +67,8 @@ namespace kaco {
 		static const ArrayTag array_tag;
 
 		/// type of a callback for a value changed event
+		/// Important: Never call add_value_changed_callback()
+		///   from within (-> deadlock)!
 		using ValueChangedCallback = std::function< void(const Value& value) >;
 
 		/// Constructs an empty entry.
@@ -91,26 +93,33 @@ namespace kaco {
 		Entry& operator=(Entry&& other) = default;
 
 		/// Sets the value. If the entry is an array, array_index can be specified.
+		/// \remark thread-safe
 		void set_value(const Value& value, uint8_t array_index=0);
 
 		/// Returns the value. If the entry is an array, array_index can be specified.
+		/// \remark thread-safe
 		const Value& get_value(uint8_t array_index=0) const;
 
 		/// Returns if the value is set/valid.  If the entry is an array, array_index can be specified.
+		/// \remark thread-safe
 		bool valid(uint8_t array_index=0) const;
 
 		/// Returns the data type.
+		/// \remark thread-safe
 		Type get_type() const;
 
 		/// Registers a given function to be called when the value is changed.
+		/// \remark thread-safe
 		void add_value_changed_callback(ValueChangedCallback callback);
 
 		/// Prints relevant information concerning this entry on standard output - name, index, possibly value, ...
 		/// This is used by Device::print_dictionary()
+		/// \remark not thread-safe due to std::cout
 		void print() const;
 
 		/// Compares entries by index and subindex.
 		/// This can be used for sorting the dictionary.
+		/// \remark thread-safe
 		bool operator<(const Entry& other) const;
 
 		/// index in dictionary
@@ -153,13 +162,15 @@ namespace kaco {
 
 		std::vector<Value> m_value;
 		std::vector<bool> m_valid;
-		std::vector<ValueChangedCallback> m_value_changed_callbacks;
 		Value m_dummy_value;
+
+		std::vector<ValueChangedCallback> m_value_changed_callbacks;
+		std::unique_ptr<std::mutex> m_value_changed_callbacks_mutex;
 
 		/// read_write_mutex locks get_value() and set_value() because a PDO
 		/// transmitter thread could read a value reference while it is
 		/// set by the main thread.
-		std::unique_ptr<std::mutex> read_write_mutex;
+		std::unique_ptr<std::recursive_mutex> m_read_write_mutex; // recursive_mutex because of valid() used by get_entry(), on heap because mutexes aren't movable.
 
 
 	};

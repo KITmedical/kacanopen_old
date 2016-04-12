@@ -33,6 +33,7 @@
 #include <chrono>
 #include <future>
 #include <string>
+#include <cassert>
 
 #include "logger.h"
 #include "core.h"
@@ -82,6 +83,8 @@ Core::~Core() {
 
 bool Core::start(const std::string busname, unsigned baudrate) {
 
+	assert(!m_running);
+
 	CANBoard board = {busname.c_str(), std::to_string(baudrate).c_str()} ;
 	m_handle = canOpen_driver(&board);
 
@@ -97,7 +100,9 @@ bool Core::start(const std::string busname, unsigned baudrate) {
 }
 
 void Core::stop() {
-	
+
+	assert(m_running);
+
 	m_running = false;
 	m_loop_thread.detach();
 

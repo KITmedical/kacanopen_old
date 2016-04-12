@@ -73,23 +73,26 @@ namespace kaco {
 		/// \param core Reference to the Core
 		PDO(Core& core);
 
-		/// Destructor
-		~PDO();
+		/// Copy constructor deleted because of mutexes.
+		PDO(const PDO&) = delete;
 
 		/// Handler for an incoming PDO message
 		/// \param message The message from the network
 		/// \todo Rename this to process_incoming_tpdo() and add process_incoming_rpdo()
+		/// \remark thread-safe
 		void process_incoming_message(const Message& message) const;
 
 		/// Sends a PDO message
 		/// \param cob_id COB-ID of the message to send
 		/// \param data A vector containing the data bytes to send. PDOs can have most 8 bytes!
+		/// \remark thread-safe
 		void send(uint16_t cob_id, const std::vector<uint8_t>& data);
 
 		/// Adds a callback which will be called when a PDO has been received with the given COB-ID.
 		/// \param cob_id COB-ID to listen for
 		/// \param callback Callback function, which takes a const Message reference as argument.
 		/// \todo Rename this to add_tpdo_received_callback() and add add_rpdo_received_callback()
+		/// \remark thread-safe
 		void add_pdo_received_callback(uint16_t cob_id, PDOReceivedCallback::Callback callback);
 
 	private:

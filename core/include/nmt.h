@@ -52,7 +52,8 @@ namespace kaco {
 	public:
 		
 		/// Type of a new device callback function
-		/// You can safely call any NMT method from within.
+		/// Important: Never call register_new_device_callback()
+		///   from within (-> deadlock)!
 		using NewDeviceCallback = std::function< void(const uint8_t node_id) >;
 
 		/// NMT commands
@@ -68,30 +69,36 @@ namespace kaco {
 		/// \param core Reference to the Core
 		NMT(Core& core);
 
-		/// Destructor
-		~NMT();
+		/// Copy constructor deleted because of mutexes.
+		NMT(const NMT&) = delete;
 
 		/// Process incoming NMT message.
 		/// \param message The received CanOpen message.
+		/// \remark thread-safe
 		void process_incoming_message(const Message& message);
 
 		/// Sends a NMT message to a given device
 		/// \param node_id Node id of the device.
 		/// \param cmd The NMT command.
+		/// \remark thread-safe
 		void send_nmt_message(uint8_t node_id, Command cmd);
 
 		/// Sends a broadcast NMT message
 		/// \param cmd The NMT command.
+		/// \remark thread-safe
 		void broadcast_nmt_message(Command cmd);
 
 		/// Resets all nodes in the network.
+		/// \remark thread-safe
 		void reset_all_nodes();
 
 		/// Discovers nodes in the network via node guard protocol.
+		/// \remark thread-safe
 		void discover_nodes();
 
 		/// Registers a callback which will be called when a new slave device is discovered.
 		/// \todo rename to device_alive_callback
+		/// \remark thread-safe
 		void register_new_device_callback(const NewDeviceCallback& callback);	
 
 	private:

@@ -44,9 +44,6 @@ NMT::NMT(Core& core)
 	: m_core(core)
 	{ }
 
-NMT::~NMT() 
-	{ }
-
 void NMT::send_nmt_message(uint8_t node_id, Command cmd) {
 	DEBUG_LOG("Set NMT state of "<<(unsigned)node_id<<" to "<<static_cast<uint32_t>(cmd));
 	const Message message = { 0x0000, false, 2, {static_cast<uint8_t>(cmd),node_id,0,0,0,0,0,0} };

@@ -42,9 +42,6 @@ PDO::PDO(Core& core)
 	: m_core(core)
 	{ }
 
-PDO::~PDO() 
-	{ }
-
 void PDO::process_incoming_message(const Message& message) const {
 
 	uint16_t cob_id = message.cob_id;

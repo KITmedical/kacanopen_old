@@ -48,9 +48,6 @@ SDO::SDO(Core& core)
 	: m_core(core)
 	{ }
 
-SDO::~SDO() 
-	{ }
-
 void SDO::download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& data) {
 
 	assert(size>0);

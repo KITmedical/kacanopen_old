@@ -78,8 +78,8 @@ namespace kaco {
 		/// \param core Reference to the Core
 		SDO(Core& core);
 
-		/// Destructor
-		~SDO();
+		/// Copy constructor deleted because of mutexes.
+		SDO(const SDO&) = delete;
 		
 		/// SDO download: Write value into remote device's object dictionary.
 		/// \param node_id Node id of remote device
@@ -87,6 +87,7 @@ namespace kaco {
 		/// \param subindex Subindex
 		/// \param size Size of the entry/value in bytes
 		/// \param bytes Vector containing the data bytes of the value in little-endian order. Vector size must be equal to size argument.
+		/// \remark thread-safe
 		void download(uint8_t node_id, uint16_t index, uint8_t subindex, uint32_t size, const std::vector<uint8_t>& bytes);
 		
 		/// SDO download: Get value from remote device's object dictionary.
@@ -94,11 +95,13 @@ namespace kaco {
 		/// \param index Dictionary index
 		/// \param subindex Subindex
 		/// \returns Vector containing the data bytes of the value in little-endian order.
+		/// \remark thread-safe
 		std::vector<uint8_t> upload(uint8_t node_id, uint16_t index, uint8_t subindex);
 
 		/// Process incoming SDO message.
 		/// \param message The received CanOpen message.
 		/// \todo Rename this to process_incoming_server_sdo() and add process_incoming_client_sdo()
+		/// \remark thread-safe
 		void process_incoming_message(const Message& message);
 
 		/// Sends an SDO message and waits for the response.
@@ -113,6 +116,7 @@ namespace kaco {
 		/// \param response Will contain the response.
 		/// \todo Make response a return value.
 		/// \todo Make byte0 - byte3 arguments an array
+		/// \remark thread-safe
 		void send_sdo_and_wait(uint8_t command, uint8_t node_id, uint16_t index, uint8_t subindex,
 			uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 			SDOResponse& response);

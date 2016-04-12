@@ -61,7 +61,8 @@ namespace kaco {
 	public:
 		
 		/// Type of a message receiver function
-		/// You can safely call any Core method from within.
+		/// Important: Never call register_receive_callback()
+		///   from within (-> deadlock)!
 		using MessageReceivedCallback = std::function< void(const Message&) >;
 
 		/// Constructor
@@ -69,20 +70,27 @@ namespace kaco {
 
 		/// Destructor
 		~Core();
+
+		/// Copy constructor deleted because of mutexes.
+		Core(const Core&) = delete;
 		
 		/// Opens CAN driver and starts CAN message receive loop.
 		///	\param busname Name of the bus which will be passed to the CAN driver, e.g. slcan0
 		///	\param baudrate Baudrate in 1/s, will be passed to the CAN driver, e.g. 500000
 		/// \returns true if successful
+		/// \remark Core must not run yet.
 		bool start(const std::string busname, unsigned baudrate);
 		
 		/// Stops the receive loop and closes the driver.
+		/// \remark Core must be running.
 		void stop();
 
 		/// Sends a message
+		/// \remark thread-safe if m_lock_send==true or driver is thread-safe.
 		void send(const Message& message);
 
 		/// Registers a callback function which is called when a message has been received.
+		/// \remark thread-safe
 		void register_receive_callback(const MessageReceivedCallback& callback);
 
 		/// The NMT sub-protocol
